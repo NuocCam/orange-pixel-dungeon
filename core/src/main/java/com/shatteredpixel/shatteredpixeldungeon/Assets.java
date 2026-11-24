@@ -77,6 +77,7 @@ public class Assets {
 		public static final String ARCS_FG  = "interfaces/arcs2.png";
 
 		public static final String BANNERS  = "interfaces/banners.png";
+		public static final String ORANGE_AVATAR = "interfaces/orange_avatar.png";
 		public static final String BADGES   = "interfaces/badges.png";
 		public static final String LOCKED   = "interfaces/locked_badge.png";
 

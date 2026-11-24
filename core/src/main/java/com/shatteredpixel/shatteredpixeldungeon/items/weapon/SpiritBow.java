@@ -21,6 +21,11 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.items.weapon;
 
+import com.shatteredpixel.shatteredpixeldungeon.effects.CheckedCell;
+import com.watabou.utils.BArray;
+import com.watabou.utils.PathFinder;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
@@ -365,6 +370,25 @@ public class SpiritBow extends Weapon {
 		@Override
 		protected void onThrow( int cell ) {
 			Char enemy = Actor.findChar( cell );
+			if (Dungeon.hero.hasTalent(Talent.ATTRACTION) && enemy == null) {
+				int range = Dungeon.hero.pointsInTalent(Talent.ATTRACTION);
+				for (Mob mob : Dungeon.level.mobs.toArray( new Mob[0] )) {
+					if (mob.paralysed <= 0
+							&& Dungeon.level.distance(cell, mob.pos) <= range
+							&& mob.state != mob.HUNTING) {
+						if (mob.sprite != null) {
+							mob.sprite.showStatus(CharSprite.NEUTRAL, "?");
+						}
+						mob.beckon( cell );
+					}
+				}
+				PathFinder.buildDistanceMap( cell, BArray.or(Dungeon.level.passable, Dungeon.level.avoid, null), range );
+				for (int i = 0; i < PathFinder.distance.length; i++){
+					if (PathFinder.distance[i] < Integer.MAX_VALUE) {
+						GameScene.checkedCell( i, cell );
+					}
+				}
+			}
 			if (enemy == null || enemy == curUser) {
 				parent = null;
 				Splash.at( cell, 0xCC99FFFF, 1 );

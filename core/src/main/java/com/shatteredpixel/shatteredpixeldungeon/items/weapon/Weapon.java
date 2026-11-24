@@ -21,6 +21,7 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.items.weapon;
 
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.MonkEnergy;
 import com.shatteredpixel.shatteredpixeldungeon.Badges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.Statistics;
@@ -327,6 +328,35 @@ abstract public class Weapon extends KindOfWeapon {
 			multi += 0.6f;
 		}
 
+		if (owner instanceof Hero) {
+			Hero hero = (Hero) owner;
+
+			if (hero.hasTalent(Talent.LIGHT_WEAPON) && this instanceof MeleeWeapon) {
+				int excessStr = hero.STR() - STRReq();
+				if (excessStr > 0) {
+					multi *= 1 + 0.05f * hero.pointsInTalent(Talent.LIGHT_WEAPON) * excessStr;
+				}
+			}
+
+			if (hero.hasTalent(Talent.ATK_SPEED_ENHANCE)) {
+				multi *= 1 + 0.05f * hero.pointsInTalent(Talent.ATK_SPEED_ENHANCE);
+			}
+
+			if (hero.subClass == HeroSubClass.MONK && hero.buff(MonkEnergy.class) != null && hero.buff(MonkEnergy.class).harmonized(hero)) {
+				multi *= 1.5f;
+			}
+
+			if (hero.hasTalent(Talent.QUICK_FOLLOWUP) && hero.buff(Talent.QuickFollowupTracker.class) != null) {
+				multi *= 1 + hero.pointsInTalent(Talent.QUICK_FOLLOWUP)/3f;
+			}
+
+			if (hero.belongings.weapon != null && hero.belongings.secondWep != null
+					&& hero.pointsInTalent(Talent.TWIN_SWORD) > 2
+					&& hero.belongings.weapon.getClass() == hero.belongings.secondWep.getClass()) {
+				multi *= 2;
+			}
+		}
+
 		return multi;
 	}
 
@@ -547,6 +577,9 @@ abstract public class Weapon extends KindOfWeapon {
 
 		public static float genericProcChanceMultiplier( Char attacker ){
 			float multi = RingOfArcana.enchantPowerMultiplier(attacker);
+			if (attacker == Dungeon.hero) {
+				multi *= ParchmentScrap.enchantEffectMultiplier();
+			}
 			Berserk rage = attacker.buff(Berserk.class);
 			if (rage != null) {
 				multi = rage.enchantFactor(multi);

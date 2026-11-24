@@ -21,6 +21,13 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.actors;
 
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.spells.HolyMantle;
+import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Barrier;
+import com.shatteredpixel.shatteredpixeldungeon.effects.SpellSprite;
+import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfRecharging;
+import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.CloakOfShadows;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.SoulMark;
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Badges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
@@ -75,6 +82,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Vertigo;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Vulnerable;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Weakness;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroSubClass;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
@@ -119,6 +127,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfRetributio
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfTeleportation;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.exotic.ScrollOfChallenge;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.exotic.ScrollOfPsionicBlast;
+import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.DimensionalSundial;
 import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.FerretTuft;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfBlastWave;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfFireblast;
@@ -402,6 +411,10 @@ public abstract class Char extends Actor {
 				}
 			}
 
+			if (this instanceof DriedRose.GhostHero){
+				dr = 0;
+			}
+
 			//we use a float here briefly so that we don't have to constantly round while
 			// potentially applying various multiplier effects
 			float dmg;
@@ -417,6 +430,10 @@ public abstract class Char extends Actor {
 
 			dmg = dmg*dmgMulti;
 
+			if (this instanceof Mob && alignment == Alignment.ENEMY){
+				dmg = dmg*DimensionalSundial.enemyDamageMultiplier();
+			}
+
 			//flat damage bonus is affected by multipliers
 			dmg += dmgBonus;
 
@@ -424,6 +441,9 @@ public abstract class Char extends Actor {
 				enemy.buff(GuidingLight.Illuminated.class).detach();
 				if (this == Dungeon.hero && Dungeon.hero.hasTalent(Talent.SEARING_LIGHT)){
 					dmg += 1 + 2*Dungeon.hero.pointsInTalent(Talent.SEARING_LIGHT);
+				}
+				if (this == Dungeon.hero && Dungeon.hero.hasTalent(Talent.WARDING_LIGHT)){
+					Buff.affect(Dungeon.hero, Barrier.class).setShield(1 + 2*Dungeon.hero.pointsInTalent(Talent.WARDING_LIGHT));
 				}
 				if (this != Dungeon.hero && Dungeon.hero.subClass == HeroSubClass.PRIEST){
 					enemy.damage(5+Dungeon.hero.lvl, GuidingLight.INSTANCE);
@@ -474,6 +494,10 @@ public abstract class Char extends Actor {
 
 			if (enemy.buff(MonkEnergy.MonkAbility.Meditate.MeditateResistance.class) != null){
 				dmg *= 0.2f;
+			}
+
+			if ( buff(SoulMark.class) != null && Dungeon.hero.hasTalent(Talent.MARK_OF_WEAKNESS) && alignment != Alignment.ALLY) {
+				dmg *= Math.pow(0.9f, Dungeon.hero.pointsInTalent(Talent.MARK_OF_WEAKNESS));
 			}
 
 			if ( buff(Weakness.class) != null ){
@@ -529,6 +553,14 @@ public abstract class Char extends Actor {
 				if (enemy.sprite != null) {
 					enemy.sprite.showStatus(CharSprite.NEGATIVE, Messages.get(Preparation.class, "assassinated"));
 				}
+				if (this == Dungeon.hero && Random.Float() < Dungeon.hero.pointsInTalent(Talent.ENERGY_DRAW)/3f) {
+					CloakOfShadows cloak = Dungeon.hero.belongings.getItem(CloakOfShadows.class);
+					if (cloak != null) {
+						cloak.directCharge(1);
+						ScrollOfRecharging.charge(Dungeon.hero);
+						SpellSprite.show(Dungeon.hero, SpellSprite.CHARGE);
+					}
+				}
 			}
 
 			Talent.CombinedLethalityAbilityTracker combinedLethality = buff(Talent.CombinedLethalityAbilityTracker.class);
@@ -582,6 +614,13 @@ public abstract class Char extends Actor {
 			
 		} else if (!Char.hasProp(enemy, Property.OBJECT)) {
 
+			if (enemy == Dungeon.hero && Dungeon.hero.hasTalent(Talent.QUICK_PREP)) {
+				Momentum momentum = Dungeon.hero.buff(Momentum.class);
+				if (momentum != null) {
+					momentum.quickPrep(Dungeon.hero.pointsInTalent(Talent.QUICK_PREP));
+				}
+			}
+
 			if (enemy.sprite != null){
 				if (hitMissIcon != -1){
 					//dooking is a playful sound Ferrets can make, like low pitched chirping
@@ -607,6 +646,17 @@ public abstract class Char extends Actor {
 			return false;
 		}
 
+	}
+
+	public void heal(int amount) {
+		amount = Math.min( amount, this.HT - this.HP );
+		if (amount > 0 && this.isAlive()) {
+			this.HP += amount;
+			if (this.sprite != null) {
+				this.sprite.emitter().start( Speck.factory( Speck.HEALING ), 0.4f, 1 );
+				this.sprite.showStatusWithIcon( CharSprite.POSITIVE, Integer.toString( amount ), FloatingText.HEALING);
+			}
+		}
 	}
 
 	public static int INFINITE_ACCURACY = 1_000_000;
@@ -924,6 +974,11 @@ public abstract class Char extends Actor {
 				bleedSrc = Vorpal.class;
 			}
 			((Char) src).buff(Vorpal.VorpalTracker.class).detach();
+		}
+
+		if (buff(HolyMantle.HolyMantleBuff.class) != null) {
+			damage = HolyMantle.HolyMantleBuff.DamageReduction(damage);
+			buff(HolyMantle.HolyMantleBuff.class).detach();
 		}
 
 		Class<?> srcClass = src.getClass();

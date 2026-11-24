@@ -63,6 +63,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.potions.Potion;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.InventoryScroll;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfTeleportation;
 import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.DimensionalSundial;
+import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.MossyClump;
 import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.TrinketCatalyst;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MeleeWeapon;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Bestiary;
@@ -146,12 +147,15 @@ import com.watabou.noosa.audio.Sample;
 import com.watabou.noosa.particles.Emitter;
 import com.watabou.noosa.tweeners.Tweener;
 import com.watabou.utils.Callback;
+import com.watabou.utils.DeviceCompat;
 import com.watabou.utils.GameMath;
 import com.watabou.utils.PlatformSupport;
 import com.watabou.utils.Point;
 import com.watabou.utils.PointF;
 import com.watabou.utils.Random;
 import com.watabou.utils.RectF;
+import com.zrp200.scrollofdebug.ScrollOfDebug;
+import com.zrp200.scrollofdebug.WndGiveItem;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -227,6 +231,25 @@ public class GameScene extends PixelScene {
 		if (Dungeon.hero == null || Dungeon.level == null){
 			ShatteredPixelDungeon.switchNoFade(TitleScene.class);
 			return;
+		}
+
+		ScrollOfDebug debug = Dungeon.hero.belongings.getItem(ScrollOfDebug.class);
+		if (DeviceCompat.isDebug()) {
+			if (debug == null) {
+				debug = new ScrollOfDebug();
+				if (!debug.collect()) Dungeon.hero.belongings.backpack.items.add(debug);
+			}
+			if (!Dungeon.quickslot.contains(debug)) {
+				for (int slot = 0; slot < Dungeon.quickslot.SIZE; slot++) {
+					if (Dungeon.quickslot.getItem(slot) == null) {
+						Dungeon.quickslot.setSlot(slot, debug);
+						break;
+					}
+				}
+			}
+		} else if (debug != null) {
+			debug.detachAll(Dungeon.hero.belongings.backpack);
+			Dungeon.quickslot.clearItem(debug);
 		}
 
 		Dungeon.level.playLevelMusic();
@@ -466,6 +489,13 @@ public class GameScene extends PixelScene {
 		menu.camera = uiCamera;
 		menu.setPos( menuBarMaxLeft, screentop);
 		add(menu);
+
+		if (DeviceCompat.isDebug()) {
+			WndGiveItem.OpenButton giveItem = new WndGiveItem.OpenButton();
+			giveItem.camera = uiCamera;
+			giveItem.setRect(menuBarMaxLeft - 17, screentop + 2, 16, 16);
+			add(giveItem);
+		}
 
 		float extraRight = uiCamera.width - (menuBarMaxLeft + MenuPane.WIDTH);
 		if (extraRight > 0){
@@ -732,12 +762,7 @@ public class GameScene extends PixelScene {
 				Dungeon.hero.buff(AscensionChallenge.class).saySwitch();
 			}
 
-			DimensionalSundial.sundialWarned = true;
-			if (DimensionalSundial.spawnMultiplierAtCurrentTime() > 1){
-				GLog.w(Messages.get(DimensionalSundial.class, "warning"));
-			} else {
-				DimensionalSundial.sundialWarned = false;
-			}
+			DimensionalSundial.announceTime();
 
 			InterlevelScene.mode = InterlevelScene.Mode.NONE;
 

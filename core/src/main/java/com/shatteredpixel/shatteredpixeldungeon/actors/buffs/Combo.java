@@ -431,12 +431,17 @@ public class Combo extends Buff implements ActionIndicator.Action {
 		switch(moveBeingUsed){
 			case CLOBBER:
 				clobberUsed = true;
+				if (!enemy.isAlive() && hero.pointsInTalent(Talent.SKILL_REPEAT) >= 1){
+					clobberUsed = false;
+				}
 				if (getHighestMove() == null) ActionIndicator.clearAction(Combo.this);
 				hero.spendAndNext(hero.attackDelay());
 				break;
 
 			case PARRY:
-				//do nothing
+				if (!enemy.isAlive() && hero.pointsInTalent(Talent.SKILL_REPEAT) >= 2){
+					parryUsed = false;
+				}
 				break;
 
 			case FURY:
@@ -474,6 +479,10 @@ public class Combo extends Buff implements ActionIndicator.Action {
 		if (!enemy.isAlive() || (!wasAlly && enemy.alignment == target.alignment)) {
 			if (hero.hasTalent(Talent.LETHAL_DEFENSE)){
 				Buff.affect(hero, BrokenSeal.WarriorShield.class).reduceCooldown(hero.pointsInTalent(Talent.LETHAL_DEFENSE)/3f);
+			}
+			if (hero.pointsInTalent(Talent.SKILL_REPEAT) >= 3){
+				clobberUsed = false;
+				parryUsed = false;
 			}
 		}
 

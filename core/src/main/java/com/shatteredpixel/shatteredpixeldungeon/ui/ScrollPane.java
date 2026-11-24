@@ -158,6 +158,8 @@ public class ScrollPane extends Component {
 		return content;
 	}
 
+	public int lastClickButton = PointerEvent.LEFT;
+
 	public void onClick( float x, float y ) {
 	}
 
@@ -190,6 +192,7 @@ public class ScrollPane extends Component {
 		@Override
 		protected void onClick(PointerEvent event) {
 			PointF p = content.camera.screenToCamera((int) event.current.x, (int) event.current.y);
+			lastClickButton = event.button;
 			ScrollPane.this.onClick(p.x, p.y);
 		}
 

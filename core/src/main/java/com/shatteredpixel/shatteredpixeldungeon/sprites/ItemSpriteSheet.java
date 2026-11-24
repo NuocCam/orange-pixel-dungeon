@@ -460,6 +460,7 @@ public class ItemSpriteSheet {
 	public static final int ARTIFACT_ROSE3      = ARTIFACTS+22;
 	public static final int ARTIFACT_TOME       = ARTIFACTS+23;
 	public static final int ARTIFACT_KEY        = ARTIFACTS+24;
+	public static final int ARTIFACT_MEDIC_KIT  = ARTIFACTS+25;
 	static{
 		assignItemRect(ARTIFACT_CLOAK,      9,  15);
 		assignItemRect(ARTIFACT_ARMBAND,    16, 13);
@@ -486,6 +487,7 @@ public class ItemSpriteSheet {
 		assignItemRect(ARTIFACT_ROSE3,      14, 14);
 		assignItemRect(ARTIFACT_TOME,       14, 16);
 		assignItemRect(ARTIFACT_KEY,        8,  16);
+		assignItemRect(ARTIFACT_MEDIC_KIT,  16, 13);
 	}
 
 	private static final int TRINKETS        =                               xy(1, 18);  //32 slots
@@ -506,6 +508,7 @@ public class ItemSpriteSheet {
 	public static final int CHAOTIC_CENSER  = TRINKETS+14;
 	public static final int FERRET_TUFT     = TRINKETS+15;
 	public static final int SPYGLASS        = TRINKETS+16;
+	public static final int SPYGLASS_REPAIRED = TRINKETS+17;
 	static{
 		assignItemRect(RAT_SKULL,       16, 11);
 		assignItemRect(PARCHMENT_SCRAP, 10, 14);
@@ -524,6 +527,7 @@ public class ItemSpriteSheet {
 		assignItemRect(CHAOTIC_CENSER,  13, 15);
 		assignItemRect(FERRET_TUFT,     16, 15);
 		assignItemRect(SPYGLASS,        15, 15);
+		assignItemRect(SPYGLASS_REPAIRED, 15, 15);
 	}
 
 	private static final int SCROLLS        =                               xy(1, 20);  //16 slots

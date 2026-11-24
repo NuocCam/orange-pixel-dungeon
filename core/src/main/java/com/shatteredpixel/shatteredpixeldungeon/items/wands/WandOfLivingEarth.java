@@ -37,6 +37,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.NPC;
 import com.shatteredpixel.shatteredpixeldungeon.effects.FloatingText;
 import com.shatteredpixel.shatteredpixeldungeon.effects.MagicMissile;
+import com.shatteredpixel.shatteredpixeldungeon.items.armor.glyphs.AntiMagic;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MagesStaff;
 import com.shatteredpixel.shatteredpixeldungeon.mechanics.Ballistica;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
@@ -392,8 +393,7 @@ public class WandOfLivingEarth extends DamageWand {
 				sprite.showStatusWithIcon(CharSprite.POSITIVE, Integer.toString(healthToAdd), FloatingText.HEALING);
 			}
 			HP = Math.min(HT, HP + healthToAdd);
-			//half of hero's evasion
-			defenseSkill = (hero.lvl + 4)/2;
+			defenseSkill = 0;
 		}
 
 		@Override
@@ -413,9 +413,13 @@ public class WandOfLivingEarth extends DamageWand {
 			return Random.NormalIntRange(2, 4 + Dungeon.scalingDepth()/2);
 		}
 
+		private int bonusDR() {
+			return 1 + Math.max(0, wandLevel)/2;
+		}
+
 		@Override
 		public int drRoll() {
-			int dr = super.drRoll();
+			int dr = super.drRoll() + bonusDR();
 			if (Dungeon.isChallenged(Challenges.NO_ARMOR)){
 				return dr + Random.NormalIntRange(wandLevel, 2 + wandLevel);
 			} else {
@@ -424,15 +428,27 @@ public class WandOfLivingEarth extends DamageWand {
 		}
 
 		@Override
+		public float resist(Class effect) {
+			float result = super.resist(effect);
+			for (Class c : AntiMagic.RESISTS){
+				if (c.isAssignableFrom(effect)){
+					return result * 0.8f;
+				}
+			}
+			return result;
+		}
+
+		@Override
 		public String description() {
 			String desc = Messages.get(this, "desc");
 
 			if (Actor.chars().contains(this)) {
 				if (Dungeon.isChallenged(Challenges.NO_ARMOR)) {
-					desc += "\n\n" + Messages.get(this, "wand_info", wandLevel, 2 + wandLevel);
+					desc += "\n\n" + Messages.get(this, "wand_info", wandLevel + bonusDR(), 2 + wandLevel + bonusDR());
 				} else {
-					desc += "\n\n" + Messages.get(this, "wand_info", wandLevel, 3 + 3 * wandLevel);
+					desc += "\n\n" + Messages.get(this, "wand_info", wandLevel + bonusDR(), 3 + 3 * wandLevel + bonusDR());
 				}
+				desc += "\n\n" + Messages.get(this, "magic_info");
 			}
 
 			return desc;

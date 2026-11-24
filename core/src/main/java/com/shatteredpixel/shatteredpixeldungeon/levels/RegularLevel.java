@@ -51,6 +51,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.keys.CrystalKey;
 import com.shatteredpixel.shatteredpixeldungeon.items.keys.GoldenKey;
 import com.shatteredpixel.shatteredpixeldungeon.items.keys.Key;
 import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.CrackedSpyglass;
+import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.Spyglass;
 import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.MimicTooth;
 import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.TrinketCatalyst;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Document;
@@ -676,16 +677,17 @@ public abstract class RegularLevel extends Level {
 			}
 		Random.popGenerator();
 
-		//extra spyglass loot
 		Random.pushGenerator(Random.Long());
-			int items = (int)(Random.Float() + CrackedSpyglass.extraLootChance());
+			boolean cracked = CrackedSpyglass.extraLootChance() > 0;
+			float spyglassChance = Math.max(CrackedSpyglass.extraLootChance(), Spyglass.extraLootChance());
+			int items = (int)(Random.Float() + spyglassChance);
 			for (int i = 0; i < items; i++){
 				int cell = randomDropCell();
 				if (map[cell] == Terrain.HIGH_GRASS || map[cell] == Terrain.FURROWED_GRASS) {
 					map[cell] = Terrain.GRASS;
 					losBlocking[cell] = false;
 				}
-				drop( Generator.randomUsingDefaults(), cell).hidden = true;
+				drop( Generator.randomUsingDefaults(), cell).hidden = cracked;
 			}
 		Random.popGenerator();
 

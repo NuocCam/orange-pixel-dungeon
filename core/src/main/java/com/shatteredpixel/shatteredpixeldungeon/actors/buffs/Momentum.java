@@ -21,6 +21,7 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.actors.buffs;
 
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
@@ -92,6 +93,13 @@ public class Momentum extends Buff implements ActionIndicator.Action {
 		return true;
 	}
 	
+	public void quickPrep(int amount) {
+		if (freerunCooldown > 0) {
+			freerunCooldown = Math.max(0, freerunCooldown - amount);
+		}
+		BuffIndicator.refreshHero();
+	}
+
 	public void gainStack(){
 		movedLastTurn = true;
 		if (freerunCooldown <= 0 && !freerunning()){
@@ -240,6 +248,9 @@ public class Momentum extends Buff implements ActionIndicator.Action {
 		target.sprite.emitter().burst(Speck.factory(Speck.JET), 5+ momentumStacks);
 		SpellSprite.show(target, SpellSprite.HASTE, 1, 1, 0);
 		momentumStacks = 0;
+		if (((Hero) target).hasTalent(Talent.MOMENTARY_FOCUSING)) {
+			Buff.affect(target, EvasiveMove.class, ((Hero) target).pointsInTalent(Talent.MOMENTARY_FOCUSING));
+		}
 		BuffIndicator.refreshHero();
 		ActionIndicator.clearAction(this);
 	}

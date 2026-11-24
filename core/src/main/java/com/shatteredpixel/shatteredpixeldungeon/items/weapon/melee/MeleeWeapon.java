@@ -177,6 +177,10 @@ public class MeleeWeapon extends Weapon {
 			charger.partialCharge++;
 		}
 
+		if (hero.hasTalent(Talent.SKILLED_HAND)) {
+			Buff.affect(hero, Talent.SkilledHandTracker.class);
+		}
+
 		if (hero.heroClass == HeroClass.DUELIST
 				&& hero.hasTalent(Talent.AGGRESSIVE_BARRIER)
 				&& (hero.HP / (float)hero.HT) <= 0.5f){
@@ -435,6 +439,16 @@ public class MeleeWeapon extends Weapon {
 						chargeToGain *= 1.5f;
 					}
 
+					if (Dungeon.hero.hasTalent(Talent.FASTER_CHARGE)) {
+						chargeToGain *= 1 + Dungeon.hero.pointsInTalent(Talent.FASTER_CHARGE)/12f;
+					}
+
+					if (Dungeon.hero.hasTalent(Talent.TWIN_SWORD)
+							&& Dungeon.hero.belongings.weapon != null && Dungeon.hero.belongings.secondWep != null
+							&& Dungeon.hero.belongings.weapon.getClass() == Dungeon.hero.belongings.secondWep.getClass()) {
+						chargeToGain *= 1.25f;
+					}
+
 					//50% slower charge gain with brawler's stance enabled, even if buff is inactive
 					if (Dungeon.hero.buff(RingOfForce.BrawlersStance.class) != null){
 						chargeToGain *= 0.50f;
@@ -480,12 +494,17 @@ public class MeleeWeapon extends Weapon {
 		}
 
 		public int chargeCap(){
+			int cap;
 			//caps at level 19 with 8 or 10 charges
 			if (Dungeon.hero.subClass == HeroSubClass.CHAMPION){
-				return Math.min(10, 4 + (Dungeon.hero.lvl - 1) / 3);
+				cap = Math.min(10, 4 + (Dungeon.hero.lvl - 1) / 3);
 			} else {
-				return Math.min(8, 2 + (Dungeon.hero.lvl - 1) / 3);
+				cap = Math.min(8, 2 + (Dungeon.hero.lvl - 1) / 3);
 			}
+			if (Dungeon.hero.heroClass == HeroClass.DUELIST) {
+				cap += Dungeon.hero.pointsInTalent(Talent.ACCUMULATION);
+			}
+			return cap;
 		}
 
 		public void gainCharge( float charge ){
@@ -577,6 +596,14 @@ public class MeleeWeapon extends Weapon {
 
 			Dungeon.hero.sprite.operate(Dungeon.hero.pos);
 			Sample.INSTANCE.play(Assets.Sounds.UNLOCK);
+
+			if (Dungeon.hero.buff(Talent.QuickFollowupTracker.class) != null) {
+				Dungeon.hero.buff(Talent.QuickFollowupTracker.class).detach();
+			}
+			if (Dungeon.hero.buff(Talent.QuickFollowupCooldown.class) == null && Dungeon.hero.hasTalent(Talent.QUICK_FOLLOWUP)) {
+				Buff.affect(Dungeon.hero, Talent.QuickFollowupTracker.class);
+				Buff.affect(Dungeon.hero, Talent.QuickFollowupCooldown.class, 10f);
+			}
 
 			ActionIndicator.setAction(this);
 			Item.updateQuickslot();

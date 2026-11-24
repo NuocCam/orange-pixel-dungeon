@@ -21,6 +21,8 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.items.wands;
 
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.MagicalCircle;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.MagicalEmpower;
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Badges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
@@ -213,6 +215,9 @@ public abstract class Wand extends Item {
 			Buff.append(Dungeon.hero, TalismanOfForesight.CharAwareness.class, dur).charID = target.id();
 		}
 
+		if (Dungeon.hero.hasTalent(Talent.ENHANCED_MARK)) {
+			wandLevel += Dungeon.hero.pointsInTalent(Talent.ENHANCED_MARK);
+		}
 		if (target != Dungeon.hero &&
 				Dungeon.hero.subClass == HeroSubClass.WARLOCK &&
 				//standard 1 - 0.92^x chance, plus 7%. Starts at 15%
@@ -233,6 +238,13 @@ public abstract class Wand extends Item {
 			Buff.affect(Dungeon.hero, Talent.SearingLightCooldown.class, 20f);
 		}
 
+		if (Dungeon.hero.heroClass != HeroClass.CLERIC
+				&& Dungeon.hero.hasTalent(Talent.WARDING_LIGHT)
+				&& Dungeon.hero.buff(Talent.WardingLightCooldown.class) == null){
+			Buff.affect(Dungeon.hero, Barrier.class).setShield(1+2*Dungeon.hero.pointsInTalent(Talent.WARDING_LIGHT));
+			Buff.affect(Dungeon.hero, Talent.WardingLightCooldown.class, 20f);
+		}
+
 		if (target.alignment != Char.Alignment.ALLY
 				&& Dungeon.hero.heroClass != HeroClass.CLERIC
 				&& Dungeon.hero.hasTalent(Talent.SUNRAY)){
@@ -246,6 +258,13 @@ public abstract class Wand extends Item {
 	@Override
 	public void onDetach( ) {
 		stopCharging();
+	}
+
+	public void loseCharge() {
+		while (curCharges > 0) {
+			curCharges --;
+			updateQuickslot();
+		}
 	}
 
 	public void stopCharging() {
@@ -402,6 +421,10 @@ public abstract class Wand extends Item {
 				lvl += 2;
 			}
 
+			if (charger.target.buff(MagicalEmpower.class) != null){
+				lvl += charger.target.buff(MagicalEmpower.class).getUpgrades();
+			}
+
 			if (curCharges == 1 && charger.target instanceof Hero && ((Hero)charger.target).hasTalent(Talent.DESPERATE_POWER)){
 				lvl += ((Hero)charger.target).pointsInTalent(Talent.DESPERATE_POWER);
 			}
@@ -486,7 +509,11 @@ public abstract class Wand extends Item {
 			}
 		}
 		
-		curCharges -= cursed ? 1 : chargesPerCast();
+		if ((Dungeon.hero.hasTalent(Talent.CHARGE_PRESERVE) && Random.Int(20) < Dungeon.hero.pointsInTalent(Talent.CHARGE_PRESERVE))
+				|| (Dungeon.hero.pointsInTalent(Talent.MAGICAL_CIRCLE) > 1 && Dungeon.hero.buff(MagicalCircle.class) != null && Random.Int(2) == 0)) {
+		} else {
+			curCharges -= cursed ? 1 : chargesPerCast();
+		}
 
 		//remove magic charge at a higher priority, if we are benefiting from it are and not the
 		//wand that just applied it
@@ -500,6 +527,10 @@ public abstract class Wand extends Item {
 			ScrollEmpower empower = curUser.buff(ScrollEmpower.class);
 			if (empower != null){
 				empower.use();
+			}
+			MagicalEmpower magicalEmpower = curUser.buff(MagicalEmpower.class);
+			if (magicalEmpower != null) {
+				magicalEmpower.use();
 			}
 		}
 
@@ -695,6 +726,11 @@ public abstract class Wand extends Item {
 						float shield = curUser.HT * (0.04f*curWand.curCharges);
 						if (curUser.pointsInTalent(Talent.SHIELD_BATTERY) == 2) shield *= 1.5f;
 						Buff.affect(curUser, Barrier.class).setShield(Math.round(shield));
+
+						if (Dungeon.hero.subClass == HeroSubClass.BATTLEMAGE && Dungeon.hero.hasTalent(Talent.MAGICAL_CIRCLE)) {
+							Buff.affect(curUser, MagicalCircle.class).setup(curUser.pos, curWand.curCharges*3+1);
+						}
+
 						curUser.sprite.showStatusWithIcon(CharSprite.POSITIVE, Integer.toString(Math.round(shield)), FloatingText.SHIELDING);
 						curWand.curCharges = 0;
 						curUser.sprite.operate(curUser.pos);
@@ -847,8 +883,16 @@ public abstract class Wand extends Item {
 			float turnsToCharge = (float) (BASE_CHARGE_DELAY
 					+ (SCALING_CHARGE_ADDITION * Math.pow(scalingFactor, missingCharges)));
 
-			if (Regeneration.regenOn())
-				partialCharge += (1f/turnsToCharge) * RingOfEnergy.wandChargeMultiplier(target);
+			if (Regeneration.regenOn()) {
+				float multi = RingOfEnergy.wandChargeMultiplier(target);
+				if (Dungeon.hero != null) {
+					multi *= (1f + 0.1f * Dungeon.hero.pointsInTalent(Talent.FASTER_CHARGER));
+					if (Dungeon.hero.hasTalent(Talent.MAGICAL_CIRCLE) && Dungeon.hero.buff(MagicalCircle.class) != null) {
+						multi += 1;
+					}
+				}
+				partialCharge += (1f/turnsToCharge) * multi;
+			}
 
 			for (Recharging bonus : target.buffs(Recharging.class)){
 				if (bonus != null && bonus.remainder() > 0f) {

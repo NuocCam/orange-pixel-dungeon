@@ -21,11 +21,13 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee;
 
+import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfMagicMissile;
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Badges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.ArtifactRecharge;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.MagicalEmpower;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroSubClass;
@@ -188,7 +190,27 @@ public class MagesStaff extends MeleeWeapon {
 				Sample.INSTANCE.play(Assets.Sounds.HIT_STRONG, 0.75f, 1.2f);
 			}
 		}
+
+		WandOfMagicMissile.MagicCharge magicCharge = Dungeon.hero.buff(WandOfMagicMissile.MagicCharge.class);
+		if (!(magicCharge != null
+				&& magicCharge.wandJustApplied() != this.wand
+				&& magicCharge.level() == buffedLvl()
+				&& buffedLvl() > super.buffedLvl())){
+			MagicalEmpower magicalEmpower = Dungeon.hero.buff(MagicalEmpower.class);
+			if (magicalEmpower != null) {
+				magicalEmpower.use();
+			}
+		}
+
 		return super.proc(attacker, defender, damage);
+	}
+
+	public int getCurCharges() {
+		return wand.curCharges;
+	}
+
+	public void loseCharge() {
+		wand.loseCharge();
 	}
 
 	@Override

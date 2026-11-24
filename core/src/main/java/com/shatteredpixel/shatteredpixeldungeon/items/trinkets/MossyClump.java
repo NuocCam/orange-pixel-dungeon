@@ -21,11 +21,28 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.items.trinkets;
 
+import com.shatteredpixel.shatteredpixeldungeon.Challenges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
+import com.shatteredpixel.shatteredpixeldungeon.levels.RegularLevel;
+import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
+import com.shatteredpixel.shatteredpixeldungeon.plants.Blindweed;
+import com.shatteredpixel.shatteredpixeldungeon.plants.Earthroot;
+import com.shatteredpixel.shatteredpixeldungeon.plants.Fadeleaf;
+import com.shatteredpixel.shatteredpixeldungeon.plants.Firebloom;
+import com.shatteredpixel.shatteredpixeldungeon.plants.Icecap;
+import com.shatteredpixel.shatteredpixeldungeon.plants.Mageroyal;
+import com.shatteredpixel.shatteredpixeldungeon.plants.Plant;
+import com.shatteredpixel.shatteredpixeldungeon.plants.Sorrowmoss;
+import com.shatteredpixel.shatteredpixeldungeon.plants.Starflower;
+import com.shatteredpixel.shatteredpixeldungeon.plants.Stormvine;
+import com.shatteredpixel.shatteredpixeldungeon.plants.Sungrass;
+import com.shatteredpixel.shatteredpixeldungeon.plants.Swiftthistle;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.watabou.utils.Bundle;
+import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
 
 import java.util.ArrayList;
@@ -44,78 +61,201 @@ public class MossyClump extends Trinket {
 
 	@Override
 	public String statsDesc() {
-		if (isIdentified()){
-			return Messages.get(this, "stats_desc", (int)(100*overrideNormalLevelChance(buffedLvl())));
+		int lvl = isIdentified() ? buffedLvl() : 0;
+		String desc = Messages.get(this, isIdentified() ? "stats_desc" : "typical_stats_desc", plantsPerFloor(lvl));
+		if (Dungeon.hero != null && Dungeon.level != null && Dungeon.hero.belongings.getItem(MossyClump.class) == this) {
+			desc += "\n\n" + Messages.get(this, "helpful_chance", Math.round(100 * helpfulChance()), TRAMPLE_PENALTY);
 		} else {
-			return Messages.get(this, "typical_stats_desc", (int)(100*overrideNormalLevelChance(0)));
+			desc += "\n\n" + Messages.get(this, "helpful_chance_typical", TRAMPLE_PENALTY);
 		}
+		return desc;
 	}
 
-	public static float overrideNormalLevelChance(){
-		return overrideNormalLevelChance(trinketLevel(MossyClump.class));
+	public static int plantsPerFloor( int level ){
+		return 4 + 2*Math.max(0, level);
 	}
 
-	public static float overrideNormalLevelChance( int level ){
-		if (level == -1){
-			return 0f;
+	public static final int TRAMPLE_PENALTY = 5;
+
+	private ArrayList<Integer> trampledKeys = new ArrayList<>();
+	private ArrayList<Integer> trampledCounts = new ArrayList<>();
+
+	private static int floorKey(){
+		return Dungeon.depth + 1000*Dungeon.branch;
+	}
+
+	private int trampledOnThisFloor(){
+		int i = trampledKeys.indexOf(floorKey());
+		return i == -1 ? 0 : trampledCounts.get(i);
+	}
+
+	private void addTrampledOnThisFloor(){
+		int i = trampledKeys.indexOf(floorKey());
+		if (i == -1){
+			trampledKeys.add(floorKey());
+			trampledCounts.add(1);
 		} else {
-			return 0.25f + 0.25f*level;
+			trampledCounts.set(i, trampledCounts.get(i) + 1);
 		}
 	}
 
-	//true for grass, false for water
-	//ensures a little consistency of RNG
-	private ArrayList<Boolean> levelFeels = new ArrayList<>();
-	private int shuffles = 0;
+	public float helpfulChance(){
+		return Math.max(0f, 0.5f - TRAMPLE_PENALTY*trampledOnThisFloor()/100f);
+	}
 
-	public static Level.Feeling getNextFeeling(){
-		MossyClump clump = Dungeon.hero.belongings.getItem(MossyClump.class);
-		if (clump == null) {
-			return Level.Feeling.NONE;
+	private static boolean isHelpful( Plant plant ){
+		return plant instanceof Sungrass || plant instanceof Earthroot || plant instanceof Swiftthistle
+				|| plant instanceof Mageroyal || plant instanceof Starflower;
+	}
+
+	private static final Class[] HELPFUL = new Class[]{
+			Sungrass.Seed.class, Sungrass.Seed.class, Sungrass.Seed.class,
+			Earthroot.Seed.class, Earthroot.Seed.class,
+			Swiftthistle.Seed.class, Swiftthistle.Seed.class,
+			Mageroyal.Seed.class,
+			Starflower.Seed.class
+	};
+
+	private static final Class[] HARMFUL = new Class[]{
+			Firebloom.Seed.class, Icecap.Seed.class, Sorrowmoss.Seed.class,
+			Stormvine.Seed.class, Blindweed.Seed.class, Fadeleaf.Seed.class
+	};
+
+	private static Plant.Seed randomSeed( boolean helpful ){
+		Class[] pool = helpful ? HELPFUL : HARMFUL;
+		try {
+			return (Plant.Seed) pool[Random.Int(pool.length)].newInstance();
+		} catch (Exception e) {
+			return null;
 		}
-		if (clump.levelFeels.isEmpty()){
-			Random.pushGenerator(Dungeon.seed+1);
-				clump.levelFeels.add(true);
-				clump.levelFeels.add(true);
-				clump.levelFeels.add(false);
-				clump.levelFeels.add(false);
-				clump.levelFeels.add(false);
-				clump.levelFeels.add(false);
-				for (int i = 0; i <= clump.shuffles; i++) {
-					Random.shuffle(clump.levelFeels);
+	}
+
+	private static boolean plantable( Level level, int cell ){
+		int t = level.map[cell];
+		return (t == Terrain.EMPTY || t == Terrain.GRASS || t == Terrain.EMPTY_DECO)
+				&& level.passable[cell]
+				&& level.heaps.get(cell) == null
+				&& level.traps.get(cell) == null
+				&& level.plants.get(cell) == null
+				&& Actor.findChar(cell) == null
+				&& level.findMob(cell) == null
+				&& cell != level.entrance() && cell != level.exit();
+	}
+
+	private static boolean awayFromTransitions( Level level, int cell ){
+		return level.distance(cell, level.entrance()) > 3 && level.distance(cell, level.exit()) > 3;
+	}
+
+	public static void populate( Level level ){
+		if (!(level instanceof RegularLevel)) return;
+		if (Dungeon.hero == null || Dungeon.hero.belongings.getItem(MossyClump.class) == null) return;
+		if (Dungeon.isChallenged(Challenges.NO_HERBALISM)) return;
+
+		int lvl = Dungeon.hero.belongings.getItem(MossyClump.class).buffedLvl();
+
+		ArrayList<Integer> cells = new ArrayList<>();
+		for (int i = 0; i < level.length(); i++){
+			if (plantable(level, i) && awayFromTransitions(level, i)){
+				cells.add(i);
+			}
+		}
+		Random.shuffle(cells);
+
+		int patches = plantsPerFloor(lvl) + 2 + lvl;
+		for (int i = 0; i < patches && i < cells.size(); i++){
+			int c = cells.get(i);
+			for (int n : PathFinder.NEIGHBOURS9){
+				int cc = c + n;
+				if (cc < 0 || cc >= level.length()) continue;
+				int t = level.map[cc];
+				if ((t == Terrain.EMPTY || t == Terrain.EMPTY_DECO) && level.passable[cc]
+						&& (n == 0 || Random.Int(10) < 6)){
+					Level.set(cc, Terrain.GRASS, level);
 				}
-				clump.shuffles++;
-			Random.popGenerator();
+			}
 		}
 
-		return clump.levelFeels.remove(0) ? Level.Feeling.GRASS : Level.Feeling.WATER;
+		int planted = 0;
+		int starflowers = 0;
+		for (int c : cells){
+			if (planted >= plantsPerFloor(lvl)) break;
+			if (!plantable(level, c)) continue;
+
+			Plant.Seed seed = randomSeed(Random.Int(2) == 0);
+			if (seed == null) continue;
+			if (seed instanceof Starflower.Seed){
+				if (starflowers >= 1){
+					seed = new Sungrass.Seed();
+				}
+				starflowers++;
+			}
+			level.plant(seed, c);
+			planted++;
+		}
 	}
 
-	private static final String FEELS = "feels";
-	private static final String SHUFFLES = "shuffles";
+	public static void onPlantTriggered( Plant plant ){
+		if (Dungeon.hero == null || Dungeon.level == null) return;
+		MossyClump clump = Dungeon.hero.belongings.getItem(MossyClump.class);
+		if (clump == null) return;
+
+		if (isHelpful(plant)){
+			clump.addTrampledOnThisFloor();
+		}
+
+		clump.regrow(Dungeon.level);
+	}
+
+	private void regrow( Level level ){
+		if (!(level instanceof RegularLevel) || Dungeon.isChallenged(Challenges.NO_HERBALISM)) return;
+
+		ArrayList<Integer> hidden = new ArrayList<>();
+		ArrayList<Integer> any = new ArrayList<>();
+		for (int i = 0; i < level.length(); i++){
+			if (plantable(level, i) && awayFromTransitions(level, i)){
+				any.add(i);
+				if (!level.heroFOV[i] && level.distance(i, Dungeon.hero.pos) > 5){
+					hidden.add(i);
+				}
+			}
+		}
+		ArrayList<Integer> cells = hidden.isEmpty() ? any : hidden;
+		if (cells.isEmpty()) return;
+
+		Plant.Seed seed = randomSeed(Random.Float() < helpfulChance());
+		if (seed != null){
+			level.plant(seed, Random.element(cells));
+		}
+	}
+
+	private static final String TRAMPLED_KEYS = "trampled_keys";
+	private static final String TRAMPLED_COUNTS = "trampled_counts";
 
 	@Override
 	public void storeInBundle(Bundle bundle) {
 		super.storeInBundle(bundle);
-		if (!levelFeels.isEmpty()){
-			boolean[] storeFeels = new boolean[levelFeels.size()];
-			for (int i = 0; i < storeFeels.length; i++){
-				storeFeels[i] = levelFeels.get(i);
-			}
-			bundle.put(FEELS, storeFeels);
+		int[] keys = new int[trampledKeys.size()];
+		int[] counts = new int[trampledKeys.size()];
+		for (int i = 0; i < keys.length; i++){
+			keys[i] = trampledKeys.get(i);
+			counts[i] = trampledCounts.get(i);
 		}
-		bundle.put( SHUFFLES, shuffles );
+		bundle.put(TRAMPLED_KEYS, keys);
+		bundle.put(TRAMPLED_COUNTS, counts);
 	}
 
 	@Override
 	public void restoreFromBundle(Bundle bundle) {
 		super.restoreFromBundle(bundle);
-		levelFeels.clear();
-		if (bundle.contains(FEELS)){
-			for (boolean b : bundle.getBooleanArray(FEELS)){
-				levelFeels.add(b);
+		trampledKeys.clear();
+		trampledCounts.clear();
+		if (bundle.contains(TRAMPLED_KEYS)){
+			int[] keys = bundle.getIntArray(TRAMPLED_KEYS);
+			int[] counts = bundle.getIntArray(TRAMPLED_COUNTS);
+			for (int i = 0; i < keys.length && i < counts.length; i++){
+				trampledKeys.add(keys[i]);
+				trampledCounts.add(counts[i]);
 			}
 		}
-		shuffles = bundle.getInt( SHUFFLES );
 	}
 }

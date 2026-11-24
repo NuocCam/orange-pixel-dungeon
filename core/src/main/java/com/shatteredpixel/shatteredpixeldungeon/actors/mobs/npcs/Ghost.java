@@ -335,12 +335,9 @@ public class Ghost extends NPC {
 				weapon.enchant(null);
 				weapon.cursed = false;
 
-				//50%:+0, 30%:+1, 15%:+2, 5%:+3
 				float itemLevelRoll = Random.Float();
 				int itemLevel;
-				if (itemLevelRoll < 0.5f){
-					itemLevel = 0;
-				} else if (itemLevelRoll < 0.8f){
+				if (itemLevelRoll < 0.8f){
 					itemLevel = 1;
 				} else if (itemLevelRoll < 0.95f){
 					itemLevel = 2;

@@ -100,6 +100,12 @@ public class Healing extends Buff {
 		flatHealPerTick = Math.max(flatHealPerTick, flatPerTick);
 	}
 	
+	public void limitByBloodVial(){
+		if (VialOfBlood.delayBurstHealing()){
+			bloodVialLimitingLevel = VialOfBlood.bloodVialLevel();
+		}
+	}
+
 	public void increaseHeal( int amount ){
 		healingLeft += amount;
 	}

@@ -21,6 +21,15 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.actors.hero;
 
+import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.MedicKit;
+import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfBlastWave;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Blindness;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.PinCushion;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Adrenaline;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Haste;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.EvasiveMove;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.MagicalCombo;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.spells.Resurrection;
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Badges;
 import com.shatteredpixel.shatteredpixeldungeon.Bones;
@@ -114,6 +123,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.keys.CrystalKey;
 import com.shatteredpixel.shatteredpixeldungeon.items.keys.GoldenKey;
 import com.shatteredpixel.shatteredpixeldungeon.items.keys.IronKey;
 import com.shatteredpixel.shatteredpixeldungeon.items.keys.Key;
+import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.CrackedSpyglass;
 import com.shatteredpixel.shatteredpixeldungeon.items.keys.WornKey;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.Potion;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfExperience;
@@ -261,6 +271,9 @@ public class Hero extends Char {
 		int curHT = HT;
 		
 		HT = 20 + 5*(lvl-1) + HTBoost;
+		if (hasTalent(Talent.MAX_HEALTH)) {
+			HT += 5*pointsInTalent(Talent.MAX_HEALTH);
+		}
 		float multiplier = RingOfMight.HTMultiplier(this);
 		HT = Math.round(multiplier * HT);
 		
@@ -556,6 +569,10 @@ public class Hero extends Char {
 		if (buff(Scimitar.SwordDance.class) != null){
 			accuracy *= 1.50f;
 		}
+
+		if (hasTalent(Talent.ACC_ENHANCE)) {
+			accuracy *= 1 + 0.05f * pointsInTalent(Talent.ACC_ENHANCE);
+		}
 		
 		if (!RingOfForce.fightingUnarmed(this)) {
 			return Math.max(1, Math.round(attackSkill * accuracy * wep.accuracyFactor( this, target )));
@@ -577,10 +594,21 @@ public class Hero extends Char {
 		if (buff(RoundShield.GuardTracker.class) != null){
 			return INFINITE_EVASION;
 		}
+
+		if (buff(Talent.ParryTracker.class) != null){
+			if (canAttack(enemy) && !isCharmedBy(enemy)){
+				Buff.affect(this, Talent.RiposteTracker.class).enemy = enemy;
+			}
+			return INFINITE_EVASION;
+		}
 		
 		float evasion = defenseSkill;
 		
 		evasion *= RingOfEvasion.evasionMultiplier( this );
+
+		if (hasTalent(Talent.EVA_ENHANCE)) {
+			evasion *= 1 + 0.05f * pointsInTalent(Talent.EVA_ENHANCE);
+		}
 
 		if (buff(Talent.LiquidAgilEVATracker.class) != null){
 			if (pointsInTalent(Talent.LIQUID_AGILITY) == 1){
@@ -589,6 +617,8 @@ public class Hero extends Char {
 				return INFINITE_EVASION;
 			}
 		}
+
+		if (buff(EvasiveMove.class) != null) return INFINITE_EVASION;
 
 		if (buff(Quarterstaff.DefensiveStance.class) != null){
 			evasion *= 3;
@@ -630,6 +660,15 @@ public class Hero extends Char {
 
 		if (buff(MonkEnergy.MonkAbility.Focus.FocusBuff.class) != null){
 			buff(MonkEnergy.MonkAbility.Focus.FocusBuff.class).detach();
+			if (sprite != null && sprite.visible) {
+				Sample.INSTANCE.play(Assets.Sounds.HIT_PARRY, 1, Random.Float(0.96f, 1.05f));
+			}
+			return Messages.get(Monk.class, "parried");
+		}
+
+		Talent.ParryTracker talentParry = buff(Talent.ParryTracker.class);
+		if (hasTalent(Talent.PARRY) && talentParry != null) {
+			talentParry.detach();
 			if (sprite != null && sprite.visible) {
 				Sample.INSTANCE.play(Assets.Sounds.HIT_PARRY, 1, Random.Float(0.96f, 1.05f));
 			}
@@ -716,6 +755,14 @@ public class Hero extends Char {
 		float speed = super.speed();
 
 		speed *= RingOfHaste.speedMultiplier(this);
+
+		if (hasTalent(Talent.MOVESPEED_ENHANCE)) {
+			speed *= 1 + 0.1f*pointsInTalent(Talent.MOVESPEED_ENHANCE);
+		}
+
+		if (subClass == HeroSubClass.MONK && buff(MonkEnergy.class) != null && buff(MonkEnergy.class).harmonized(this)) {
+			speed *= 1.5f;
+		}
 		
 		if (belongings.armor() != null) {
 			speed = belongings.armor().speedFactor(this, speed);
@@ -797,6 +844,10 @@ public class Hero extends Char {
 			//This is for that one guy, you shall get your fists of fury!
 			float speed = RingOfFuror.attackSpeedMultiplier(this);
 
+			if (hasTalent(Talent.ATK_SPEED_ENHANCE)) {
+				speed *= 1 + 0.05f * pointsInTalent(Talent.ATK_SPEED_ENHANCE);
+			}
+
 			//ditto for furor + sword dance!
 			if (buff(Scimitar.SwordDance.class) != null){
 				speed += 0.6f;
@@ -841,6 +892,10 @@ public class Hero extends Char {
 
 		if (buff(Endure.EndureTracker.class) != null){
 			buff(Endure.EndureTracker.class).endEnduring();
+		}
+
+		if (hasTalent(Talent.PARRY) && buff(Talent.ParryCooldown.class) == null){
+			Buff.affect(this, Talent.ParryTracker.class);
 		}
 		
 		if (!ready) {
@@ -1118,8 +1173,12 @@ public class Hero extends Char {
 			Heap heap = Dungeon.level.heaps.get( pos );
 			if (heap != null) {
 				Item item = heap.peek();
+				boolean wasHidden = heap.hidden;
 				if (item.doPickUp( this )) {
 					heap.pickUp();
+					if (wasHidden) {
+						CrackedSpyglass.onHiddenItemLooted();
+					}
 
 					//TODO this statement is getting silly, might be better to handle this as a propery of items
 					if (item instanceof Dewdrop
@@ -1575,6 +1634,47 @@ public class Hero extends Char {
 					}
 				});
 			}
+			if (hasTalent(Talent.KICK)
+					&& enemy.buff(PinCushion.class) != null
+					&& Dungeon.level.adjacent(pos, enemy.pos)
+					&& buff(Talent.KickCooldown.class) == null) {
+				Item item = enemy.buff(PinCushion.class).grabOne();
+				if (item.doPickUp(this, enemy.pos)){
+					spend(-1);
+				} else {
+					GLog.w(Messages.get(this, "cant_grab"));
+					Dungeon.level.drop(item, enemy.pos).sprite.drop();
+				}
+				Ballistica trajectory = new Ballistica(pos, enemy.pos, Ballistica.STOP_TARGET);
+				trajectory = new Ballistica(trajectory.collisionPos, trajectory.path.get(trajectory.path.size() - 1), Ballistica.PROJECTILE);
+				WandOfBlastWave.throwChar(enemy, trajectory, pointsInTalent(Talent.KICK), true, false, getClass());
+				Buff.affect(this, Talent.KickCooldown.class, 10f);
+			}
+			if (wep instanceof MissileWeapon
+					&& hasTalent(Talent.SHOOTING_EYES)
+					&& enemy.buff(Talent.ShootingEyesTracker.class) == null) {
+				if (Random.Float() < pointsInTalent(Talent.SHOOTING_EYES)/3f) {
+					Buff.affect(enemy, Blindness.class, 2f);
+				}
+				Buff.affect(enemy, Talent.ShootingEyesTracker.class);
+			}
+			if (wep instanceof MissileWeapon
+					&& hasTalent(Talent.TARGET_SPOTTING)
+					&& buff(SnipersMark.class) != null
+					&& buff(SnipersMark.class).object == enemy.id()) {
+				damage = (int)(damage*(1+0.1f*pointsInTalent(Talent.TARGET_SPOTTING)));
+			}
+			break;
+		case CHAMPION:
+			if (belongings.weapon != null && belongings.secondWep != null
+					&& pointsInTalent(Talent.TWIN_SWORD) > 1
+					&& belongings.weapon.getClass() == belongings.secondWep.getClass()) {
+				KindOfWeapon other = belongings.secondWep;
+				if (belongings.secondWep == wep)  {
+					other = belongings.weapon;
+				}
+				damage = other.proc( this, enemy, damage );
+			}
 			break;
 		default:
 		}
@@ -1588,6 +1688,23 @@ public class Hero extends Char {
 		if (damage > 0 && subClass == HeroSubClass.BERSERKER){
 			Berserk berserk = Buff.affect(this, Berserk.class);
 			berserk.damage(damage);
+		}
+
+		if (subClass == HeroSubClass.GLADIATOR && Random.Float() < pointsInTalent(Talent.OFFENSIVE_DEFENSE)/3f) {
+			Buff.affect(this, Combo.class).hit(enemy);
+		}
+
+		if (hasTalent(Talent.EMERGENCY_ESCAPE) && Random.Float() < pointsInTalent(Talent.EMERGENCY_ESCAPE)/50f) {
+			Buff.prolong(this, Invisibility.class, 3f);
+		}
+
+		if (hasTalent(Talent.OVERCOMING)) {
+			Momentum momentum = buff(Momentum.class);
+			if (momentum != null && momentum.freerunning()) {
+				Buff.affect(this, Haste.class, 2f);
+				if (pointsInTalent(Talent.OVERCOMING) > 1) Buff.affect(this, Adrenaline.class, 2f);
+				if (pointsInTalent(Talent.OVERCOMING) > 2) Buff.affect(this, EvasiveMove.class, 2f);
+			}
 		}
 		
 		if (belongings.armor() != null) {
@@ -2172,6 +2289,25 @@ public class Hero extends Char {
 		
 		curAction = null;
 
+		if (buff(Resurrection.ResurrectionBuff.class) != null) {
+			interrupt();
+			this.HP = Math.max(1, HT / 10);
+
+			PotionOfHealing.cure(this);
+			Buff.prolong(this, Invulnerability.class, Invulnerability.DURATION);
+
+			SpellSprite.show(this, SpellSprite.ANKH);
+			GameScene.flash(0x80FFFF40);
+			Sample.INSTANCE.play(Assets.Sounds.TELEPORT);
+			GLog.w(Messages.get(this, "revive"));
+			Catalog.countUse(Ankh.class);
+
+			buff(Resurrection.ResurrectionBuff.class).detach();
+			Buff.affect(this, Resurrection.ResurrectionCooldown.class, Resurrection.ResurrectionCooldown.DURATION);
+
+			return;
+		}
+
 		Ankh ankh = null;
 
 		//look for ankhs in player inventory, prioritize ones which are blessed.
@@ -2186,9 +2322,15 @@ public class Hero extends Char {
 
 			if (ankh.isBlessed()) {
 				this.HP = HT / 4;
+				Buff.affect(this, Barrier.class).setShield(HT / 2);
+
+				MedicKit medicKit = belongings.getItem(MedicKit.class);
+				if (medicKit != null) {
+					medicKit.ankhLevelUp();
+				}
 
 				PotionOfHealing.cure(this);
-				Buff.prolong(this, Invulnerability.class, Invulnerability.DURATION);
+				Buff.prolong(this, Invulnerability.class, Invulnerability.DURATION + 1);
 
 				SpellSprite.show(this, SpellSprite.ANKH);
 				GameScene.flash(0x80FFFF40);
@@ -2370,6 +2512,10 @@ public class Hero extends Char {
 
 		if (hit && subClass == HeroSubClass.GLADIATOR && wasEnemy){
 			Buff.affect( this, Combo.class ).hit(attackTarget);
+		}
+
+		if (hit && subClass == HeroSubClass.BATTLEMAGE && belongings.attackingWeapon() instanceof MagesStaff && hasTalent(Talent.BATTLE_MAGIC) && wasEnemy) {
+			Buff.affect( this, MagicalCombo.class).hit( attackTarget );
 		}
 
 		if (hit && heroClass == HeroClass.DUELIST && wasEnemy){

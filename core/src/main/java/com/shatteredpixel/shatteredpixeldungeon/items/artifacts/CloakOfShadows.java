@@ -287,7 +287,8 @@ public class CloakOfShadows extends Artifact {
 
 		@Override
 		public float iconFadePercent() {
-			return (4f - turnsToCost) / 4f;
+			float maxCost = 4f + ((Hero) target).pointsInTalent(Talent.CAUTIOUS_PREP);
+			return (maxCost - turnsToCost) / maxCost;
 		}
 
 		@Override
@@ -347,7 +348,7 @@ public class CloakOfShadows extends Artifact {
 						GLog.p(Messages.get(this, "levelup"));
 						
 					}
-					turnsToCost = 4;
+					turnsToCost = 4 + ((Hero) target).pointsInTalent(Talent.CAUTIOUS_PREP);
 				}
 				updateQuickslot();
 			}

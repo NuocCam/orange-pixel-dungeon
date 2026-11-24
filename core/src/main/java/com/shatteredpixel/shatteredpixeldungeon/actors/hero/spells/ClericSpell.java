@@ -136,6 +136,10 @@ public abstract class ClericSpell {
 				spells.add(BlessSpell.INSTANCE);
 			}
 
+			if (cleric.hasTalent(Talent.DIVINE_BLAST)){
+				spells.add(DivineBlast.INSTANCE);
+			}
+
 		} else if (tier == 3){
 
 			if (cleric.subClass == HeroSubClass.PRIEST) {
@@ -158,6 +162,15 @@ public abstract class ClericSpell {
 			if (cleric.hasTalent(Talent.MNEMONIC_PRAYER)){
 				spells.add(MnemonicPrayer.INSTANCE);
 			}
+			if (cleric.hasTalent(Talent.DIVINE_RAY)){
+				spells.add(DivineRay.INSTANCE);
+			}
+			if (cleric.hasTalent(Talent.HOLY_BOMB)){
+				spells.add(HolyBombSpell.INSTANCE);
+			}
+			if (cleric.hasTalent(Talent.RESURRECTION)){
+				spells.add(Resurrection.INSTANCE);
+			}
 
 			if (cleric.hasTalent(Talent.LAY_ON_HANDS)){
 				spells.add(LayOnHands.INSTANCE);
@@ -167,6 +180,15 @@ public abstract class ClericSpell {
 			}
 			if (cleric.hasTalent(Talent.WALL_OF_LIGHT)){
 				spells.add(WallOfLight.INSTANCE);
+			}
+			if (cleric.hasTalent(Talent.HOLY_MANTLE)){
+				spells.add(HolyMantle.INSTANCE);
+			}
+			if (cleric.hasTalent(Talent.POWER_OF_LIFE)){
+				spells.add(PowerOfLife.INSTANCE);
+			}
+			if (cleric.hasTalent(Talent.INDUCE_AGGRO)){
+				spells.add(InduceAggro.INSTANCE);
 			}
 
 		} else if (tier == 4){
@@ -226,6 +248,13 @@ public abstract class ClericSpell {
 		spells.add(HolyLance.INSTANCE);
 		spells.add(HallowedGround.INSTANCE);
 		spells.add(MnemonicPrayer.INSTANCE);
+		spells.add(DivineBlast.INSTANCE);
+		spells.add(DivineRay.INSTANCE);
+		spells.add(HolyBombSpell.INSTANCE);
+		spells.add(Resurrection.INSTANCE);
+		spells.add(HolyMantle.INSTANCE);
+		spells.add(PowerOfLife.INSTANCE);
+		spells.add(InduceAggro.INSTANCE);
 		spells.add(DivineIntervention.INSTANCE);
 		spells.add(Judgement.INSTANCE);
 		spells.add(Flash.INSTANCE);

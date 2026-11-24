@@ -21,6 +21,8 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.actors.buffs;
 
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.spells.SpiritForm;
@@ -75,6 +77,11 @@ public class Regeneration extends Buff {
 						delay -= 1.33f + chaliceLevel*0.667f;
 						delay /= RingOfEnergy.artifactChargeMultiplier(target);
 					}
+				}
+
+				if (target == Dungeon.hero && Dungeon.hero.heroClass != HeroClass.DUELIST
+						&& Dungeon.hero.hasTalent(Talent.ACCUMULATION)) {
+					delay /= 1f + 0.1f*Dungeon.hero.pointsInTalent(Talent.ACCUMULATION);
 				}
 
 				//salt cube is turned off while regen is disabled.

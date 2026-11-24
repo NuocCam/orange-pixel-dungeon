@@ -268,6 +268,7 @@ public class TalismanOfForesight extends Artifact {
 	}
 	
 	private boolean warn = false;
+	private boolean warnHidden = false;
 	
 	public class Foresight extends ArtifactBuff{
 
@@ -302,6 +303,7 @@ public class TalismanOfForesight extends Artifact {
 
 		public void checkAwareness(){
 			boolean smthFound = false;
+			boolean hiddenItemFound = false;
 
 			int distance = 3;
 
@@ -334,6 +336,12 @@ public class TalismanOfForesight extends Artifact {
 							smthFound = true;
 						}
 					}
+
+					if (Dungeon.level.heroFOV[p]
+							&& Dungeon.level.heaps.get(p) != null
+							&& Dungeon.level.heaps.get(p).hidden) {
+						hiddenItemFound = true;
+					}
 				}
 			}
 
@@ -349,6 +357,20 @@ public class TalismanOfForesight extends Artifact {
 				}
 			} else {
 				warn = false;
+			}
+
+			if (hiddenItemFound
+					&& !cursed
+					&& target.buff(MagicImmune.class) == null){
+				if (!warnHidden){
+					GLog.w( Messages.get(this, "hidden_item") );
+					if (target instanceof Hero){
+						((Hero)target).interrupt();
+					}
+					warnHidden = true;
+				}
+			} else {
+				warnHidden = false;
 			}
 		}
 

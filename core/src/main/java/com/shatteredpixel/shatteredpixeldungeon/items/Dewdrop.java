@@ -23,6 +23,7 @@ package com.shatteredpixel.shatteredpixeldungeon.items;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.MedicKit;
 import com.shatteredpixel.shatteredpixeldungeon.Statistics;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Barrier;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
@@ -84,6 +85,12 @@ public class Dewdrop extends Item {
 		int effect = Math.round( hero.HT * 0.05f * quantity );
 
 		int heal = Math.min( hero.HT - hero.HP, effect );
+
+		heal += hero.pointsInTalent(Talent.HEALING_DEW);
+
+		if (heal > 0 && MedicKit.cursedProc(hero, heal)) {
+			return true;
+		}
 
 		int shield = 0;
 		if (hero.hasTalent(Talent.SHIELDING_DEW)){

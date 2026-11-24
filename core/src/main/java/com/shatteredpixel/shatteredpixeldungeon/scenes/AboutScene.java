@@ -21,6 +21,7 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.scenes;
 
+import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.ShatteredPixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Flare;
 import com.shatteredpixel.shatteredpixeldungeon.ui.ExitButton;
@@ -64,6 +65,20 @@ public class AboutScene extends PixelScene {
 		Component content = list.content();
 		content.clear();
 
+
+		final int ORANGE_COLOR = 0xFF9933;
+		CreditsBlock orange = new CreditsBlock(true, ORANGE_COLOR,
+				"Orange Pixel Dungeon",
+				new Image(Assets.Interfaces.ORANGE_AVATAR),
+				"Developed by: _NuocCam_\nA fork based on Shattered Pixel Dungeon's open source",
+				"github.com/NuocCam",
+				"https://github.com/NuocCam");
+		orange.setRect((w - colWidth)/2f, insets.top + 6, colWidth, 0);
+		content.add(orange);
+
+		final float top0 = orange.bottom() + 12;
+		addLine(top0 - 6, content);
+
 		//*** Shattered Pixel Dungeon Credits ***
 
 		CreditsBlock shpx = new CreditsBlock(true, Window.SHPX_COLOR,
@@ -73,9 +88,9 @@ public class AboutScene extends PixelScene {
 				"ShatteredPixel.com",
 				"https://ShatteredPixel.com");
 		if (landscape()){
-			shpx.setRect((w - fullWidth)/2f - 6, insets.top + 26, 120, 0);
+			shpx.setRect((w - fullWidth)/2f - 6, top0 + 20, 120, 0);
 		} else {
-			shpx.setRect((w - fullWidth)/2f, insets.top + 6, 120, 0);
+			shpx.setRect((w - fullWidth)/2f, top0, 120, 0);
 		}
 		content.add(shpx);
 
@@ -87,7 +102,7 @@ public class AboutScene extends PixelScene {
 				"https://www.alekskomitov.com/");
 		aleks.setSize(colWidth/2f, 0);
 		if (landscape()){
-			aleks.setPos(shpx.right(), insets.top+6);
+			aleks.setPos(shpx.right(), top0);
 		} else {
 			aleks.setPos(w/2f - colWidth/2f, shpx.bottom()+6);
 		}

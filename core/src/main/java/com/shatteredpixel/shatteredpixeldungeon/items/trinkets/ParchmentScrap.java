@@ -38,11 +38,11 @@ public class ParchmentScrap extends Trinket {
 
 	@Override
 	public String statsDesc() {
-		if (isIdentified()){
-			return Messages.get(this, "stats_desc", (int)enchantChanceMultiplier(buffedLvl()), Messages.decimalFormat("#.##", curseChanceMultiplier(buffedLvl())));
-		} else {
-			return Messages.get(this, "typical_stats_desc", (int)enchantChanceMultiplier(0), Messages.decimalFormat("#.##", curseChanceMultiplier(0)));
-		}
+		int lvl = isIdentified() ? buffedLvl() : 0;
+		return Messages.get(this, isIdentified() ? "stats_desc" : "typical_stats_desc",
+				Messages.decimalFormat("#.##", enchantChanceMultiplier(lvl)),
+				Messages.decimalFormat("#.##", curseChanceMultiplier(lvl)),
+				Messages.decimalFormat("#.#", 100*(enchantEffectMultiplier(lvl)-1f)));
 	}
 
 	public static float enchantChanceMultiplier(){
@@ -54,13 +54,25 @@ public class ParchmentScrap extends Trinket {
 			default:
 				return 1;
 			case 0:
-				return 2;
+				return 1.5f;
 			case 1:
-				return 4;
+				return 3;
 			case 2:
-				return 7;
+				return 5;
 			case 3:
-				return 10;
+				return 8;
+		}
+	}
+
+	public static float enchantEffectMultiplier(){
+		return enchantEffectMultiplier(trinketLevel(ParchmentScrap.class));
+	}
+
+	public static float enchantEffectMultiplier( int level ){
+		if (level <= -1){
+			return 1f;
+		} else {
+			return 1.05f + 0.10f*level/3f;
 		}
 	}
 

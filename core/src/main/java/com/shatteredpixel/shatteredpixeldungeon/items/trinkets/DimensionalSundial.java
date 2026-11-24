@@ -21,6 +21,8 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.items.trinkets;
 
+import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
@@ -42,58 +44,51 @@ public class DimensionalSundial extends Trinket {
 
 	@Override
 	public String statsDesc() {
-		if (isIdentified()){
-			return Messages.get(this,
-					"stats_desc",
-					(int)(100*(1f - enemySpawnMultiplierDaytime(buffedLvl()))),
-					(int)(100*(enemySpawnMultiplierNighttime(buffedLvl())-1f)));
+		int lvl = isIdentified() ? buffedLvl() : 0;
+		return Messages.get(this,
+				isIdentified() ? "stats_desc" : "typical_stats_desc",
+				Messages.decimalFormat("#.#", 100*bigChange(lvl)),
+				Messages.decimalFormat("#.#", 100*smallChange(lvl)));
+	}
+
+	public static boolean isNight(){
+		Calendar cal = GregorianCalendar.getInstance();
+		return cal.get(Calendar.HOUR_OF_DAY) >= 20 || cal.get(Calendar.HOUR_OF_DAY) <= 7;
+	}
+
+	public static float bigChange( int level ){
+		return 0.05f + 0.10f*Math.max(0, level)/3f;
+	}
+
+	public static float smallChange( int level ){
+		return 0.10f*Math.max(0, level)/3f;
+	}
+
+	public static float enemyHealthMultiplier(){
+		int level = trinketLevel(DimensionalSundial.class);
+		if (level == -1) return 1f;
+		return isNight() ? 1f - bigChange(level) : 1f + smallChange(level);
+	}
+
+	public static float enemyDamageMultiplier(){
+		int level = trinketLevel(DimensionalSundial.class);
+		if (level == -1) return 1f;
+		return isNight() ? 1f + smallChange(level) : 1f - bigChange(level);
+	}
+
+	public static void applyToNewMob( Mob mob ){
+		float mult = enemyHealthMultiplier();
+		if (mult == 1f || mob.properties().contains(Char.Property.BOSS) || mob.properties().contains(Char.Property.MINIBOSS)) return;
+		mob.HT = Math.max(1, Math.round(mob.HT*mult));
+		mob.HP = Math.max(1, Math.round(mob.HP*mult));
+	}
+
+	public static void announceTime(){
+		if (trinketLevel(DimensionalSundial.class) == -1) return;
+		if (isNight()){
+			GLog.w(Messages.get(DimensionalSundial.class, "night"));
 		} else {
-			return Messages.get(this, "typical_stats_desc",
-					(int)(100*(1f - enemySpawnMultiplierDaytime(0))),
-					(int)(100*(enemySpawnMultiplierNighttime(0)-1f)));
-		}
-	}
-
-	public static boolean sundialWarned = false;
-
-	public static float spawnMultiplierAtCurrentTime(){
-		if (trinketLevel(DimensionalSundial.class) != -1) {
-			Calendar cal = GregorianCalendar.getInstance();
-			if (cal.get(Calendar.HOUR_OF_DAY) >= 20 || cal.get(Calendar.HOUR_OF_DAY) <= 7) {
-				if (!sundialWarned){
-					GLog.w(Messages.get(DimensionalSundial.class, "warning"));
-					sundialWarned = true;
-				}
-				return enemySpawnMultiplierNighttime();
-			} else {
-				return enemySpawnMultiplierDaytime();
-			}
-		} else {
-			return 1f;
-		}
-	}
-
-	public static float enemySpawnMultiplierDaytime(){
-		return enemySpawnMultiplierDaytime(trinketLevel(DimensionalSundial.class));
-	}
-
-	public static float enemySpawnMultiplierDaytime( int level ){
-		if (level == -1){
-			return 1f;
-		} else {
-			return 0.95f - 0.05f*level;
-		}
-	}
-
-	public static float enemySpawnMultiplierNighttime(){
-		return enemySpawnMultiplierNighttime(trinketLevel(DimensionalSundial.class));
-	}
-
-	public static float enemySpawnMultiplierNighttime( int level ){
-		if (level == -1){
-			return 1f;
-		} else {
-			return 1.25f + 0.25f*level;
+			GLog.i(Messages.get(DimensionalSundial.class, "day"));
 		}
 	}
 }

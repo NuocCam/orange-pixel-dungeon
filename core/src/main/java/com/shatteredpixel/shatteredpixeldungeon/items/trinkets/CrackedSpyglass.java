@@ -21,14 +21,21 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.items.trinkets;
 
+import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
+import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
+import com.watabou.utils.Bundle;
 
 public class CrackedSpyglass extends Trinket{
 
 	{
 		image = ItemSpriteSheet.SPYGLASS;
 	}
+
+	public static final int LOOTS_TO_REPAIR = 10;
+
+	private int hiddenLooted = 0;
 
 	@Override
 	protected int upgradeEnergyCost() {
@@ -38,15 +45,17 @@ public class CrackedSpyglass extends Trinket{
 
 	@Override
 	public String statsDesc() {
+		String desc;
 		if (isIdentified()){
 			if (buffedLvl() >= 2){
-				return Messages.get(this, "stats_desc_upgraded", Messages.decimalFormat("#.##", 100 * (extraLootChance(buffedLvl())-1f)));
+				desc = Messages.get(this, "stats_desc_upgraded", Messages.decimalFormat("#.##", 100 * (extraLootChance(buffedLvl())-1f)));
 			} else {
-				return Messages.get(this, "stats_desc", Messages.decimalFormat("#.##", 100 * extraLootChance(buffedLvl())));
+				desc = Messages.get(this, "stats_desc", Messages.decimalFormat("#.##", 100 * extraLootChance(buffedLvl())));
 			}
 		} else {
-			return Messages.get(this, "typical_stats_desc", Messages.decimalFormat("#.##", 100 * extraLootChance(0)));
+			desc = Messages.get(this, "typical_stats_desc", Messages.decimalFormat("#.##", 100 * extraLootChance(0)));
 		}
+		return desc + "\n\n" + Messages.get(this, "repair_progress", hiddenLooted, LOOTS_TO_REPAIR);
 	}
 
 	public static float extraLootChance(){
@@ -59,6 +68,40 @@ public class CrackedSpyglass extends Trinket{
 		} else {
 			return 0.375f*(level+1);
 		}
+	}
+
+	public static void onHiddenItemLooted(){
+		if (Dungeon.hero == null) return;
+		CrackedSpyglass glass = Dungeon.hero.belongings.getItem(CrackedSpyglass.class);
+		if (glass == null) return;
+
+		glass.hiddenLooted++;
+		if (glass.hiddenLooted >= LOOTS_TO_REPAIR){
+			Spyglass fixed = new Spyglass();
+			fixed.level(glass.level());
+			fixed.identify();
+			glass.detachAll(Dungeon.hero.belongings.backpack);
+			if (!fixed.collect()){
+				Dungeon.level.drop(fixed, Dungeon.hero.pos);
+			}
+			GLog.p(Messages.get(CrackedSpyglass.class, "repaired"));
+		} else {
+			GLog.i(Messages.get(CrackedSpyglass.class, "progress", glass.hiddenLooted, LOOTS_TO_REPAIR));
+		}
+	}
+
+	private static final String LOOTED = "hidden_looted";
+
+	@Override
+	public void storeInBundle(Bundle bundle) {
+		super.storeInBundle(bundle);
+		bundle.put(LOOTED, hiddenLooted);
+	}
+
+	@Override
+	public void restoreFromBundle(Bundle bundle) {
+		super.restoreFromBundle(bundle);
+		hiddenLooted = bundle.getInt(LOOTED);
 	}
 
 }
