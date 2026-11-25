@@ -21,6 +21,7 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.items;
 
+import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.AscendantCitrine;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.MedicKit;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.LloydsBeacon;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.CapeOfThorns;
@@ -576,9 +577,10 @@ public class Generator {
 					UnstableSpellbook.class,
 					CapeOfThorns.class,
 					LloydsBeacon.class,
-					MedicKit.class
+					MedicKit.class,
+					AscendantCitrine.class
 			};
-			ARTIFACT.defaultProbs = new float[]{ 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 };
+			ARTIFACT.defaultProbs = new float[]{ 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 };
 			ARTIFACT.probs = ARTIFACT.defaultProbs.clone();
 
 			//Trinkets are unique like artifacts, but unlike them you can only have one at once
@@ -961,6 +963,12 @@ public class Generator {
 
 				//pre-v3.3.0 conversion for artifacts (addition of tome and key)
 				if (cat == Category.ARTIFACT && probs.length != cat.defaultProbs.length){
+					if (probs.length >= 16){
+						for (int i = 0; i < probs.length && i < cat.probs.length; i++){
+							cat.probs[i] = probs[i];
+						}
+						continue;
+					}
 					int keyIDX = 9;
 					int j = 0;
 					for (int i = 0; i < probs.length; i++){

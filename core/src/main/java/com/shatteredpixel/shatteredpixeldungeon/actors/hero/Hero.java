@@ -21,6 +21,7 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.actors.hero;
 
+import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.AscendantCitrine;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.MedicKit;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfBlastWave;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Blindness;
@@ -2189,6 +2190,7 @@ public class Hero extends Char {
 				}
 				
 				updateHT( true );
+				AscendantCitrine.onHeroLevelUp(this);
 				attackSkill++;
 				defenseSkill++;
 

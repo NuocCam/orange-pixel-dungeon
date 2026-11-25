@@ -69,7 +69,7 @@ public class RingOfSharpshooting extends Ring {
 	}
 	
 	public static float durabilityMultiplier( Char target ){
-		return (float)(Math.pow(1.2, getBonus(target, Aim.class)));
+		return (float)(Math.pow(1.2, getBonusF(target, Aim.class)));
 	}
 
 	public class Aim extends RingBuff {

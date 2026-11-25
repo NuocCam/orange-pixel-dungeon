@@ -37,9 +37,9 @@ public class RingOfAccuracy extends Ring {
 		if (isIdentified()){
 			String info = Messages.get(this, "stats",
 					Messages.decimalFormat("#.##", 100f * (Math.pow(1.3f, soloBuffedBonus()) - 1f)));
-			if (isEquipped(Dungeon.hero) && soloBuffedBonus() != combinedBuffedBonus(Dungeon.hero)){
+			if (isEquipped(Dungeon.hero) && soloBuffedBonus() != combinedBuffedBonusF(Dungeon.hero)){
 				info += "\n\n" + Messages.get(this, "combined_stats",
-						Messages.decimalFormat("#.##", 100f * (Math.pow(1.3f, combinedBuffedBonus(Dungeon.hero)) - 1f)));
+						Messages.decimalFormat("#.##", 100f * (Math.pow(1.3f, combinedBuffedBonusF(Dungeon.hero)) - 1f)));
 			}
 			return info;
 		} else {
@@ -58,7 +58,7 @@ public class RingOfAccuracy extends Ring {
 	}
 	
 	public static float accuracyMultiplier( Char target ){
-		return (float)Math.pow(1.3f, getBuffedBonus(target, Accuracy.class));
+		return (float)Math.pow(1.3f, getBuffedBonusF(target, Accuracy.class));
 	}
 	
 	public class Accuracy extends RingBuff {

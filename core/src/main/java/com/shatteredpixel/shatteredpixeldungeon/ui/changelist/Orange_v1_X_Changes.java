@@ -55,6 +55,20 @@ public class Orange_v1_X_Changes {
 		changes.hardlight(ORANGE);
 		changeInfos.add(changes);
 
+		changes = new ChangeInfo("v1.1.2", false, null);
+		changes.hardlight(Window.TITLE_COLOR);
+		changeInfos.add(changes);
+
+		changes.addButton( new ChangeButton( new ItemSprite(ItemSpriteSheet.ARTIFACT_CITRINE2), "Ascendant Citrine",
+				"The new **Ascendant Citrine** artifact carries the echo of a random ring, at a third of its strength. Ring of Force isn't in the pool.\n" +
+				"\n" +
+				"**-** It only charges when you level up. Ring of Energy and Light Cloak help, timed recharging does nothing\n" +
+				"**-** A charge rerolls it into a different ring, never the same one twice in a row\n" +
+				"**-** Each reroll also upgrades it up to +10, and it scales like a ring of that level\n" +
+				"**-** Stacks with worn rings of the same kind\n" +
+				"**-** Strength, thrown weapon damge and bonus drops only count whole points\n" +
+				"**-** A cursed one does nothing, and you can't put on rings while wearing it"));
+
 		changes = new ChangeInfo("v1.1.1", false, null);
 		changes.hardlight(Window.TITLE_COLOR);
 		changeInfos.add(changes);

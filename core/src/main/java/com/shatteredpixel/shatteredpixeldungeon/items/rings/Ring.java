@@ -35,6 +35,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.ItemStatusHandler;
 import com.shatteredpixel.shatteredpixeldungeon.items.KindofMisc;
+import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.AscendantCitrine;
 import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.ShardOfOblivion;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Catalog;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
@@ -51,6 +52,10 @@ public class Ring extends KindofMisc {
 	
 	protected Buff buff;
 	protected Class<? extends RingBuff> buffClass;
+
+	//1 for real rings, the citrine drops it to 1/3
+	public float effectScale = 1f;
+	public AscendantCitrine citrine;
 
 	private static final LinkedHashMap<String, Integer> gems = new LinkedHashMap<String, Integer>() {
 		{
@@ -131,6 +136,22 @@ public class Ring extends KindofMisc {
 		}
 		buff = buff();
 		buff.attachTo( ch );
+	}
+
+	@Override
+	public boolean doEquip( Hero hero ) {
+		if (AscendantCitrine.blocksRings(hero)) {
+			GLog.w( Messages.get(AscendantCitrine.class, "blocks_rings") );
+			return false;
+		}
+		return super.doEquip( hero );
+	}
+
+	public void deactivate() {
+		if (buff != null) {
+			buff.detach();
+			buff = null;
+		}
 	}
 
 	@Override
@@ -355,10 +376,18 @@ public class Ring extends KindofMisc {
 	}
 
 	public static int getBonus(Char target, Class<?extends RingBuff> type){
+		return (int) getBonusF(target, type);
+	}
+
+	public static int getBuffedBonus(Char target, Class<?extends RingBuff> type){
+		return (int) getBuffedBonusF(target, type);
+	}
+
+	public static float getBonusF(Char target, Class<?extends RingBuff> type){
 		if (target.buff(MagicImmune.class) != null) return 0;
-		int bonus = 0;
+		float bonus = 0;
 		for (RingBuff buff : target.buffs(type)) {
-			bonus += buff.level();
+			bonus += buff.levelF();
 		}
 		SpiritForm.SpiritFormBuff spiritForm = target.buff(SpiritForm.SpiritFormBuff.class);
 		if (bonus == 0
@@ -370,11 +399,11 @@ public class Ring extends KindofMisc {
 		return bonus;
 	}
 
-	public static int getBuffedBonus(Char target, Class<?extends RingBuff> type){
+	public static float getBuffedBonusF(Char target, Class<?extends RingBuff> type){
 		if (target.buff(MagicImmune.class) != null) return 0;
-		int bonus = 0;
+		float bonus = 0;
 		for (RingBuff buff : target.buffs(type)) {
-			bonus += buff.buffedLvl();
+			bonus += buff.buffedLvlF();
 		}
 		if (bonus == 0
 				&& target.buff(SpiritForm.SpiritFormBuff.class) != null
@@ -403,6 +432,16 @@ public class Ring extends KindofMisc {
 		}
 	}
 
+	public float soloBonusF(){
+		if (citrine != null && citrine.cursed) return 0;
+		return soloBonus() * effectScale;
+	}
+
+	public float soloBuffedBonusF(){
+		if (citrine != null && citrine.cursed) return 0;
+		return soloBuffedBonus() * effectScale;
+	}
+
 	//just used for ring descriptions
 	public int combinedBonus(Hero hero){
 		int bonus = 0;
@@ -427,6 +466,13 @@ public class Ring extends KindofMisc {
 		return bonus;
 	}
 
+	//like combinedBuffedBonus, but the citrine counts too
+	public float combinedBuffedBonusF(Hero hero){
+		float bonus = combinedBuffedBonus(hero);
+		bonus += AscendantCitrine.buffedBonus(hero, getClass());
+		return bonus;
+	}
+
 	public class RingBuff extends Buff {
 
 		@Override
@@ -448,11 +494,19 @@ public class Ring extends KindofMisc {
 		}
 
 		public int level(){
-			return Ring.this.soloBonus();
+			return (int) Ring.this.soloBonusF();
 		}
 
 		public int buffedLvl(){
-			return Ring.this.soloBuffedBonus();
+			return (int) Ring.this.soloBuffedBonusF();
+		}
+
+		public float levelF(){
+			return Ring.this.soloBonusF();
+		}
+
+		public float buffedLvlF(){
+			return Ring.this.soloBuffedBonusF();
 		}
 
 	}

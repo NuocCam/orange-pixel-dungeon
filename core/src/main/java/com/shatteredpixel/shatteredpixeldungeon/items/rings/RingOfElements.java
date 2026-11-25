@@ -49,9 +49,9 @@ public class RingOfElements extends Ring {
 		if (isIdentified()){
 			String info = Messages.get(this, "stats",
 					Messages.decimalFormat("#.##", 100f * (1f - Math.pow(0.825f, soloBuffedBonus()))));
-			if (isEquipped(Dungeon.hero) && soloBuffedBonus() != combinedBuffedBonus(Dungeon.hero)){
+			if (isEquipped(Dungeon.hero) && soloBuffedBonus() != combinedBuffedBonusF(Dungeon.hero)){
 				info += "\n\n" + Messages.get(this, "combined_stats",
-						Messages.decimalFormat("#.##", 100f * (1f - Math.pow(0.825f, combinedBuffedBonus(Dungeon.hero)))));
+						Messages.decimalFormat("#.##", 100f * (1f - Math.pow(0.825f, combinedBuffedBonusF(Dungeon.hero)))));
 			}
 			return info;
 		} else {
@@ -86,11 +86,11 @@ public class RingOfElements extends Ring {
 	}
 	
 	public static float resist( Char target, Class effect ){
-		if (getBuffedBonus(target, Resistance.class) == 0) return 1f;
+		if (getBuffedBonusF(target, Resistance.class) == 0) return 1f;
 		
 		for (Class c : RESISTS){
 			if (c.isAssignableFrom(effect)){
-				return (float)Math.pow(0.825, getBuffedBonus(target, Resistance.class));
+				return (float)Math.pow(0.825, getBuffedBonusF(target, Resistance.class));
 			}
 		}
 		

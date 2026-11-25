@@ -80,9 +80,9 @@ public class RingOfMight extends Ring {
 		if (isIdentified()){
 			String info = Messages.get(this, "stats",
 					soloBonus(), Messages.decimalFormat("#.##", 100f * (Math.pow(1.035, soloBuffedBonus()) - 1f)));
-			if (isEquipped(Dungeon.hero) && soloBuffedBonus() != combinedBuffedBonus(Dungeon.hero)){
+			if (isEquipped(Dungeon.hero) && soloBuffedBonus() != combinedBuffedBonusF(Dungeon.hero)){
 				info += "\n\n" + Messages.get(this, "combined_stats",
-						getBonus(Dungeon.hero, Might.class), Messages.decimalFormat("#.##", 100f * (Math.pow(1.035, combinedBuffedBonus(Dungeon.hero)) - 1f)));
+						getBonus(Dungeon.hero, Might.class), Messages.decimalFormat("#.##", 100f * (Math.pow(1.035, combinedBuffedBonusF(Dungeon.hero)) - 1f)));
 			}
 			return info;
 		} else {
@@ -112,7 +112,7 @@ public class RingOfMight extends Ring {
 	}
 	
 	public static float HTMultiplier( Char target ){
-		return (float)Math.pow(1.035, getBuffedBonus(target, Might.class));
+		return (float)Math.pow(1.035, getBuffedBonusF(target, Might.class));
 	}
 
 	public class Might extends RingBuff {

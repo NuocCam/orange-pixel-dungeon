@@ -37,9 +37,9 @@ public class RingOfTenacity extends Ring {
 		if (isIdentified()){
 			String info = Messages.get(this, "stats",
 					Messages.decimalFormat("#.##", 100f * (1f - Math.pow(0.85f, soloBuffedBonus()))));
-			if (isEquipped(Dungeon.hero) && soloBuffedBonus() != combinedBuffedBonus(Dungeon.hero)){
+			if (isEquipped(Dungeon.hero) && soloBuffedBonus() != combinedBuffedBonusF(Dungeon.hero)){
 				info += "\n\n" + Messages.get(this, "combined_stats",
-						Messages.decimalFormat("#.##", 100f * (1f - Math.pow(0.85f, combinedBuffedBonus(Dungeon.hero)))));
+						Messages.decimalFormat("#.##", 100f * (1f - Math.pow(0.85f, combinedBuffedBonusF(Dungeon.hero)))));
 			}
 			return info;
 		} else {
@@ -59,7 +59,7 @@ public class RingOfTenacity extends Ring {
 	
 	public static float damageMultiplier( Char t ){
 		//(HT - HP)/HT = heroes current % missing health.
-		return (float)Math.pow(0.85, getBuffedBonus( t, Tenacity.class)*((float)(t.HT - t.HP)/t.HT));
+		return (float)Math.pow(0.85, getBuffedBonusF( t, Tenacity.class)*((float)(t.HT - t.HP)/t.HT));
 	}
 
 	public class Tenacity extends RingBuff {
