@@ -41,7 +41,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.LostBackpack;
 import com.shatteredpixel.shatteredpixeldungeon.items.keys.Key;
-import com.shatteredpixel.shatteredpixeldungeon.items.spells.BeaconOfReturning;
+import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.LloydsBeacon;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.WeakFloorRoom;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
@@ -225,7 +225,7 @@ public class Notes {
 				case SECRETS_FLOOR: return Messages.get(Level.Feeling.class, "secrets_title");
 
 				case LOST_PACK:     return Messages.get(LostBackpack.class, "name");
-				case BEACON_LOCATION:return Messages.get(BeaconOfReturning.class, "name");
+				case BEACON_LOCATION:return Messages.get(LloydsBeacon.class, "name");
 			}
 		}
 
@@ -254,7 +254,7 @@ public class Notes {
 				case STATUE:            return Messages.get(Statue.class, "desc");
 
 				case LOST_PACK:         return Messages.get(LostBackpack.class, "desc");
-				case BEACON_LOCATION:   return Messages.get(BeaconOfReturning.class, "desc");
+				case BEACON_LOCATION:   return Messages.get(LloydsBeacon.class, "desc");
 
 				case GHOST:         return Messages.get(Ghost.class, "desc");
 				case RAT_KING:      return new RatKing().description(); //variable description based on holiday/run state

@@ -55,6 +55,24 @@ public class Orange_v1_X_Changes {
 		changes.hardlight(ORANGE);
 		changeInfos.add(changes);
 
+		changes = new ChangeInfo("v1.1.1", false, null);
+		changes.hardlight(Window.TITLE_COLOR);
+		changeInfos.add(changes);
+
+		changes.addButton( new ChangeButton( ChangeIcons.V061_BUGFIX, Messages.get(ChangesScene.class, "bugfixes"),
+				"Fixed the following bugs:\n" +
+				"**-** The Medic Kit description showing raw formatting codes and logging an error\n" +
+				"**-** The Spyglass being unidentified after the Cracked Spyglass repairs itself\n" +
+				"**-** The Talisman of Foresight showing a missing text message when a hidden item is close by"));
+
+		changes.addButton( new ChangeButton( new ItemSprite(ItemSpriteSheet.ARTIFACT_MEDIC_KIT), "Medic Kit",
+				"**-** The Medic Kit now shows its charges with the maximum, like 2/5\n" +
+				"**-** Healing to full health now uses only as many charges as it takes, taking the Vial of Blood's bonus into account, and at +6 anything the healing can't use still becomes a shield\n" +
+				"**-** Healing from the kit is now spread out by the Vial of Blood like other healing, including the instant heal at +10"));
+
+		changes.addButton( new ChangeButton( new ItemSprite(ItemSpriteSheet.RETURN_BEACON), "Beacon of Returning",
+				"The Beacon of Returning spell has been removed from alchemy. Lloyd's Beacon can still be used to set a return point."));
+
 		changes = section(changeInfos, "new", Window.TITLE_COLOR);
 
 		changes.addButton( new ChangeButton( new ItemSprite(ItemSpriteSheet.ARTIFACT_MEDIC_KIT), "Orange Versions & Changelog",

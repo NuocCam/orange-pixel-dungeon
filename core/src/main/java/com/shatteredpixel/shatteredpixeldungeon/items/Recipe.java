@@ -45,7 +45,6 @@ import com.shatteredpixel.shatteredpixeldungeon.items.potions.exotic.ExoticPotio
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.Scroll;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.exotic.ExoticScroll;
 import com.shatteredpixel.shatteredpixeldungeon.items.spells.Alchemize;
-import com.shatteredpixel.shatteredpixeldungeon.items.spells.BeaconOfReturning;
 import com.shatteredpixel.shatteredpixeldungeon.items.spells.CurseInfusion;
 import com.shatteredpixel.shatteredpixeldungeon.items.spells.MagicalInfusion;
 import com.shatteredpixel.shatteredpixeldungeon.items.spells.PhaseShift;
@@ -187,7 +186,6 @@ public abstract class Recipe {
 		new ElixirOfMight.Recipe(),
 		new ElixirOfFeatherFall.Recipe(),
 		new MagicalInfusion.Recipe(),
-		new BeaconOfReturning.Recipe(),
 		new PhaseShift.Recipe(),
 		new Recycle.Recipe(),
 		new TelekineticGrab.Recipe(),
