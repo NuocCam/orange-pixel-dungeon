@@ -160,6 +160,8 @@ public class ScrollPane extends Component {
 
 	public int lastClickButton = PointerEvent.LEFT;
 
+	//TODO might be nice to have pointer down and up here too!
+	// this would allow sub-elements to behave more like real buttons
 	public void onClick( float x, float y ) {
 	}
 

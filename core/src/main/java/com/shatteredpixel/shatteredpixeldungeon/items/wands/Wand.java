@@ -884,7 +884,14 @@ public abstract class Wand extends Item {
 					+ (SCALING_CHARGE_ADDITION * Math.pow(scalingFactor, missingCharges)));
 
 			if (Regeneration.regenOn()) {
-				float multi = RingOfEnergy.wandChargeMultiplier(target);
+				float multi = RingOfEnergy.rechargeSpeedMultiplier(target);
+
+				if (target instanceof Hero
+						&& ((Hero) target).heroClass != HeroClass.CLERIC
+						&& ((Hero) target).hasTalent(Talent.LIGHT_READING)){
+					multi *= 1f + (0.2f * ((Hero) target).pointsInTalent(Talent.LIGHT_READING)/3f);
+				}
+
 				if (Dungeon.hero != null) {
 					multi *= (1f + 0.1f * Dungeon.hero.pointsInTalent(Talent.FASTER_CHARGER));
 					if (Dungeon.hero.hasTalent(Talent.MAGICAL_CIRCLE) && Dungeon.hero.buff(MagicalCircle.class) != null) {

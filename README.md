@@ -37,7 +37,7 @@ Needs JDK 11 or newer (17 for the iOS build). Gradle is included.
 ./gradlew android:assembleDebug
 ```
 
-The first runs the game, the second builds a jar into `desktop/build/libs/`, the third makes a debug .apk. The setup guides from upstream are in `docs/`: [Android](docs/getting-started-android.md), [desktop](docs/getting-started-desktop.md), [iOS](docs/getting-started-ios.md).
+The first runs the game, the second builds a jar into `desktop/build/libs/`, the third makes a debug .apk. The setup guides from upstream are in `docs/`: [Android](docs/compiling-for-android.md), [desktop](docs/compiling-for-desktop.md), [iOS](docs/compiling-for-ios.md).
 
 ## Credits
 

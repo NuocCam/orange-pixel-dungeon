@@ -37,7 +37,6 @@ import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.Waterskin;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfHealing;
-import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfEnergy;
 import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.VialOfBlood;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
@@ -221,7 +220,7 @@ public class MedicKit extends Artifact {
 	public void charge(Hero target, float amount) {
 		if (target.buff(MagicImmune.class) != null) return;
 		if (charge < maxCharge()) {
-			partialCharge += amount * RingOfEnergy.artifactChargeMultiplier(target) / turnsPerCharge();
+			partialCharge += amount * rechargeSpeedMultiplier(target) / turnsPerCharge();
 			while (partialCharge >= 1 && charge < maxCharge()) {
 				partialCharge--;
 				charge++;

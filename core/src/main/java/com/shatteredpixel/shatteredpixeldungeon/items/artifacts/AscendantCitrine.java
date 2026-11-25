@@ -251,7 +251,7 @@ public class AscendantCitrine extends Artifact {
 	private void gainFromLevel(Hero hero) {
 		if (cursed || hero.buff(MagicImmune.class) != null) return;
 
-		partialCharge += RingOfEnergy.artifactChargeMultiplier(hero);
+		partialCharge += rechargeSpeedMultiplier(hero);
 		int gained = (int) partialCharge;
 		if (gained > 0) {
 			partialCharge -= gained;
