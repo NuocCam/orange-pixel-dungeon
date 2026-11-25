@@ -29,7 +29,7 @@ import com.shatteredpixel.shatteredpixeldungeon.GamesInProgress;
 import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
 import com.shatteredpixel.shatteredpixeldungeon.ShatteredPixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.effects.BannerSprites;
-import com.shatteredpixel.shatteredpixeldungeon.effects.Fireball;
+import com.shatteredpixel.shatteredpixeldungeon.effects.SpinningOrange;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Languages;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.services.news.News;
@@ -64,8 +64,8 @@ import java.util.Date;
 public class TitleScene extends PixelScene {
 
 	private Image title;
-	private Fireball leftFB;
-	private Fireball rightFB;
+	private SpinningOrange leftFB;
+	private SpinningOrange rightFB;
 	private Image signs;
 
 	private StyledButton btnPlay;
@@ -115,11 +115,11 @@ public class TitleScene extends PixelScene {
 		align(title);
 
 		if (landscape()){
-			leftFB = placeTorch(title.x + 30, title.y + 35);
-			rightFB = placeTorch(title.x + title.width - 30, title.y + 35);
+			leftFB = placeTorch(title.x + 30, title.y + 24);
+			rightFB = placeTorch(title.x + title.width - 30, title.y + 24);
 		} else {
-			leftFB = placeTorch(title.x + 16, title.y + 70);
-			rightFB = placeTorch(title.x + title.width - 16, title.y + 70);
+			leftFB = placeTorch(title.x + 14, title.y + 8);
+			rightFB = placeTorch(title.x + title.width - 14, title.y + 8);
 		}
 
 		signs = new Image(BannerSprites.get( landscape() ? BannerSprites.Type.TITLE_GLOW_LAND : BannerSprites.Type.TITLE_GLOW_PORT)){
@@ -341,8 +341,8 @@ public class TitleScene extends PixelScene {
 
 	}
 
-	private Fireball placeTorch(float x, float y ) {
-		Fireball fb = new Fireball();
+	private SpinningOrange placeTorch(float x, float y ) {
+		SpinningOrange fb = new SpinningOrange();
 		fb.x = x - fb.width()/2f;
 		fb.y = y - fb.height();
 

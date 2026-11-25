@@ -30,7 +30,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Rankings;
 import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
 import com.shatteredpixel.shatteredpixeldungeon.ShatteredPixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.effects.BannerSprites;
-import com.shatteredpixel.shatteredpixeldungeon.effects.Fireball;
+import com.shatteredpixel.shatteredpixeldungeon.effects.SpinningOrange;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Document;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Journal;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Languages;
@@ -119,11 +119,11 @@ public class WelcomeScene extends PixelScene {
 		align(title);
 
 		if (landscape()){
-			placeTorch(title.x + 30, title.y + 35);
-			placeTorch(title.x + title.width - 30, title.y + 35);
+			placeTorch(title.x + 30, title.y + 24);
+			placeTorch(title.x + title.width - 30, title.y + 24);
 		} else {
-			placeTorch(title.x + 16, title.y + 70);
-			placeTorch(title.x + title.width - 16, title.y + 70);
+			placeTorch(title.x + 14, title.y + 8);
+			placeTorch(title.x + title.width - 14, title.y + 8);
 		}
 
 		Image signs = new Image(BannerSprites.get( landscape() ? BannerSprites.Type.TITLE_GLOW_LAND : BannerSprites.Type.TITLE_GLOW_PORT)){
@@ -242,7 +242,7 @@ public class WelcomeScene extends PixelScene {
 	}
 
 	private void placeTorch( float x, float y ) {
-		Fireball fb = new Fireball();
+		SpinningOrange fb = new SpinningOrange();
 		fb.x = x - fb.width()/2f;
 		fb.y = y - fb.height();
 

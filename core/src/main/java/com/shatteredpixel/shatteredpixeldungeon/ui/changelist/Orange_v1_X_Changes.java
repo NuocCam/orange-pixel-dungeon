@@ -69,6 +69,12 @@ public class Orange_v1_X_Changes {
 				"**-** Strength, thrown weapon damge and bonus drops only count whole points\n" +
 				"**-** A cursed one does nothing, and you can't put on rings while wearing it"));
 
+		changes.addButton( new ChangeButton( ChangeIcons.V081_MISC, "Title Screen & Icons",
+				"**-** The flames on the title screen are now spinning oranges\n" +
+				"**-** Boss Slain and Game Over use the orange colors too\n" +
+				"**-** The app icon is orange now on every platform\n" +
+				"**-** Fixed the iOS launch screen still showing the Shattered logo"));
+
 		changes = new ChangeInfo("v1.1.1", false, null);
 		changes.hardlight(Window.TITLE_COLOR);
 		changeInfos.add(changes);
