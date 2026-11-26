@@ -39,6 +39,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Ghoul;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Gnoll;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Golem;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Guard;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Ijiraq;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Monk;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Necromancer;
@@ -115,8 +116,14 @@ public class AscensionChallenge extends Buff {
 			return 1f;
 		}
 
+		//an ijiraq scales the same way as whatever it is imitating
+		Class<?> type = ch.getClass();
+		if (ch instanceof Ijiraq && ((Ijiraq) ch).disguise() != null){
+			type = ((Ijiraq) ch).disguise();
+		}
+
 		for (Class<?extends Mob> cls : modifiers.keySet()){
-			if (cls.isAssignableFrom(ch.getClass())){
+			if (cls.isAssignableFrom(type)){
 				return modifiers.get(cls);
 			}
 		}

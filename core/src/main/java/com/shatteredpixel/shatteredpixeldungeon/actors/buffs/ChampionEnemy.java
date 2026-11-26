@@ -30,6 +30,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Fire;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Bat;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Crab;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Guard;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Ijiraq;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Thief;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
@@ -107,6 +108,9 @@ public abstract class ChampionEnemy extends Buff {
 		}
 
 		if (Dungeon.mobsToChampion <= 0 && Dungeon.isChallenged(Challenges.CHAMPION_ENEMIES)) {
+
+			//ijiraq never become champions, the next enemy gets it instead
+			if (m instanceof Ijiraq) return;
 
 			//we block certain standout enemies on floor <10 from becoming champions
 			if (m instanceof Crab  && Dungeon.scalingDepth() <= 3) return;

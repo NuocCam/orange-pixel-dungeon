@@ -32,6 +32,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Invisibility;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Ijiraq;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Rat;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Statue;
@@ -122,7 +123,9 @@ public class Ratmogrify extends ArmorAbility {
 			GLog.w(Messages.get(this, "cant_transform"));
 			return;
 		} else if (ch instanceof TransmogRat){
-			if (((TransmogRat) ch).allied || !hero.hasTalent(Talent.RATLOMACY)){
+			//an ijiraq can't be won over, even while it's a rat
+			if (((TransmogRat) ch).allied || !hero.hasTalent(Talent.RATLOMACY)
+					|| ((TransmogRat) ch).original instanceof Ijiraq){
 				GLog.w(Messages.get(this, "cant_transform"));
 				return;
 			} else {

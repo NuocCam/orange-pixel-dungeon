@@ -58,6 +58,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.spells.DivineSense;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.spells.Stasis;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.GnollGeomancer;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mimic;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Ijiraq;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.MobSpawner;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Piranha;
@@ -76,6 +77,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.Stylus;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.TalismanOfForesight;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.TimekeepersHourglass;
 import com.shatteredpixel.shatteredpixeldungeon.items.bombs.Bomb;
+import com.shatteredpixel.shatteredpixeldungeon.items.food.MagicOrange;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfStrength;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfUpgrade;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.exotic.ScrollOfChallenge;
@@ -257,7 +259,11 @@ public abstract class Level implements Bundlable {
 				Dungeon.LimitedDrops.TRINKET_CATA.drop();
 				addItemToSpawn( new TrinketCatalyst());
 			}
-			
+			//a bonus find on about 1 in 4 floors, it doesn't replace the normal food drop
+			if (Random.Int(4) == 0) {
+				addItemToSpawn( new MagicOrange() );
+			}
+
 			if (Dungeon.depth > 1) {
 				//50% chance of getting a level feeling
 				//~7.15% chance for each feeling
@@ -539,7 +545,9 @@ public abstract class Level implements Bundlable {
 			mobsToSpawn = MobSpawner.getMobRotation(Dungeon.depth);
 		}
 
-		Mob m = Reflection.newInstance(mobsToSpawn.remove(0));
+		Class<? extends Mob> cl = mobsToSpawn.remove(0);
+		Mob m = Ijiraq.rollToReplace(cl);
+		if (m == null) m = Reflection.newInstance(cl);
 		DimensionalSundial.applyToNewMob(m);
 		return m;
 	}

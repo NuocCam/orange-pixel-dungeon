@@ -88,7 +88,7 @@ public class AscendantCitrine extends Artifact {
 	};
 	private static final double[] BASE = {
 			1.3, 1.175, 0.825, 1.175, 1.125, 1.09051,
-			1.15, 1.035, 1.2, 0.85, 1.2
+			1.15, 1.05, 1.25, 0.85, 1.2
 	};
 
 	private Class<? extends Ring> ringClass;

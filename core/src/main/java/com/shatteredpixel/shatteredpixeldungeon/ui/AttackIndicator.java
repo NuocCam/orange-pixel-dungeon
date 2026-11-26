@@ -24,6 +24,7 @@ package com.shatteredpixel.shatteredpixeldungeon.ui;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.SPDAction;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Ijiraq;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
@@ -142,6 +143,13 @@ public class AttackIndicator extends Tag {
 		enable( bg.visible );
 	}
 	
+	//for when the current target changes how it looks
+	public static void refresh( Mob target ){
+		if (instance != null && instance.lastTarget == target) {
+			instance.updateImage();
+		}
+	}
+
 	private synchronized void updateImage() {
 		
 		if (sprite != null) {
@@ -149,7 +157,8 @@ public class AttackIndicator extends Tag {
 			sprite = null;
 		}
 		
-		sprite = Reflection.newInstance(lastTarget.spriteClass);
+		//a disguised ijiraq doesn't look like its own sprite class
+		sprite = lastTarget instanceof Ijiraq ? lastTarget.sprite() : Reflection.newInstance(lastTarget.spriteClass);
 		active = true;
 		sprite.linkVisuals(lastTarget);
 		sprite.idle();
