@@ -151,7 +151,9 @@ public class ChangesScene extends PixelScene {
 		
 		final ArrayList<ChangeInfo> changeInfos = new ArrayList<>();
 
-		if (Messages.lang() != Languages.ENGLISH){
+		//the orange tab comes in vietnamese as well
+		if (Messages.lang() != Languages.ENGLISH
+				&& !(changesSelected == 0 && Messages.lang() == Languages.VIETNAMESE)){
 			ChangeInfo langWarn = new ChangeInfo("", true, Messages.get(this, "lang_warn"));
 			langWarn.hardlight(CharSprite.WARNING);
 			changeInfos.add(langWarn);
