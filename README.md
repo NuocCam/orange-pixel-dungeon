@@ -1,7 +1,7 @@
 # Orange Pixel Dungeon
 
-Orange Pixel Dungeon is a fork of [Shattered Pixel Dungeon](https://github.com/00-Evan/shattered-pixel-dungeon) v4.0.2. It's the normal game with some new artifacts, talents and spells, new and reworked trinkets, balance changes with a lot of love.
-
+Orange Pixel Dungeon is a fork of [Shattered Pixel Dungeon](https://github.com/00-Evan/shattered-pixel-dungeon) v4.0.2. It's the normal game with some new artifacts, talents and spells, new and reworked trinkets, balance changes with a lot of love. This project/mod is for players enjoy Shattered but want more new contents without too much changing the base game.
+Vietnamese translation supported, there may be translation error/bugs on other language so I suggest you play in English or create suggestions/issues.
 
 ## Download
 
