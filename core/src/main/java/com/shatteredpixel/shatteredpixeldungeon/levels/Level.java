@@ -73,6 +73,8 @@ import com.shatteredpixel.shatteredpixeldungeon.effects.particles.WindParticle;
 import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
+import com.shatteredpixel.shatteredpixeldungeon.items.food.Food;
+import com.shatteredpixel.shatteredpixeldungeon.items.food.JungleBerry;
 import com.shatteredpixel.shatteredpixeldungeon.items.Stylus;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.TalismanOfForesight;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.TimekeepersHourglass;
@@ -949,13 +951,62 @@ public abstract class Level implements Bundlable {
 	public void destroy( int pos ) {
 		//if raw tile type is flammable or empty
 		int terr = map[pos];
-		if (terr == Terrain.EMPTY || terr == Terrain.EMPTY_DECO
+		if (terr == Terrain.LOG) {
+			sinkLog(pos);
+		} else if (terr == Terrain.EMPTY || terr == Terrain.EMPTY_DECO
 				|| (Terrain.flags[map[pos]] & Terrain.FLAMABLE) != 0) {
 			set(pos, Terrain.EMBERS);
 		}
 		Blob web = blobs.get(Web.class);
 		if (web != null){
 			web.clear(pos);
+		}
+	}
+
+	//a burnt log leaves only the water under it, so whatever was on top has to move
+	private void sinkLog( int pos ){
+		set(pos, Terrain.DEEP_WATER, this);
+		ArrayList<Integer> sunk = new ArrayList<>();
+		sunk.add(pos);
+
+		//an islet or bit of log which this was the only way to goes under with it.
+		// All of it is water before anything moves, so nothing washes up on it
+		for (int offset : PathFinder.NEIGHBOURS8){
+			for (int cell : DeepWater.stranded(this, pos + offset)){
+				set(cell, Terrain.DEEP_WATER, this);
+				GameScene.updateMap(cell);
+				sunk.add(cell);
+			}
+		}
+
+		for (int cell : sunk){
+			washOff(cell);
+		}
+	}
+
+	private void washOff( int pos ){
+		Plant plant = plants.get(pos);
+		if (plant != null){
+			plant.wither();
+		}
+
+		Char ch = Actor.findChar(pos);
+		if (ch != null){
+			DeepWater.expel(ch);
+		}
+
+		//dropping it all again washes it ashore. A lit bomb ends up right back here
+		Heap heap = heaps.get(pos);
+		if (heap != null){
+			Item[] items = heap.items.toArray(new Item[0]);
+			heap.destroy();
+			//back to front, so the pile ends up in the same order
+			for (int i = items.length-1; i >= 0; i--){
+				ItemSprite sprite = drop(items[i], pos).sprite;
+				if (sprite != null){
+					sprite.drop(pos);
+				}
+			}
 		}
 	}
 
@@ -1043,6 +1094,21 @@ public abstract class Level implements Bundlable {
 	//row of the raised terrain image with this floor's front layer of tall grass
 	public int raisedGrassRow(){
 		return (Dungeon.depth-1)/5;
+	}
+
+	//true when walking into tall grass takes twice as long
+	public boolean tallGrassSlows(){
+		return false;
+	}
+
+	//scales the seed and dew chances of trampled grass
+	public float grassLootMultiplier(){
+		return 1;
+	}
+
+	//what a secret larder gets stocked with here
+	public Food larderFood(){
+		return null;
 	}
 
 	public Heap drop( Item item, int cell ) {
@@ -1264,6 +1330,10 @@ public abstract class Level implements Bundlable {
 				return;
 			}
 			
+			if (map[ch.pos] == Terrain.BERRY_BUSH && ch == Dungeon.hero){
+				pickBerry(ch.pos);
+			}
+
 			//characters which are not the hero or a sheep 'soft' press cells
 			pressCell( ch.pos, ch instanceof Hero || ch instanceof Sheep);
 		} else {
@@ -1277,6 +1347,18 @@ public abstract class Level implements Bundlable {
 		}
 	}
 	
+	private void pickBerry( int cell ){
+		set(cell, Terrain.BERRY_BUSH_PICKED, this);
+		GameScene.updateMap(cell);
+		JungleBerry berry = new JungleBerry();
+		if (berry.collect()){
+			GLog.i(Messages.capitalize(Messages.get(Hero.class, "you_now_have", berry.name())));
+			Sample.INSTANCE.play(Assets.Sounds.ITEM);
+		} else {
+			drop(berry, cell).sprite.drop();
+		}
+	}
+
 	//public method for forcing the hard press of a cell. e.g. when an item lands on it
 	public void pressCell( int cell ){
 		pressCell( cell, true );
@@ -1655,6 +1737,12 @@ public abstract class Level implements Bundlable {
 				return Messages.get(Level.class, "water_name");
 			case Terrain.DEEP_WATER:
 				return Messages.get(Level.class, "deep_water_name");
+			case Terrain.LOG:
+				return Messages.get(Level.class, "log_name");
+			case Terrain.BERRY_BUSH:
+				return Messages.get(Level.class, "berry_bush_name");
+			case Terrain.BERRY_BUSH_PICKED:
+				return Messages.get(Level.class, "berry_bush_picked_name");
 			case Terrain.WALL:
 			case Terrain.WALL_DECO:
 			case Terrain.SECRET_DOOR:
@@ -1714,6 +1802,12 @@ public abstract class Level implements Bundlable {
 				return Messages.get(Level.class, "water_desc");
 			case Terrain.DEEP_WATER:
 				return Messages.get(Level.class, "deep_water_desc");
+			case Terrain.LOG:
+				return Messages.get(Level.class, "log_desc");
+			case Terrain.BERRY_BUSH:
+				return Messages.get(Level.class, "berry_bush_desc");
+			case Terrain.BERRY_BUSH_PICKED:
+				return Messages.get(Level.class, "berry_bush_picked_desc");
 			case Terrain.ENTRANCE:
 			case Terrain.ENTRANCE_SP:
 				return Messages.get(Level.class, "entrance_desc");

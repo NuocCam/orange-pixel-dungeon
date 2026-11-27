@@ -131,6 +131,8 @@ public class HighGrass {
 				// absolute max drop rate is ~1/6.5 with footwear of nature, ~1/18 without
 				lootChance *= PetrifiedSeed.grassLootMultiplier();
 
+				lootChance *= level.grassLootMultiplier();
+
 				//vault level spawns significantly fewer seeds from grass
 				if (Dungeon.level instanceof VaultLevel){
 					lootChance /= 3;
@@ -151,6 +153,8 @@ public class HighGrass {
 				if (Dungeon.level != null && Dungeon.level.feeling == Level.Feeling.GRASS){
 					lootChance /= 2;
 				}
+
+				lootChance *= level.grassLootMultiplier();
 
 				if (Random.Float() < lootChance) {
 					level.drop(new Dewdrop(), pos).sprite.drop();

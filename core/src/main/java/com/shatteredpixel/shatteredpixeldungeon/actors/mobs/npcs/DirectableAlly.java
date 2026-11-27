@@ -138,7 +138,7 @@ public class DirectableAlly extends NPC {
 				target = defendingPos != -1 ? defendingPos : Dungeon.hero.pos;
 				//always move towards the hero when wandering
 				if (getCloser( target )) {
-					spend( 1 / speed() );
+					spend( moveTime(1) );
 					if (pos == defendingPos) movingToDefendPos = false;
 					return moveSprite( oldPos, pos );
 				} else {

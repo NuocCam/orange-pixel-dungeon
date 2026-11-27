@@ -311,7 +311,7 @@ public abstract class Char extends Actor {
 		c.sprite.move( newPos, oldPos );
 		c.move( oldPos );
 		
-		c.spend( 1 / c.speed() );
+		c.spend( c.moveTime(1) );
 
 		if (c == Dungeon.hero){
 			if (Dungeon.hero.subClass == HeroSubClass.FREERUNNER){
@@ -1356,8 +1356,26 @@ public abstract class Char extends Actor {
 	//used in various bits of gameplay logic to determine the direction of movement
 	protected int previousPos = -1;
 
+	//whether the last step went into tall grass and has to pay for it
+	private boolean enteredTallGrass = false;
+
+	public boolean slowedByTallGrass(){
+		return !flying;
+	}
+
+	//time taken up by a step which has just been made
+	public float moveTime( float delay ){
+		float time = delay / speed();
+		return enteredTallGrass ? time*2 : time;
+	}
+
 	//travelling may be false when a character is moving instantaneously, such as via teleportation
 	public void move( int step, boolean travelling ) {
+
+		//cleared before anything can call the step off
+		if (travelling){
+			enteredTallGrass = false;
+		}
 
 		if (travelling && Dungeon.level.adjacent( step, pos ) && buff( Vertigo.class ) != null) {
 			int newPos = pos + PathFinder.NEIGHBOURS8[Random.Int( 8 )];
@@ -1384,7 +1402,14 @@ public abstract class Char extends Actor {
 			previousPos = -1;
 		}
 		pos = step;
-		
+
+		//has to be noted now, occupyCell flattens the grass
+		if (travelling && Dungeon.level.tallGrassSlows() && slowedByTallGrass()
+				&& (Dungeon.level.map[pos] == Terrain.HIGH_GRASS
+					|| Dungeon.level.map[pos] == Terrain.FURROWED_GRASS)) {
+			enteredTallGrass = true;
+		}
+
 		if (this != Dungeon.hero) {
 			sprite.visible = Dungeon.level.heroFOV[pos];
 		}

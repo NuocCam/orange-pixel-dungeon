@@ -58,8 +58,10 @@ public class Rotberry extends Plant {
 			CellEmitter.get( pos ).burst( LeafParticle.GENERAL, 6 );
 		}
 
-		//seed always drops, no lotus benefit
-		Dungeon.level.drop( new Seed(), pos ).sprite.drop();
+		//seed always drops, no lotus benefit. Wild ones are the exception
+		if (!wild) {
+			Dungeon.level.drop(new Seed(), pos).sprite.drop();
+		}
 	}
 
 	public static class Seed extends Plant.Seed {

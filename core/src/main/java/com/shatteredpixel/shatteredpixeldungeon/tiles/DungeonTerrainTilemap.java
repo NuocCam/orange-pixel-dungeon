@@ -71,6 +71,9 @@ public class DungeonTerrainTilemap extends DungeonTilemap {
 					stitchAt(pos + PathFinder.CIRCLE4[3])
 			);
 
+		} else if (tile == Terrain.LOG) {
+			return DungeonTileSheet.logVisual(map, pos, mapWidth);
+
 		} else if (tile == Terrain.CHASM) {
 			return DungeonTileSheet.stitchChasmTile( pos > mapWidth ? map[pos - mapWidth] : -1);
 		}

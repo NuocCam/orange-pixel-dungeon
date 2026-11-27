@@ -760,6 +760,12 @@ public class Hero extends Char {
 	}
 	
 	@Override
+	public boolean slowedByTallGrass() {
+		//the huntress is at home in it
+		return super.slowedByTallGrass() && heroClass != HeroClass.HUNTRESS;
+	}
+
+	@Override
 	public float speed() {
 
 		float speed = super.speed();
@@ -2035,8 +2041,8 @@ public class Hero extends Char {
 			move(step);
 			sprite.move(oldPos, pos);
 
-			spend( delay / speed() );
-			
+			spend( moveTime(delay) );
+
 			search(false);
 
 			return true;

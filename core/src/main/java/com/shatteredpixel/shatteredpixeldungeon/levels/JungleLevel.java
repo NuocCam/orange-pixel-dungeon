@@ -24,19 +24,32 @@ package com.shatteredpixel.shatteredpixeldungeon.levels;
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mimic;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
+import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
+import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
+import com.shatteredpixel.shatteredpixeldungeon.items.food.Food;
+import com.shatteredpixel.shatteredpixeldungeon.items.food.JungleBerry;
+import com.shatteredpixel.shatteredpixeldungeon.items.food.Pasty;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.LevelTransition;
 import com.shatteredpixel.shatteredpixeldungeon.levels.painters.JunglePainter;
 import com.shatteredpixel.shatteredpixeldungeon.levels.painters.Painter;
+import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.Room;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.secret.SecretRoom;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.SpecialRoom;
+import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.StandardRoom;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
+import com.shatteredpixel.shatteredpixeldungeon.plants.Plant;
+import com.shatteredpixel.shatteredpixeldungeon.plants.Rotberry;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.CustomTilemap;
 import com.watabou.noosa.Tilemap;
 import com.watabou.utils.Bundle;
+import com.watabou.utils.Point;
 import com.watabou.utils.Random;
 
 import java.util.ArrayList;
+import java.util.ListIterator;
 
 //floors 1-4 of a jungle run, taking the place of the sewers.
 // There's no sad ghost quest down here.
@@ -45,6 +58,20 @@ public class JungleLevel extends RegularLevel {
 	{
 		color1 = 0x48763c;
 		color2 = 0x59994a;
+	}
+
+	//the jungle has more tall grass than the sewers, so each tile of it gives a bit less.
+	// GrassTest measures both and holds this to what it finds
+	public static final float GRASS_LOOT_MULT = 0.49f;
+
+	@Override
+	public boolean tallGrassSlows() {
+		return true;
+	}
+
+	@Override
+	public float grassLootMultiplier() {
+		return GRASS_LOOT_MULT;
 	}
 
 	@Override
@@ -72,6 +99,7 @@ public class JungleLevel extends RegularLevel {
 		// Note down what buliding one uses up, or the run slowly loses labs and secret rooms
 		ArrayList<Item> items = new ArrayList<>(itemsToSpawn);
 		int labs = Dungeon.LimitedDrops.LAB_ROOM.count;
+		int bushes = bushesToPlace;
 		Bundle roomDecks = new Bundle();
 		SpecialRoom.storeRoomsInBundle(roomDecks);
 		SecretRoom.storeRoomsInBundle(roomDecks);
@@ -81,10 +109,131 @@ public class JungleLevel extends RegularLevel {
 		}
 
 		itemsToSpawn = items;
+		bushesToPlace = bushes;
 		Dungeon.LimitedDrops.LAB_ROOM.count = labs;
 		SpecialRoom.restoreRoomsFromBundle(roomDecks);
 		SecretRoom.restoreRoomsFromBundle(roomDecks);
 		return false;
+	}
+
+	//rations don't turn up down here, every one of them grows on a bush instead.
+	// Only counts while the floor is being made, afterwards the bushes are just part of the map
+	private int bushesToPlace = 0;
+
+	private static boolean isRation( Item item ){
+		return item != null && (item.getClass() == Food.class || item.getClass() == Pasty.class);
+	}
+
+	//one berry for a ration. A pasty is worth half as much again, so half the time it's two
+	private static int berriesFor( Item ration ){
+		int berries = ration.quantity();
+		if (ration.getClass() == Pasty.class){
+			for (int i = 0; i < ration.quantity(); i++){
+				berries += Random.Int(2);
+			}
+		}
+		return berries;
+	}
+
+	@Override
+	public void addItemToSpawn( Item item ) {
+		if (isRation(item)){
+			bushesToPlace += berriesFor(item);
+		} else {
+			super.addItemToSpawn(item);
+		}
+	}
+
+	@Override
+	public Food larderFood() {
+		return new JungleBerry();
+	}
+
+	@Override
+	protected void createItems() {
+		super.createItems();
+
+		//food which was rolled straight into a heap or a mimic becomes berries too.
+		// The remains of an old hero are left how they were
+		for (Heap heap : heaps.valueList()){
+			if (heap.type != Heap.Type.REMAINS){
+				toBerries(heap.items.listIterator());
+			}
+		}
+		for (Mob mob : mobs){
+			if (mob instanceof Mimic && ((Mimic) mob).items != null){
+				toBerries(((Mimic) mob).items.listIterator());
+			}
+		}
+
+		placeBushes();
+
+		growWildPlants();
+	}
+
+	private void placeBushes(){
+		for (int tries = 0; bushesToPlace > 0; tries++){
+			//never in the entrance room. If the dice keep missing, go looking, or give up
+			int cell = tries < 1000 ? randomDropCell() : spareBushCell();
+			if (cell == -1 && tries >= 1000) break;
+			if (cell != -1 && plants.get(cell) == null && bushFits(map[cell], tries >= 100)){
+				Level.set(cell, Terrain.BERRY_BUSH, this);
+				bushesToPlace--;
+			}
+		}
+	}
+
+	//the first spot randomDropCell could have picked which has room for a bush, -1 if none
+	private int spareBushCell(){
+		for (Room room : rooms()){
+			if (!(room instanceof StandardRoom) || room == roomEntrance) continue;
+			for (Point p : room.getPoints()){
+				int cell = pointToCell(p);
+				if (passable[cell] && !solid[cell] && cell != exit()
+						&& heaps.get(cell) == null && findMob(cell) == null
+						&& plants.get(cell) == null && bushFits(map[cell], true)
+						&& room.canPlaceItem(p, this)){
+					return cell;
+				}
+			}
+		}
+		return -1;
+	}
+
+	//0 to 2 a floor, the same plants seeds grow into, though rotberry turns up wild too
+	private void growWildPlants(){
+		int plantsToGrow = Random.Int(3);
+		for (int tries = 0; plantsToGrow > 0 && tries < 100; tries++){
+			int cell = randomDropCell();
+			if (cell != -1 && plants.get(cell) == null && bushFits(map[cell], false)){
+				Plant.Seed seed = Random.Int(8) == 0 ? new Rotberry.Seed()
+						: (Plant.Seed) Generator.randomUsingDefaults(Generator.Category.SEED);
+				//null with the no herbalism challenge
+				Plant plant = plant(seed, cell);
+				if (plant != null){
+					plant.wild = true;
+				}
+				plantsToGrow--;
+			}
+		}
+	}
+
+	//open floor, though a badly flooded or overgrown floor may not have any going spare
+	private static boolean bushFits( int terrain, boolean anywhere ){
+		if (terrain == Terrain.EMPTY || terrain == Terrain.EMPTY_DECO || terrain == Terrain.GRASS){
+			return true;
+		}
+		return anywhere && (terrain == Terrain.WATER || terrain == Terrain.EMPTY_SP
+				|| terrain == Terrain.HIGH_GRASS || terrain == Terrain.FURROWED_GRASS);
+	}
+
+	private static void toBerries( ListIterator<Item> items ){
+		while (items.hasNext()){
+			Item item = items.next();
+			if (isRation(item)){
+				items.set(new JungleBerry().quantity(berriesFor(item)));
+			}
+		}
 	}
 
 	@Override

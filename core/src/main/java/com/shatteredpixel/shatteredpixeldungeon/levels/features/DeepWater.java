@@ -32,6 +32,8 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.MagicalFireRoom;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 
+import com.watabou.utils.PathFinder;
+
 import java.util.ArrayList;
 
 //takes the place of pits where there mustn't be any. Only things which float can be over
@@ -57,6 +59,29 @@ public class DeepWater {
 			Dungeon.observe();
 			GameScene.updateFog();
 		}
+	}
+
+	//the most log and islet one crossing can strand, in a big room with both ends gone
+	private static final int STRANDED_MAX = 8;
+
+	//the bit of footing around this cell, if it's small and has nothing but deep water all
+	// round it, otherwise nothing. Walkways and doors touch walls, so they never count
+	public static ArrayList<Integer> stranded( Level level, int from ){
+		ArrayList<Integer> found = new ArrayList<>();
+		if (!level.passable[from]) return found;
+		found.add( from );
+		for (int i = 0; i < found.size(); i++){
+			int cell = found.get(i);
+			//never a way up or down
+			if (level.getTransition( cell ) != null) return new ArrayList<>();
+			for (int offset : PathFinder.NEIGHBOURS8){
+				int n = cell + offset;
+				if (level.map[n] == Terrain.DEEP_WATER || found.contains( n )) continue;
+				if (!level.passable[n] || found.size() == STRANDED_MAX) return new ArrayList<>();
+				found.add( n );
+			}
+		}
+		return found;
 	}
 
 	//where something dropped into deep water at this cell washes up, -1 if nowhere.

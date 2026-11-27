@@ -21,14 +21,17 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.jungle;
 
+import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.painters.Painter;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.StandardRoom;
 import com.watabou.utils.Point;
+import com.watabou.utils.Random;
 
-//deep water in the middle with one narrow way over it. The walkway goes all the way
-// round, so crossing is only ever a shortcut
+//deep water in the middle with a fallen log over it. The walkway goes all the way
+// round, so crossing is only ever a shortcut and losing the log to a fire costs nothing needed.
+// Now and then there's an islet half way over, with a little something on it
 public class LogCrossingRoom extends StandardRoom {
 
 	@Override
@@ -55,9 +58,16 @@ public class LogCrossingRoom extends StandardRoom {
 		//the crossing runs the long way
 		Point c = center();
 		if (width() >= height()){
-			Painter.drawLine( level, new Point(left+2, c.y), new Point(right-2, c.y), Terrain.EMPTY );
+			Painter.drawLine( level, new Point(left+2, c.y), new Point(right-2, c.y), Terrain.LOG );
 		} else {
-			Painter.drawLine( level, new Point(c.x, top+2), new Point(c.x, bottom-2), Terrain.EMPTY );
+			Painter.drawLine( level, new Point(c.x, top+2), new Point(c.x, bottom-2), Terrain.LOG );
+		}
+
+		//the middle never touches the walkway, so only the log leads there
+		if (Random.Int(3) == 0){
+			Painter.set( level, c, Terrain.EMPTY );
+			level.drop( Generator.randomUsingDefaults( Random.Int(2) == 0 ?
+					Generator.Category.POTION : Generator.Category.SCROLL ), level.pointToCell(c) );
 		}
 
 		for (Door door : connected.values()) {
@@ -77,6 +87,17 @@ public class LogCrossingRoom extends StandardRoom {
 	@Override
 	public boolean canPlaceGrass(Point p) {
 		return !pastWalkway(p);
+	}
+
+	//nothing else gets put where a fire could strand it
+	@Override
+	public boolean canPlaceItem(Point p, Level l) {
+		return super.canPlaceItem(p, l) && !pastWalkway(p);
+	}
+
+	@Override
+	public boolean canPlaceCharacter(Point p, Level l) {
+		return super.canPlaceCharacter(p, l) && !pastWalkway(p);
 	}
 
 }

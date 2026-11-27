@@ -1341,7 +1341,7 @@ public abstract class Mob extends Char {
 			
 			int oldPos = pos;
 			if (target != -1 && getCloser( target )) {
-				spend( 1 / speed() );
+				spend( moveTime(1) );
 				return moveSprite( oldPos, pos );
 			} else {
 				target = randomDestination();
@@ -1394,7 +1394,7 @@ public abstract class Mob extends Char {
 				int oldPos = pos;
 				if (target != -1 && getCloser( target )) {
 					
-					spend( 1 / speed() );
+					spend( moveTime(1) );
 					return moveSprite( oldPos,  pos );
 
 				} else {
@@ -1513,7 +1513,7 @@ public abstract class Mob extends Char {
 			int oldPos = pos;
 			if (target != -1 && getFurther( target )) {
 
-				spend( 1 / speed() );
+				spend( moveTime(1) );
 				return moveSprite( oldPos, pos );
 
 			} else {

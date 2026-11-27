@@ -59,6 +59,9 @@ public abstract class Plant implements Bundlable {
 
 	protected Class<? extends Plant.Seed> seedClass;
 
+	//grew there by itself, these never leave anything behind
+	public boolean wild = false;
+
 	public void trigger(){
 
 		Char ch = Actor.findChar(pos);
@@ -91,6 +94,10 @@ public abstract class Plant implements Bundlable {
 			CellEmitter.get( pos ).burst( LeafParticle.GENERAL, 6 );
 		}
 
+		if (wild){
+			return;
+		}
+
 		float seedChance = 0f;
 		for (Char c : Actor.chars()){
 			if (c instanceof WandOfRegrowth.Lotus){
@@ -110,15 +117,18 @@ public abstract class Plant implements Bundlable {
 	}
 	
 	private static final String POS	= "pos";
+	private static final String WILD	= "wild";
 
 	@Override
 	public void restoreFromBundle( Bundle bundle ) {
 		pos = bundle.getInt( POS );
+		wild = bundle.getBoolean( WILD );
 	}
 
 	@Override
 	public void storeInBundle( Bundle bundle ) {
 		bundle.put( POS, pos );
+		bundle.put( WILD, wild );
 	}
 
 	public String name(){

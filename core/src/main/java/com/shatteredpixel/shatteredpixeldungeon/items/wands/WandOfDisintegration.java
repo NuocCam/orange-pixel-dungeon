@@ -96,7 +96,8 @@ public class WandOfDisintegration extends DamageWand {
 				if (ch instanceof Mob && ((Mob) ch).state == ((Mob) ch).PASSIVE
 						&& !(Dungeon.level.mapped[c] || Dungeon.level.visited[c])){
 					//avoid harming undiscovered passive chars
-				} else {
+				//a burning log can push someone further along the beam, they're only hit once
+				} else if (!chars.contains(ch)) {
 					chars.add(ch);
 				}
 			}

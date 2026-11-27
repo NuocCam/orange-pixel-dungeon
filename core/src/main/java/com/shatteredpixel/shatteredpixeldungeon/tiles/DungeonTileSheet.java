@@ -77,6 +77,16 @@ public class DungeonTileSheet {
 
 	public static final int ENTRANCE_SP     = GROUND +22;
 
+	//a fallen log over deep water, lying across the screen or up it. Only on the jungle sheet
+	public static final int LOG_FLAT        = GROUND +21;
+	public static final int LOG_VERTICAL    = GROUND +23;
+
+	//a log with water either side of it runs up and down
+	public static int logVisual(int[] map, int pos, int width){
+		return map[pos-1] == Terrain.DEEP_WATER && map[pos+1] == Terrain.DEEP_WATER ?
+				LOG_VERTICAL : LOG_FLAT;
+	}
+
 	//for sheets with Level.wallPaths(): the way up and down as a notch in the side or bottom of the tree line.
 	//+0 in a left wall, +1 in a right wall, +2 in a bottom wall.
 	//A path in a top wall just uses ENTRANCE, EXIT or ENTRANCE_SP.
@@ -124,6 +134,8 @@ public class DungeonTileSheet {
 		//floor
 		chasmStitcheable.put( Terrain.EMPTY,        CHASM_FLOOR );
 		chasmStitcheable.put( Terrain.GRASS,        CHASM_FLOOR );
+		chasmStitcheable.put( Terrain.BERRY_BUSH,   CHASM_FLOOR );
+		chasmStitcheable.put( Terrain.BERRY_BUSH_PICKED, CHASM_FLOOR );
 		chasmStitcheable.put( Terrain.EMBERS,       CHASM_FLOOR );
 		chasmStitcheable.put( Terrain.EMPTY_WELL,   CHASM_FLOOR );
 		chasmStitcheable.put( Terrain.HIGH_GRASS,   CHASM_FLOOR );
@@ -225,7 +237,8 @@ public class DungeonTileSheet {
 		boolean shallows = false;
 		for (int i = 0; i < sides.length; i++){
 			if (sides[i] == Terrain.WATER) shallows = true;
-			if (sides[i] != Terrain.DEEP_WATER){
+			//a log lies on top of the water, so there's no edge along it
+			if (sides[i] != Terrain.DEEP_WATER && sides[i] != Terrain.LOG){
 				edge += 1 << i;
 				if (sides[i] != Terrain.WATER && !wallStitcheable(sides[i])) ground += 1 << i;
 			}
@@ -234,7 +247,10 @@ public class DungeonTileSheet {
 	}
 
 	public static boolean floorTile(int tile){
-		return tile == Terrain.WATER || tile == Terrain.DEEP_WATER || directVisuals.get(tile, CHASM) < CHASM;
+		//the bushes are drawn from further down the sheet, but they're ground like any other
+		return tile == Terrain.WATER || tile == Terrain.DEEP_WATER
+				|| tile == Terrain.BERRY_BUSH || tile == Terrain.BERRY_BUSH_PICKED
+				|| directVisuals.get(tile, CHASM) < CHASM;
 	}
 
 
@@ -259,6 +275,9 @@ public class DungeonTileSheet {
 	public static final int LOCKED_EXIT         = FLAT_WALLS+13;
 
 	public static final int FLAT_OTHER          =                           xy(1, 5);   //16 slots
+	//free slots which no other terrain or alt visual draws from. Only the jungle sheet fills them
+	public static final int BERRY_BUSH          = FLAT_OTHER+4;
+	public static final int BERRY_BUSH_PICKED   = FLAT_OTHER+7;
 	public static final int FLAT_ALCHEMY_POT    = FLAT_OTHER+0;
 	public static final int FLAT_BARRICADE      = FLAT_OTHER+1;
 	public static final int FLAT_HIGH_GRASS     = FLAT_OTHER+2;
@@ -483,6 +502,8 @@ public class DungeonTileSheet {
 		directVisuals.put(Terrain.EXIT,             EXIT);
 		directVisuals.put(Terrain.EMBERS,           EMBERS);
 		directVisuals.put(Terrain.PEDESTAL,         PEDESTAL);
+		directVisuals.put(Terrain.BERRY_BUSH,       BERRY_BUSH);
+		directVisuals.put(Terrain.BERRY_BUSH_PICKED,BERRY_BUSH_PICKED);
 		directVisuals.put(Terrain.EMPTY_SP,         FLOOR_SP);
 		directVisuals.put(Terrain.ENTRANCE_SP,      ENTRANCE_SP);
 

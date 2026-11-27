@@ -71,6 +71,13 @@ public class Terrain {
 	public static final int WATER		    = 29;
 	//too deep to wade into, only things which float get across. Nothing falls into it
 	public static final int DEEP_WATER	    = 40;
+
+	//a bush with one jungle berry on it, and the same bush once the berry's gone
+	public static final int BERRY_BUSH      = 41;
+	public static final int BERRY_BUSH_PICKED = 42;
+
+	//a fallen log laid across deep water. Burns away, and leaves the water behind
+	public static final int LOG             = 43;
 	
 	public static final int PASSABLE		= 0x01;
 	public static final int LOS_BLOCKING	= 0x02;
@@ -89,6 +96,9 @@ public class Terrain {
 		flags[EMPTY_WELL]	= PASSABLE;
 		flags[WATER]		= PASSABLE | LIQUID;
 		flags[DEEP_WATER]	= AVOID | LIQUID;
+		flags[BERRY_BUSH]	= PASSABLE | FLAMABLE;
+		flags[BERRY_BUSH_PICKED] = flags[BERRY_BUSH];
+		flags[LOG]			= PASSABLE | FLAMABLE;
 		flags[WALL]			= LOS_BLOCKING | SOLID;
 		flags[DOOR]			= PASSABLE | LOS_BLOCKING | FLAMABLE | SOLID;
 		flags[OPEN_DOOR]	= PASSABLE | FLAMABLE;

@@ -59,8 +59,10 @@ public class SecretLarderRoom extends SecretRoom {
 		int extraFood = (int)(Hunger.STARVING - Hunger.HUNGRY) * (1 + Dungeon.depth / 5);
 		
 		while (extraFood > 0){
-			Food food;
-			if (extraFood >= Hunger.STARVING){
+			Food food = level.larderFood();
+			if (food != null){
+				extraFood -= food.energy;
+			} else if (extraFood >= Hunger.STARVING){
 				food = new Pasty();
 				extraFood -= Hunger.STARVING;
 			} else {
