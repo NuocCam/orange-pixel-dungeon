@@ -23,6 +23,8 @@ package com.shatteredpixel.shatteredpixeldungeon.levels.regions;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.GamesInProgress;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.MobSpawner;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.Room;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.secret.SecretRoom;
@@ -54,6 +56,16 @@ public class Region {
 	//the same for a saved game which isn't loaded yet
 	public static Region ofSave( GamesInProgress.Info info ){
 		return info.jungle ? JUNGLE : NORMAL;
+	}
+
+	//the plain mobs of a floor, unshuffled. A floor with its own gets no rare extras either
+	public ArrayList<Class<? extends Mob>> mobRotation( int depth ){
+		return null;
+	}
+
+	//the rare version of a mob on this floor, null if it has none
+	public Class<? extends Mob> rareAlt( int depth, Class<? extends Mob> cls ){
+		return MobSpawner.RARE_ALTS.get(cls);
 	}
 
 	//level for the regular floors of the first region

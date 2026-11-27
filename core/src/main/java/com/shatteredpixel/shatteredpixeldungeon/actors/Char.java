@@ -1363,6 +1363,11 @@ public abstract class Char extends Actor {
 		return !flying;
 	}
 
+	//whether tall grass gets trampled by walking into it
+	public boolean flattensGrass(){
+		return true;
+	}
+
 	//time taken up by a step which has just been made
 	public float moveTime( float delay ){
 		float time = delay / speed();

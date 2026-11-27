@@ -28,6 +28,7 @@ import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
 import com.shatteredpixel.shatteredpixeldungeon.Statistics;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.Waterskin;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
@@ -321,6 +322,7 @@ public class QuickSlotButton extends Button {
 				Actor.chars().contains( lastTarget ) &&
 				lastTarget.isAlive() &&
 				lastTarget.alignment != Char.Alignment.ALLY &&
+				!(lastTarget instanceof Mob && ((Mob) lastTarget).hidden()) &&
 				Dungeon.level.heroFOV[lastTarget.pos]) {
 
 			targetingSlot = slotNum;
@@ -350,7 +352,8 @@ public class QuickSlotButton extends Button {
 
 	//FIXME: this is currently very expensive, should either optimize ballistica or this, or both
 	public static int autoAim(Char target, Item item){
-		if (Dungeon.hero == null || target == null){
+		if (Dungeon.hero == null || target == null
+				|| (target instanceof Mob && ((Mob) target).hidden())){
 			return -1;
 		}
 

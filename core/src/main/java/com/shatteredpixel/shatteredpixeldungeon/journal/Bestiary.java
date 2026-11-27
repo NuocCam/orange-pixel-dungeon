@@ -64,6 +64,16 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.GreatCrab;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Guard;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.HermitCrab;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Ijiraq;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.jungle.Bear;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.jungle.Boar;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.jungle.Deer;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.jungle.DireWolf;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.jungle.Gecko;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.jungle.Mantis;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.jungle.Skink;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.jungle.Squirrel;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.jungle.Toad;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.jungle.Wolf;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mimic;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Monk;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Necromancer;
@@ -220,6 +230,8 @@ public enum Bestiary {
 	static {
 
 		REGIONAL.addEntities(Rat.class, Snake.class, Gnoll.class, Swarm.class, Crab.class, Slime.class,
+				Skink.class, Deer.class, Boar.class, Toad.class, Wolf.class, Bear.class,
+				Mantis.class, Squirrel.class,
 				Skeleton.class, Thief.class, DM100.class, Guard.class, Necromancer.class,
 				Bat.class, Brute.class, Shaman.RedShaman.class, Shaman.BlueShaman.class, Shaman.PurpleShaman.class, Spinner.class, DM200.class,
 				Ghoul.class, Elemental.FireElemental.class, Elemental.FrostElemental.class, Elemental.ShockElemental.class, Warlock.class, Monk.class, Golem.class,
@@ -239,7 +251,7 @@ public enum Bestiary {
 				Elemental.ChaosElemental.class, Senior.class,
 				Acidic.class,
 				TormentedSpirit.class, PhantomPiranha.class, CrystalMimic.class, ArmoredStatue.class,
-				Ijiraq.class);
+				Ijiraq.class, Gecko.class, DireWolf.class);
 
 		QUEST.addEntities(FetidRat.class, GnollTrickster.class, GreatCrab.class,
 				Elemental.NewbornFireElemental.class, RotLasher.class, RotHeart.class,

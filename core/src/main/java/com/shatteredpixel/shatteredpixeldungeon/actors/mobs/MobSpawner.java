@@ -25,6 +25,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.duelist.Challenge;
 import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.RatSkull;
+import com.shatteredpixel.shatteredpixeldungeon.levels.regions.Region;
 import com.watabou.utils.Random;
 
 import java.util.ArrayList;
@@ -62,9 +63,12 @@ public class MobSpawner extends Actor {
 	}
 
 	public static ArrayList<Class<? extends Mob>> getMobRotation(int depth ){
-		ArrayList<Class<? extends Mob>> mobs = standardMobRotation( depth );
-		addRareMobs(depth, mobs);
-		swapMobAlts(mobs);
+		ArrayList<Class<? extends Mob>> mobs = Region.at(depth).mobRotation( depth );
+		if (mobs == null){
+			mobs = standardMobRotation( depth );
+			addRareMobs(depth, mobs);
+		}
+		swapMobAlts(depth, mobs);
 		Random.shuffle(mobs);
 		return mobs;
 	}
@@ -243,12 +247,12 @@ public class MobSpawner extends Actor {
 	}
 
 	//switches out regular mobs for their alt versions when appropriate
-	private static void swapMobAlts(ArrayList<Class<?extends Mob>> rotation) {
+	private static void swapMobAlts(int depth, ArrayList<Class<?extends Mob>> rotation) {
 		float altChance = 1 / 50f * RatSkull.exoticChanceMultiplier();
 		for (int i = 0; i < rotation.size(); i++) {
 			if (Random.Float() < altChance) {
 				Class<? extends Mob> cl = rotation.get(i);
-				Class<? extends Mob> alt = RARE_ALTS.get(cl);
+				Class<? extends Mob> alt = Region.at(depth).rareAlt(depth, cl);
 				if (alt != null) {
 					rotation.set(i, alt);
 				}

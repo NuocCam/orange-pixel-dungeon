@@ -1782,7 +1782,7 @@ public class GameScene extends PixelScene {
 		ArrayList<Object> objects = new ArrayList<>();
 
 		Char ch = Actor.findChar(cell);
-		if (ch != null && ch != Dungeon.hero){
+		if (ch != null && ch != Dungeon.hero && !(ch instanceof Mob && ((Mob) ch).hidden())){
 			if (Dungeon.level.heroFOV[cell] || Char.hasProp(ch, Char.Property.OBJECT)){
 				objects.add(ch);
 			}

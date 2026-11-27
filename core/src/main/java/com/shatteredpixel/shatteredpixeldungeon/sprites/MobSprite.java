@@ -21,6 +21,7 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.sprites;
 
+import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.DungeonTilemap;
 import com.watabou.noosa.Game;
@@ -34,9 +35,20 @@ public class MobSprite extends CharSprite {
 	private static final float FADE_TIME	= 3f;
 	private static final float FALL_TIME	= 1f;
 	
+	private boolean wasHidden = false;
+
 	@Override
 	public void update() {
 		sleeping = ch != null && ch.isAlive() && ((Mob)ch).state == ((Mob)ch).SLEEPING;
+		if (ch != null){
+			boolean hidden = ch.isAlive() && ((Mob)ch).hidden();
+			if (hidden){
+				visible = false;
+			} else if (wasHidden){
+				visible = Dungeon.level.heroFOV[ch.pos];
+			}
+			wasHidden = hidden;
+		}
 		super.update();
 	}
 	

@@ -285,6 +285,16 @@ public class Assets {
 		public static final String AMULET   = "sprites/amulet.png";
 
 		public static final String RAT      = "sprites/rat.png";
+		public static final String SKINK    = "sprites/skink.png";
+		public static final String DEER     = "sprites/deer.png";
+		public static final String BOAR     = "sprites/boar.png";
+		public static final String TOAD     = "sprites/toad.png";
+		public static final String WOLF     = "sprites/wolf.png";
+		public static final String BEAR     = "sprites/bear.png";
+		public static final String MANTIS   = "sprites/mantis.png";
+		public static final String SQUIRREL = "sprites/squirrel.png";
+		public static final String GECKO    = "sprites/gecko.png";
+		public static final String DIRE_WOLF = "sprites/dire_wolf.png";
 		public static final String BRUTE    = "sprites/brute.png";
 		public static final String SPINNER  = "sprites/spinner.png";
 		public static final String DM300    = "sprites/dm300.png";

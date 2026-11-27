@@ -783,6 +783,7 @@ public class ItemSpriteSheet {
 	public static final int SHARD   = QUEST+8;
 	public static final int ESCAPE  = QUEST+9;
 	public static final int STATUE  = QUEST+10;
+	public static final int GECKO_TAIL = QUEST+11;
 	static{
 		assignItemRect(DUST,    12, 11);
 		assignItemRect(CANDLE,  12, 12);
@@ -794,6 +795,7 @@ public class ItemSpriteSheet {
 		assignItemRect(SHARD,    8, 10);
 		assignItemRect(ESCAPE,   8, 16);
 		assignItemRect(STATUE,  10, 16);
+		assignItemRect(GECKO_TAIL, 16, 13);
 	}
 
 	private static final int BAGS       =                                   xy(1, 31);  //16 slots

@@ -40,6 +40,16 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Gnoll;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Golem;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Guard;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Ijiraq;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.jungle.Bear;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.jungle.Boar;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.jungle.Deer;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.jungle.DireWolf;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.jungle.Gecko;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.jungle.Mantis;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.jungle.Skink;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.jungle.Squirrel;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.jungle.Toad;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.jungle.Wolf;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Monk;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Necromancer;
@@ -78,6 +88,18 @@ public class AscensionChallenge extends Buff {
 		modifiers.put(Swarm.class,          8.5f);
 		modifiers.put(Crab.class,           8f);
 		modifiers.put(Slime.class,          8f);
+
+		//jungle animals scale like their sewer twins
+		modifiers.put(Skink.class,          10f);
+		modifiers.put(Deer.class,           9f);
+		modifiers.put(Boar.class,           9f);
+		modifiers.put(Toad.class,           8.5f);
+		modifiers.put(Wolf.class,           8f);
+		modifiers.put(Bear.class,           8f);
+		modifiers.put(Mantis.class,         8f);
+		modifiers.put(Squirrel.class,       10f);
+		modifiers.put(Gecko.class,          8f);
+		modifiers.put(DireWolf.class,       8f);
 
 		modifiers.put(Skeleton.class,       5f);
 		modifiers.put(Thief.class,          5f);

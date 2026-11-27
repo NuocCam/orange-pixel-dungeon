@@ -1859,7 +1859,7 @@ public class Hero extends Char {
 				Notes.add(m.landmark());
 			}
 
-			if (fieldOfView[ m.pos ] && m.alignment == Alignment.ENEMY) {
+			if (fieldOfView[ m.pos ] && m.alignment == Alignment.ENEMY && !m.hidden()) {
 				visible.add(m);
 				if (!visibleEnemies.contains( m )) {
 					newMob = true;
@@ -1887,6 +1887,7 @@ public class Hero extends Char {
 		if (target != null && (lastTarget == null ||
 							!lastTarget.isAlive() || !lastTarget.isActive() ||
 							lastTarget.alignment == Alignment.ALLY ||
+							(lastTarget instanceof Mob && ((Mob) lastTarget).hidden()) ||
 							!fieldOfView[lastTarget.pos])){
 			QuickSlotButton.target(target);
 		}
@@ -2082,7 +2083,8 @@ public class Hero extends Char {
 			
 			curAction = new HeroAction.Alchemy( cell );
 			
-		} else if (ch instanceof Mob && (fieldOfView[cell] || Char.hasProp(ch, Property.OBJECT))) {
+		} else if (ch instanceof Mob && !((Mob) ch).hidden()
+				&& (fieldOfView[cell] || Char.hasProp(ch, Property.OBJECT))) {
 
 			if (((Mob) ch).heroShouldInteract()) {
 				curAction = new HeroAction.Interact( ch );

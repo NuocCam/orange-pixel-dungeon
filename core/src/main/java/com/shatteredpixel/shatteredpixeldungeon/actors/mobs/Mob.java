@@ -915,6 +915,11 @@ public abstract class Mob extends Char {
 				&& (!attacking || enemy.canSurpriseAttack());
 	}
 
+	//a hidden enemy can't be seen or picked out by the hero, even in plain sight
+	public boolean hidden(){
+		return false;
+	}
+
 	//whether the hero should interact with the mob (true) or attack it (false)
 	public boolean heroShouldInteract(){
 		return alignment != Alignment.ENEMY && buff(Amok.class) == null;

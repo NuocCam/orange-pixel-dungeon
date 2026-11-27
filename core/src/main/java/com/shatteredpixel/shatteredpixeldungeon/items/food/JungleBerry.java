@@ -21,8 +21,15 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.items.food;
 
+import com.shatteredpixel.shatteredpixeldungeon.Assets;
+import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
+import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.BerryCharm;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Hunger;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.jungle.JungleAnimal;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
+import com.watabou.noosa.audio.Sample;
 
 //the jungle's answer to rations, one grows on each berry bush
 public class JungleBerry extends Food {
@@ -30,6 +37,22 @@ public class JungleBerry extends Food {
 	{
 		image = ItemSpriteSheet.JUNGLE_BERRY;
 		energy = Hunger.HUNGRY; //same as a ration
+	}
+
+	//a jungle animal would much rather eat than fight whoever threw it
+	@Override
+	protected void onThrow( int cell ) {
+		Char ch = Actor.findChar(cell);
+		if (ch instanceof JungleAnimal){
+			JungleAnimal animal = (JungleAnimal) ch;
+			if (animal.berryTurns() > 0 && !animal.prey && animal.alignment == Char.Alignment.ENEMY
+					&& !animal.isImmune(BerryCharm.class)){
+				Buff.affect(animal, BerryCharm.class).set(animal.berryTurns());
+				Sample.INSTANCE.play(Assets.Sounds.EAT);
+				return;
+			}
+		}
+		super.onThrow(cell);
 	}
 
 }

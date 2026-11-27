@@ -26,6 +26,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mimic;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.jungle.Squirrel;
 import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
@@ -147,6 +148,53 @@ public class JungleLevel extends RegularLevel {
 	@Override
 	public Food larderFood() {
 		return new JungleBerry();
+	}
+
+	@Override
+	protected void createMobs() {
+		int[] before = map.clone();
+		super.createMobs();
+
+		//grass under a spawned mob gets flattened, but a mantis keeps its cover
+		for (Mob mob : mobs){
+			if (!mob.flattensGrass() && (before[mob.pos] == Terrain.HIGH_GRASS
+					|| before[mob.pos] == Terrain.FURROWED_GRASS)){
+				map[mob.pos] = before[mob.pos];
+				losBlocking[mob.pos] = true;
+			}
+		}
+
+		addSquirrels();
+	}
+
+	//a squirrel or two on every floor, on top of the usual enemies
+	private void addSquirrels(){
+		ArrayList<Integer> spots = new ArrayList<>();
+		for (Room room : rooms){
+			if (!(room instanceof StandardRoom) || room == roomEntrance) continue;
+			for (Point p : room.getPoints()){
+				int cell = pointToCell(p);
+				if (passable[cell] && !solid[cell] && cell != exit()
+						&& distance(cell, entrance()) > 8
+						&& traps.get(cell) == null && plants.get(cell) == null
+						&& map[cell] != Terrain.HIGH_GRASS && map[cell] != Terrain.FURROWED_GRASS
+						&& room.canPlaceCharacter(p, this)){
+					spots.add(cell);
+				}
+			}
+		}
+
+		for (int n = Random.IntRange(1, 2); n > 0 && !spots.isEmpty(); n--){
+			Integer cell = Random.element(spots);
+			spots.remove(cell);
+			if (findMob(cell) != null){
+				n++;
+				continue;
+			}
+			Squirrel squirrel = new Squirrel();
+			squirrel.pos = cell;
+			mobs.add(squirrel);
+		}
 	}
 
 	@Override

@@ -27,6 +27,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.AllyBuff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Barrier;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.BerryCharm;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.FlavourBuff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Invisibility;
@@ -146,7 +147,9 @@ public class PowerOfMany extends ArmorAbility {
 
 			Char ch = Actor.findChar(target);
 			if (ch != null){
-				if (ch.alignment != Char.Alignment.ALLY || ch == Dungeon.hero){
+				//fed animals don't count, stasis would end the charm while they're stored
+				if (ch.alignment != Char.Alignment.ALLY || ch == Dungeon.hero
+						|| ch.buff(BerryCharm.class) != null){
 					GLog.w(Messages.get(this, "only_allies"));
 					return;
 				}

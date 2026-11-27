@@ -23,6 +23,16 @@ package com.shatteredpixel.shatteredpixeldungeon.levels.regions;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.jungle.Bear;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.jungle.Boar;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.jungle.Deer;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.jungle.DireWolf;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.jungle.Gecko;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.jungle.Mantis;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.jungle.Skink;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.jungle.Toad;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.jungle.Wolf;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Document;
 import com.shatteredpixel.shatteredpixeldungeon.levels.JungleLevel;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
@@ -44,10 +54,49 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.jungle.Ove
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.jungle.PondRoom;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.jungle.ThicketRoom;
 
+import com.watabou.utils.Random;
+
 import java.util.ArrayList;
+import java.util.Arrays;
 
 //takes the place of the sewers in about half of all runs
 public class JungleRegion extends Region {
+
+	@Override
+	public ArrayList<Class<? extends Mob>> mobRotation( int depth ) {
+		switch (depth){
+			case 1:
+				//3x skink, 1x deer
+				return rotation(Skink.class, Skink.class, Skink.class, Deer.class);
+			case 2:
+				//2x skink, 1x deer, 2x boar
+				return rotation(Skink.class, Skink.class, Deer.class, Boar.class, Boar.class);
+			case 3:
+				//1x skink, 1x deer, 2x boar, 1x mantis, 1x toad, 1x wolf
+				return rotation(Skink.class, Deer.class, Boar.class, Boar.class, Mantis.class,
+						Toad.class, Wolf.class);
+			case 4:
+				//1x boar (or mantis), 1x toad, 2x wolf, 2x bear
+				return rotation(Random.Int(2) == 0 ? Mantis.class : Boar.class,
+						Toad.class, Wolf.class, Wolf.class, Bear.class, Bear.class);
+			default:
+				//floor 5 keeps the sewer's mobs
+				return null;
+		}
+	}
+
+	@Override
+	public Class<? extends Mob> rareAlt( int depth, Class<? extends Mob> cls ) {
+		//no geckos waiting on the very first floor
+		if (cls == Skink.class)  return depth > 1 ? Gecko.class : null;
+		if (cls == Wolf.class)   return DireWolf.class;
+		return super.rareAlt(depth, cls);
+	}
+
+	@SafeVarargs
+	private static ArrayList<Class<? extends Mob>> rotation( Class<? extends Mob>... mobs ){
+		return new ArrayList<>(Arrays.asList(mobs));
+	}
 
 	@Override
 	public Level newLevel() {
