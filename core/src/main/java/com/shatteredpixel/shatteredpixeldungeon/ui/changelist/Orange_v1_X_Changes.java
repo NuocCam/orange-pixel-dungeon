@@ -25,6 +25,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.ChangesScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.BlacksmithSprite;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.BoarSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.HunterSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.IjiraqSprite;
@@ -62,9 +63,19 @@ public class Orange_v1_X_Changes {
 
 	public static void add_v1_2_Changes( ArrayList<ChangeInfo> changeInfos ) {
 
+		release(changeInfos, "v1.2.2");
+
+		ChangeInfo changes = section(changeInfos, "changes", CharSprite.WARNING);
+
+		changes.addButton( new ChangeButton( new ItemSprite(ItemSpriteSheet.SKULL_CHALICE), Messages.get(Orange_v1_X_Changes.class, "v122_skull_chalice_title"),
+				Messages.get(Orange_v1_X_Changes.class, "v122_skull_chalice_text")));
+
+		changes.addButton( new ChangeButton( new BoarSprite(), Messages.get(Orange_v1_X_Changes.class, "v122_amber_eyes_title"),
+				Messages.get(Orange_v1_X_Changes.class, "v122_amber_eyes_text")));
+
 		release(changeInfos, "v1.2.1");
 
-		ChangeInfo changes = section(changeInfos, "new", Window.TITLE_COLOR);
+		changes = section(changeInfos, "new", Window.TITLE_COLOR);
 
 		changes.addButton( new ChangeButton( new BlacksmithSprite(), Messages.get(Orange_v1_X_Changes.class, "v121_masterwork_title"),
 				Messages.get(Orange_v1_X_Changes.class, "v121_masterwork_text")));

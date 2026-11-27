@@ -61,6 +61,8 @@ public class Ijiraq extends Mob {
 	public static final int MAX_PER_FLOOR = 3;     //ever, and never two alive at once
 	public static final int POTIONS_PER_REGION = 2; //later ones only drop gold
 
+	private static final float MAX_CHANCE = .25f;
+
 	private static final int REVEAL_RANGE = 2;
 	private static final float ADRENALINE_TURNS = 12f;
 	private static final int HEARING_RANGE = 8; //how far off the growl still reachs the hero
@@ -137,7 +139,8 @@ public class Ijiraq extends Mob {
 		float base = SkullChalice.ijiraqChance();
 		float chance = base * RatSkull.exoticChanceMultiplier();
 		if (chance > base) chance = (chance + base)/2f; //rat skull is 1/2 as effective here
-		return chance;
+		//with both trinkets it would otherwise be most of the floor
+		return Math.min(chance, MAX_CHANCE);
 	}
 
 	//returns an ijiraq instead of the given enemy on a rare roll, or null

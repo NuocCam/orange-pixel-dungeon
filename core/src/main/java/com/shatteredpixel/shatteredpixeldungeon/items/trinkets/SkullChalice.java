@@ -59,7 +59,16 @@ public class SkullChalice extends Trinket {
 
 	@Override
 	public String statsDesc() {
-		return Messages.get(this, "stats_desc");
+		if (!isIdentified()){
+			return Messages.get(this, "typical_stats_desc") + "\n\n" + Messages.get(this, "bound");
+		}
+
+		//the effects add up, so every level it has reached gets its own line
+		String desc = Messages.get(this, "stats_desc_0");
+		for (int i = 1; i <= Math.min(3, buffedLvl()); i++){
+			desc += " " + Messages.get(this, "stats_desc_" + i);
+		}
+		return desc + "\n\n" + Messages.get(this, "bound");
 	}
 
 	@Override
@@ -99,8 +108,8 @@ public class SkullChalice extends Trinket {
 	public static float ijiraqChance(){
 		int level = carriedLevel();
 		if (level < 0)      return .01f;
-		else if (level < 3) return .02f;
-		else                return .04f;
+		else if (level < 3) return .10f;
+		else                return .20f;
 	}
 
 	//only call this once the upgraded chalice is back in the bag,
