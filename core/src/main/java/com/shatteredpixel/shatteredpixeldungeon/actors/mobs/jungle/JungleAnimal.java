@@ -21,6 +21,12 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.actors.mobs.jungle;
 
+import com.shatteredpixel.shatteredpixeldungeon.Challenges;
+import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Dread;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Terror;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.watabou.utils.Bundle;
 
@@ -29,6 +35,65 @@ public abstract class JungleAnimal extends Mob {
 
 	//food for something bigger, too busy being hunted to care about berries
 	public boolean prey = false;
+
+	private final AiState PREYING = new Preying();
+
+	//Amalgam's dinner: weak, worth nothing, and only interested in getting to it
+	public void makePrey(){
+		prey = true;
+		HP = HT = 10;
+		preyNature();
+	}
+
+	//the parts of being prey which don't get saved
+	private void preyNature(){
+		EXP = 0;
+		//nothing for a thief either
+		lootChance = 0;
+		baseSpeed = Dungeon.isChallenged(Challenges.STRONGER_BOSSES) ? 2 : 1;
+		state = PREYING;
+	}
+
+	@Override
+	protected boolean act() {
+		if (prey){
+			//whatever got into it, it carries on toward the roar
+			Buff.detach(this, Terror.class);
+			Buff.detach(this, Dread.class);
+			state = PREYING;
+		}
+		return super.act();
+	}
+
+	//pays the hero no mind
+	@Override
+	protected Char chooseEnemy() {
+		return prey ? null : super.chooseEnemy();
+	}
+
+	//no meat, pelts or anything else
+	@Override
+	public void rollToDropLoot() {
+		if (!prey) super.rollToDropLoot();
+	}
+
+	private class Preying implements AiState {
+		@Override
+		public boolean act( boolean enemyInFOV, boolean justAlerted ) {
+			enemySeen = false;
+			for (Mob mob : Dungeon.level.mobs){
+				if (mob instanceof Amalgam && !Dungeon.level.adjacent(pos, mob.pos)){
+					int oldPos = pos;
+					if (getCloser(mob.pos)){
+						spend(1 / speed());
+						return moveSprite(oldPos, pos);
+					}
+				}
+			}
+			spend(TICK);
+			return true;
+		}
+	}
 
 	//how long it stays on your side while eating a berry
 	public abstract int berryTurns();
@@ -55,5 +120,6 @@ public abstract class JungleAnimal extends Mob {
 	public void restoreFromBundle( Bundle bundle ) {
 		super.restoreFromBundle(bundle);
 		prey = bundle.getBoolean(PREY);
+		if (prey) preyNature();
 	}
 }

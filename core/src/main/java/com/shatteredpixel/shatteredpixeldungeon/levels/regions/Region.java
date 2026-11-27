@@ -74,6 +74,11 @@ public class Region {
 		return null;
 	}
 
+	//level for the boss floor of the first region
+	public Level newBossLevel(){
+		return null;
+	}
+
 	//loading screen art of the first region, and the point it's centered on
 	public String loadingSplash(){
 		return null;

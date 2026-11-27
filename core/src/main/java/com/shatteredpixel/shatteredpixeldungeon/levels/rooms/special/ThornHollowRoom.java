@@ -29,8 +29,8 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Roots;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Wound;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.keys.Key;
+import com.shatteredpixel.shatteredpixeldungeon.items.potions.Potion;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfLevitation;
-import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfPurity;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.levels.painters.Painter;
@@ -61,8 +61,7 @@ public class ThornHollowRoom extends TrapsRoom {
 
 	//things which have to stay out in the open. Nobody should need a potion or a berry
 	// just to get at a key, or at the potion another room is waiting for
-	private static final Class<?>[] NEVER_PRIZES = {
-			Key.class, PotionOfPurity.class, PotionOfLevitation.class };
+	private static final Class<?>[] NEVER_PRIZES = { Key.class, Potion.class };
 
 	//the trap room's prize, minus those
 	@SuppressWarnings("unchecked")

@@ -34,6 +34,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.jungle.Skink;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.jungle.Toad;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.jungle.Wolf;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Document;
+import com.shatteredpixel.shatteredpixeldungeon.levels.JungleBossLevel;
 import com.shatteredpixel.shatteredpixeldungeon.levels.JungleLevel;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.DeepWater;
@@ -108,6 +109,11 @@ public class JungleRegion extends Region {
 	}
 
 	@Override
+	public Level newBossLevel() {
+		return new JungleBossLevel();
+	}
+
+	@Override
 	public String loadingSplash() {
 		return Assets.Splashes.JUNGLE;
 	}
@@ -144,10 +150,6 @@ public class JungleRegion extends Region {
 
 	@Override
 	public StandardRoom newStandardRoom( int index ) {
-		//floor 5 is still the sewer boss floor, and its tiles can't draw these
-		if (Dungeon.bossLevel()){
-			return null;
-		}
 		//the first five rooms on the list are the ones only the sewers use
 		switch (index){
 			case 0: return new GroveRoom();

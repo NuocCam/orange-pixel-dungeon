@@ -787,6 +787,7 @@ public class ItemSpriteSheet {
 	public static final int WOLF_PELT  = QUEST+12;
 	public static final int DIRE_WOLF_PELT = QUEST+13;
 	public static final int BEAR_PELT  = QUEST+14;
+	public static final int BEAST_MARROW = QUEST+15;
 	static{
 		assignItemRect(DUST,    12, 11);
 		assignItemRect(CANDLE,  12, 12);
@@ -802,6 +803,7 @@ public class ItemSpriteSheet {
 		assignItemRect(WOLF_PELT, 15, 16);
 		assignItemRect(DIRE_WOLF_PELT, 15, 16);
 		assignItemRect(BEAR_PELT, 16, 16);
+		assignItemRect(BEAST_MARROW, 10, 9);
 	}
 
 	private static final int BAGS       =                                   xy(1, 31);  //16 slots

@@ -349,7 +349,8 @@ public class Dungeon {
 					if (level == null) level = new SewerLevel();
 					break;
 				case 5:
-					level = new SewerBossLevel();
+					level = Region.at(depth).newBossLevel();
+					if (level == null) level = new SewerBossLevel();
 					break;
 				case 6:
 				case 7:

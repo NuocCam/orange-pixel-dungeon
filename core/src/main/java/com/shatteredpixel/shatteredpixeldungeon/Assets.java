@@ -288,6 +288,7 @@ public class Assets {
 		public static final String SKINK    = "sprites/skink.png";
 		public static final String DEER     = "sprites/deer.png";
 		public static final String BOAR     = "sprites/boar.png";
+		public static final String AMALGAM  = "sprites/amalgam.png";
 		public static final String TOAD     = "sprites/toad.png";
 		public static final String WOLF     = "sprites/wolf.png";
 		public static final String BEAR     = "sprites/bear.png";

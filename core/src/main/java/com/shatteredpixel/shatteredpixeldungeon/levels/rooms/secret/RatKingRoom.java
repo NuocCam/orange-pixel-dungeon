@@ -29,7 +29,6 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.levels.painters.Painter;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.Room;
-import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.sewerboss.SewerBossEntranceRoom;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.CustomTilemap;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.custom.Carpet;
@@ -43,7 +42,7 @@ public class RatKingRoom extends SecretRoom {
 	@Override
 	public boolean canConnect(Room r) {
 		//never connects at the entrance
-		return !(r instanceof SewerBossEntranceRoom) && super.canConnect(r);
+		return !r.isEntrance() && super.canConnect(r);
 	}
 
 	@Override
