@@ -1811,10 +1811,9 @@ public class Hero extends Char {
 			}
 		}
 
-		//unused, could be removed
 		CapeOfThorns.Thorns thorns = buff( CapeOfThorns.Thorns.class );
 		if (thorns != null) {
-			damage = thorns.proc((int)damage, (src instanceof Char ? (Char)src : null),  this);
+			damage = thorns.proc((int)damage, src, this);
 		}
 
 		if (buff(Talent.WarriorFoodImmunity.class) != null){

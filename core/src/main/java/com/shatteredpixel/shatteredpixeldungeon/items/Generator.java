@@ -581,7 +581,8 @@ public class Generator {
 					MedicKit.class,
 					AscendantCitrine.class
 			};
-			ARTIFACT.defaultProbs = new float[]{ 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 };
+			//lloyd's beacon is out of the game for now, it keeps its slot so saved odds still line up
+			ARTIFACT.defaultProbs = new float[]{ 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1 };
 			ARTIFACT.probs = ARTIFACT.defaultProbs.clone();
 
 			//Trinkets are unique like artifacts, but unlike them you can only have one at once
@@ -990,6 +991,9 @@ public class Generator {
 
 			}
 		}
+
+		//saves from before 1.2.3 can still have odds for the beacon
+		Category.ARTIFACT.probs[14] = 0;
 		
 	}
 }

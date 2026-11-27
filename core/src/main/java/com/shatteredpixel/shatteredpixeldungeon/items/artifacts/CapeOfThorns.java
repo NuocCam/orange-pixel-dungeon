@@ -24,6 +24,7 @@ package com.shatteredpixel.shatteredpixeldungeon.items.artifacts;
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Hunger;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Catalog;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
@@ -32,7 +33,6 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.BuffIndicator;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Bundle;
-import com.watabou.utils.Random;
 
 import java.util.ArrayList;
 
@@ -73,7 +73,8 @@ public class CapeOfThorns extends Artifact {
 			} else {
 				//takes no time, so it can be saved for the right moment
 				charge = 0;
-				cooldown = 10+level();
+				partialCharge = 0;
+				cooldown = ((Thorns)passiveBuff).duration();
 				Sample.INSTANCE.play(Assets.Sounds.CHARGEUP);
 				GLog.p(Messages.get(Thorns.class, "radiating"));
 				updateQuickslot();
@@ -150,31 +151,61 @@ public class CapeOfThorns extends Artifact {
 			return true;
 		}
 
-		public int proc(int damage, Char attacker, Char defender){
+		//how much damage fills the cape: all of max HP at +0, 4% less each level
+		public int chargeNeeded(Hero hero){
+			return Math.max(1, Math.round(hero.HT * (1 - 0.04f*level())));
+		}
+
+		public float blockFraction(){
+			return 0.40f + 0.02f*level();
+		}
+
+		public float passiveFraction(){
+			return 0.15f + 0.01f*level();
+		}
+
+		public int proc(int damage, Object src, Char defender){
+			if (damage <= 0) return damage;
+
+			Char attacker = src instanceof Char ? (Char)src : null;
+			boolean adjacent = attacker != null && Dungeon.level.adjacent(attacker.pos, defender.pos);
+			int returned = 0;
+
 			if (cooldown == 0){
-				gain((int)(damage*(0.5+level()*0.05)));
+				//starving doesnt count, or you could just wait it out
+				if (!(src instanceof Hunger)){
+					partialCharge += damage * 100f / chargeNeeded((Hero)defender);
+					int whole = (int)partialCharge;
+					partialCharge -= whole;
+					gain(whole);
+					if (charge >= chargeCap) partialCharge = 0;
+				}
+				if (adjacent && !cursed){
+					returned = Math.max(1, Math.round(damage * passiveFraction()));
+				}
+			} else {
+				int blocked = Math.round(damage * blockFraction());
+				damage -= blocked;
+				if (adjacent) returned = blocked;
 			}
 
-			if (cooldown != 0){
-				int deflected = Random.NormalIntRange(0, damage);
-				damage -= deflected;
+			if (returned > 0){
+				attacker.damage(returned, this);
 
-				if (attacker != null && Dungeon.level.adjacent(attacker.pos, defender.pos)) {
-					attacker.damage(deflected, this);
-				}
-
-				exp+= deflected;
-
-				if (exp >= (level()+1)*3 && level() < levelCap){
-					exp -= (level()+1)*3;
+				exp += returned;
+				if (exp >= (level()+1)*5 && level() < levelCap){
+					exp -= (level()+1)*5;
 					upgrade();
 					Catalog.countUse(CapeOfThorns.class);
 					GLog.p( Messages.get(this, "levelup") );
 				}
-
 			}
 			updateQuickslot();
 			return damage;
+		}
+
+		public int duration(){
+			return 10 + level()/2;
 		}
 
 		@Override

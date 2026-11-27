@@ -38,6 +38,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.TengusMask;
 import com.shatteredpixel.shatteredpixeldungeon.items.Torch;
 import com.shatteredpixel.shatteredpixeldungeon.items.Waterskin;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
+import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.LloydsBeacon;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.MagicalHolster;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.PotionBandolier;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.ScrollHolder;
@@ -225,7 +226,10 @@ public enum Catalog {
 
 		RINGS.addItems(Generator.Category.RING.classes);
 
-		ARTIFACTS.addItems(Generator.Category.ARTIFACT.classes);
+		for (Class<?> artifact : Generator.Category.ARTIFACT.classes){
+			//the beacon cant be found for now, so the catalog doesnt ask for it
+			if (artifact != LloydsBeacon.class) ARTIFACTS.addItems(artifact);
+		}
 
 		TRINKETS.addItems(Generator.Category.TRINKET.classes);
 
