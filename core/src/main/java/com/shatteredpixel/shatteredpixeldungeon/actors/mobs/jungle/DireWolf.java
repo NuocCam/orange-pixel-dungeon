@@ -22,6 +22,8 @@
 package com.shatteredpixel.shatteredpixeldungeon.actors.mobs.jungle;
 
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
+import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.items.quest.DireWolfPelt;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Bleeding;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.DireWolfSprite;
@@ -73,5 +75,14 @@ public class DireWolf extends JungleAnimal {
 	@Override
 	public int berryTurns() {
 		return 4;
+	}
+
+	//always has its pelt, even for a hero who gets nothing else from it
+	@Override
+	public void rollToDropLoot() {
+		if (!prey){
+			Dungeon.level.drop(new DireWolfPelt(), pos).sprite.drop();
+		}
+		super.rollToDropLoot();
 	}
 }

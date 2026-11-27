@@ -28,9 +28,11 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Adrenaline;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.AllyBuff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Dread;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.jungle.*;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.ShadowParticle;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
+import com.shatteredpixel.shatteredpixeldungeon.items.quest.GeckoTail;
 import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.RatSkull;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
@@ -93,6 +95,16 @@ public class Ijiraq extends Mob {
 		DISGUISES.put(Eye.class,                    "eye");
 		DISGUISES.put(Scorpio.class,                "scorpio");
 		DISGUISES.put(Acidic.class,                 "scorpio");
+		//the jungle beasts, all but the squirrel
+		DISGUISES.put(Skink.class,                  "skink");
+		DISGUISES.put(Deer.class,                   "deer");
+		DISGUISES.put(Boar.class,                   "boar");
+		DISGUISES.put(Toad.class,                   "toad");
+		DISGUISES.put(Mantis.class,                 "mantis");
+		DISGUISES.put(Wolf.class,                   "wolf");
+		DISGUISES.put(Bear.class,                   "bear");
+		DISGUISES.put(Gecko.class,                  "gecko");
+		DISGUISES.put(DireWolf.class,               "dire_wolf");
 	}
 
 	{
@@ -287,7 +299,9 @@ public class Ijiraq extends Mob {
 	public Item createLoot() {
 		if (form == null) return null;
 		form.pos = pos; //some enemies drop things around themselves
-		return form.createLoot();
+		Item item = form.createLoot();
+		//there's no tail to take, it was never really a gecko
+		return item instanceof GeckoTail ? null : item;
 	}
 
 	private static final String FORM     = "form";

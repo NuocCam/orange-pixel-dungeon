@@ -22,6 +22,8 @@
 package com.shatteredpixel.shatteredpixeldungeon.actors.mobs.jungle;
 
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
+import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.items.quest.WolfPelt;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.WolfSprite;
 import com.watabou.utils.Random;
 
@@ -56,5 +58,15 @@ public class Wolf extends JungleAnimal {
 	@Override
 	public int berryTurns() {
 		return 8;
+	}
+
+	//the pelt goes by its own odds, however strong the hero is and whatever they're wearing
+	@Override
+	public void rollToDropLoot() {
+		if (!prey && Dungeon.LimitedDrops.WOLF_PELT.count < 3 && Random.Int(3) < 2){
+			Dungeon.LimitedDrops.WOLF_PELT.count++;
+			Dungeon.level.drop(new WolfPelt(), pos).sprite.drop();
+		}
+		super.rollToDropLoot();
 	}
 }

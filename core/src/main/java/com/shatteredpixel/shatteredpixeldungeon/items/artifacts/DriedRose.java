@@ -41,6 +41,8 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.spells.Stasis;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Wraith;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.DirectableAlly;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Ghost;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Hunter;
+import com.shatteredpixel.shatteredpixeldungeon.levels.regions.Region;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.FloatingText;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
@@ -110,10 +112,15 @@ public class DriedRose extends Artifact {
 	public static final String AC_DIRECT = "DIRECT";
 	public static final String AC_OUTFIT = "OUTFIT";
 
+	//either the sad ghost has been laid to rest, or the jungle's hunter has told his story
+	public static boolean unlocked(){
+		return Ghost.Quest.completed() || Hunter.Quest.met();
+	}
+
 	@Override
 	public ArrayList<String> actions( Hero hero ) {
 		ArrayList<String> actions = super.actions( hero );
-		if (!Ghost.Quest.completed()){
+		if (!unlocked()){
 			return actions;
 		}
 		if (isEquipped( hero )
@@ -152,7 +159,7 @@ public class DriedRose extends Artifact {
 
 			if (hero.buff(MagicImmune.class) != null) return;
 
-			if (!Ghost.Quest.completed())   GameScene.show(new WndUseItem(null, this));
+			if (!unlocked())   GameScene.show(new WndUseItem(null, this));
 			else if (ghost != null)         GLog.i( Messages.get(this, "spawned") );
 			else if (!isEquipped( hero ))   GLog.i( Messages.get(Artifact.class, "need_to_equip") );
 			else if (charge != chargeCap)   GLog.i( Messages.get(this, "no_charge") );
@@ -237,7 +244,7 @@ public class DriedRose extends Artifact {
 
 	@Override
 	public String desc() {
-		if (!Ghost.Quest.completed()
+		if (!unlocked()
 				&& (ShatteredPixelDungeon.scene() instanceof GameScene || ShatteredPixelDungeon.scene() instanceof AlchemyScene)){
 			return Messages.get(this, "desc_no_quest");
 		}
@@ -759,10 +766,13 @@ public class DriedRose extends Artifact {
 			updateRose();
 			if (c == Dungeon.hero && rose != null && !rose.talkedTo){
 				rose.talkedTo = true;
+				//who the ghost left behind depends on which way the hero came down
+				String own = Region.ofRun().ghostIntro();
+				final String intro = own != null ? own : "introduce";
 				Game.runOnRenderThread(new Callback() {
 					@Override
 					public void call() {
-						GameScene.show(new WndQuest(GhostHero.this, Messages.get(GhostHero.this, "introduce") ));
+						GameScene.show(new WndQuest(GhostHero.this, Messages.get(GhostHero.this, intro) ));
 					}
 				});
 				return true;
@@ -803,7 +813,7 @@ public class DriedRose extends Artifact {
 
 				switch (depth) {
 					case 0:
-						yell(Messages.get(this, "dialogue_sewers_" + variant));
+						yell(Messages.get(this, Dungeon.level.ghostRemarks() + variant));
 						break;
 					case 1:
 						yell(Messages.get(this, "dialogue_prison_" + variant));
@@ -830,7 +840,7 @@ public class DriedRose extends Artifact {
 			
 			switch(depth){
 				case 0:
-					yell( Messages.get( this, "seen_goo_" + Random.IntRange(1, 3) ));
+					yell( Messages.get( this, Dungeon.level.ghostBossWarnings() + Random.IntRange(1, 3) ));
 					break;
 				case 1:
 					yell( Messages.get( this, "seen_tengu_" + Random.IntRange(1, 3) ));

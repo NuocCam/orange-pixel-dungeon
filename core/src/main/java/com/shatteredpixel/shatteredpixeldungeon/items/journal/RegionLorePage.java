@@ -29,6 +29,7 @@ public class RegionLorePage {
 	public static DocumentPage pageForDoc( Document doc ){
 		switch (doc){
 			case SEWERS_GUARD: default:     return new RegionLorePage.Sewers();
+			case HUNTER_NOTES:              return new RegionLorePage.Jungle();
 			case PRISON_WARDEN:             return new RegionLorePage.Prison();
 			case CAVES_EXPLORER:            return new RegionLorePage.Caves();
 			case CITY_WARLOCK:              return new RegionLorePage.City();
@@ -44,6 +45,17 @@ public class RegionLorePage {
 		@Override
 		public Document document() {
 			return Document.SEWERS_GUARD;
+		}
+	}
+
+	public static class Jungle extends DocumentPage {
+		{
+			image = ItemSpriteSheet.SEWER_PAGE;
+		}
+
+		@Override
+		public Document document() {
+			return Document.HUNTER_NOTES;
 		}
 	}
 

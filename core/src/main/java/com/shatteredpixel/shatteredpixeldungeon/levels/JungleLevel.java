@@ -27,6 +27,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mimic;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.jungle.Squirrel;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Hunter;
 import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
@@ -64,6 +65,16 @@ public class JungleLevel extends RegularLevel {
 	//the jungle has more tall grass than the sewers, so each tile of it gives a bit less.
 	// GrassTest measures both and holds this to what it finds
 	public static final float GRASS_LOOT_MULT = 0.49f;
+
+	@Override
+	public String ghostRemarks() {
+		return "dialogue_jungle_";
+	}
+
+	@Override
+	public String ghostBossWarnings() {
+		return "seen_amalgam_";
+	}
 
 	@Override
 	public boolean tallGrassSlows() {
@@ -153,6 +164,8 @@ public class JungleLevel extends RegularLevel {
 	@Override
 	protected void createMobs() {
 		int[] before = map.clone();
+		//before the rest, so nothing else ends up where he stands
+		Hunter.Quest.spawn( this, roomExit );
 		super.createMobs();
 
 		//grass under a spawned mob gets flattened, but a mantis keeps its cover

@@ -36,7 +36,6 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.GoldenMimic;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mimic;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Statue;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Ghost;
 import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
@@ -61,6 +60,7 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.builders.Builder;
 import com.shatteredpixel.shatteredpixeldungeon.levels.builders.FigureEightBuilder;
 import com.shatteredpixel.shatteredpixeldungeon.levels.builders.LoopBuilder;
 import com.shatteredpixel.shatteredpixeldungeon.levels.painters.Painter;
+import com.shatteredpixel.shatteredpixeldungeon.levels.regions.Region;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.Room;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.secret.SecretRoom;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.MagicalFireRoom;
@@ -511,7 +511,7 @@ public abstract class RegularLevel extends Level {
 
 		Random.pushGenerator( Random.Long() );
 			DriedRose rose = Dungeon.hero.belongings.getItem( DriedRose.class );
-			if (rose != null && rose.isIdentified() && !rose.cursed && Ghost.Quest.completed()){
+			if (rose != null && rose.isIdentified() && !rose.cursed && DriedRose.unlocked()){
 				//aim to drop 1 petal every 2 floors
 				int petalsNeeded = (int) Math.ceil((float)((Dungeon.depth / 2) - rose.droppedPetals) / 3);
 
@@ -599,7 +599,10 @@ public abstract class RegularLevel extends Level {
 				Document regionDoc;
 				switch( region ){
 					default: regionDoc = null; break;
-					case 1: regionDoc = Document.SEWERS_GUARD; break;
+					case 1:
+						Document own = Region.at(Dungeon.depth).loreDoc();
+						regionDoc = own != null ? own : Document.SEWERS_GUARD;
+						break;
 					case 2: regionDoc = Document.PRISON_WARDEN; break;
 					case 3: regionDoc = Document.CAVES_EXPLORER; break;
 					case 4: regionDoc = Document.CITY_WARLOCK; break;
@@ -714,6 +717,7 @@ public abstract class RegularLevel extends Level {
 	private static HashMap<Document, Dungeon.LimitedDrops> limitedDocs = new HashMap<>();
 	static {
 		limitedDocs.put(Document.SEWERS_GUARD, Dungeon.LimitedDrops.LORE_SEWERS);
+		limitedDocs.put(Document.HUNTER_NOTES, Dungeon.LimitedDrops.LORE_JUNGLE);
 		limitedDocs.put(Document.PRISON_WARDEN, Dungeon.LimitedDrops.LORE_PRISON);
 		limitedDocs.put(Document.CAVES_EXPLORER, Dungeon.LimitedDrops.LORE_CAVES);
 		limitedDocs.put(Document.CITY_WARLOCK, Dungeon.LimitedDrops.LORE_CITY);

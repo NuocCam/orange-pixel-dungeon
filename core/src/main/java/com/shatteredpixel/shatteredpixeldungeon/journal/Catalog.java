@@ -89,6 +89,9 @@ import com.shatteredpixel.shatteredpixeldungeon.items.potions.exotic.ExoticPotio
 import com.shatteredpixel.shatteredpixeldungeon.items.quest.CeremonialCandle;
 import com.shatteredpixel.shatteredpixeldungeon.items.quest.CorpseDust;
 import com.shatteredpixel.shatteredpixeldungeon.items.quest.GeckoTail;
+import com.shatteredpixel.shatteredpixeldungeon.items.quest.WolfPelt;
+import com.shatteredpixel.shatteredpixeldungeon.items.quest.DireWolfPelt;
+import com.shatteredpixel.shatteredpixeldungeon.items.quest.BearPelt;
 import com.shatteredpixel.shatteredpixeldungeon.items.quest.DarkGold;
 import com.shatteredpixel.shatteredpixeldungeon.items.quest.DwarfToken;
 import com.shatteredpixel.shatteredpixeldungeon.items.quest.Embers;
@@ -264,7 +267,7 @@ public enum Catalog {
 				GooBlob.class, TengusMask.class, MetalShard.class, KingsCrown.class,
 				LiquidMetal.class, ArcaneResin.class,
 				SealShard.class, BrokenStaff.class, CloakScrap.class, BowFragment.class, BrokenHilt.class, TornPage.class,
-				GeckoTail.class);
+				GeckoTail.class, WolfPelt.class, DireWolfPelt.class, BearPelt.class);
 
 	}
 

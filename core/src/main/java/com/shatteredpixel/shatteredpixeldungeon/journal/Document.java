@@ -42,6 +42,7 @@ public enum Document {
 
 	INTROS(Icons.STAIRS, true),
 	SEWERS_GUARD(ItemSpriteSheet.SEWER_PAGE, true),
+	HUNTER_NOTES(ItemSpriteSheet.SEWER_PAGE, true),
 	PRISON_WARDEN(ItemSpriteSheet.PRISON_PAGE, true),
 	CAVES_EXPLORER(ItemSpriteSheet.CAVES_PAGE, true),
 	CITY_WARLOCK(ItemSpriteSheet.CITY_PAGE, true),
@@ -316,6 +317,13 @@ public enum Document {
 		SEWERS_GUARD.pagesStates.put("guild",                   debug ? READ : NOT_FOUND);
 		SEWERS_GUARD.pagesStates.put("lost",                    debug ? READ : NOT_FOUND);
 		SEWERS_GUARD.pagesStates.put("not_worth",               debug ? READ : NOT_FOUND);
+
+		HUNTER_NOTES.pagesStates.put("tracks",                   debug ? READ : NOT_FOUND);
+		HUNTER_NOTES.pagesStates.put("tall_grass",               debug ? READ : NOT_FOUND);
+		HUNTER_NOTES.pagesStates.put("boars",                    debug ? READ : NOT_FOUND);
+		HUNTER_NOTES.pagesStates.put("berries",                  debug ? READ : NOT_FOUND);
+		HUNTER_NOTES.pagesStates.put("rare_ones",                debug ? READ : NOT_FOUND);
+		HUNTER_NOTES.pagesStates.put("going_below",              debug ? READ : NOT_FOUND);
 
 		PRISON_WARDEN.pagesStates.put("journal",                debug ? READ : NOT_FOUND);
 		PRISON_WARDEN.pagesStates.put("recruits",               debug ? READ : NOT_FOUND);

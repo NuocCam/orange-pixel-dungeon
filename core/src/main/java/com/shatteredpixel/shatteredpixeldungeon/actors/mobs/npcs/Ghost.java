@@ -318,49 +318,69 @@ public class Ghost extends NPC {
 				processed = false;
 				depth = Dungeon.depth;
 
-				//50%:tier2, 30%:tier3, 15%:tier4, 5%:tier5
-				switch (Random.chances(new float[]{0, 0, 10, 6, 3, 1})){
-					default:
-					case 2: armor = new LeatherArmor(); break;
-					case 3: armor = new MailArmor();    break;
-					case 4: armor = new ScaleArmor();   break;
-					case 5: armor = new PlateArmor();   break;
-				}
-				//50%:tier2, 30%:tier3, 15%:tier4, 5%:tier5
-				int wepTier = Random.chances(new float[]{0, 0, 10, 6, 3, 1});
-				weapon = (Weapon) Generator.random(Generator.wepTiers[wepTier - 1]);
-
-				//clear weapon's starting properties
-				weapon.level(0);
-				weapon.enchant(null);
-				weapon.cursed = false;
-
-				float itemLevelRoll = Random.Float();
-				int itemLevel;
-				if (itemLevelRoll < 0.8f){
-					itemLevel = 1;
-				} else if (itemLevelRoll < 0.95f){
-					itemLevel = 2;
-				} else {
-					itemLevel = 3;
-				}
-				weapon.upgrade(itemLevel);
-				armor.upgrade(itemLevel);
-
-				// 20% base chance to be enchanted, stored separately so status isn't revealed early
-				//we generate first so that the outcome doesn't affect the number of RNG rolls
-				enchant = Weapon.Enchantment.random();
-				glyph = Armor.Glyph.random();
-
-				float enchantRoll = Random.Float();
-				if (enchantRoll > 0.2f * ParchmentScrap.enchantChanceMultiplier()){
-					enchant = null;
-					glyph = null;
-				}
+				Reward reward = rollReward();
+				weapon = reward.weapon;
+				armor = reward.armor;
+				enchant = reward.enchant;
+				glyph = reward.glyph;
 
 			}
 		}
-		
+
+		//a weapon or armor as the ghost offers them, the hunter pays for bears the same way
+		public static class Reward {
+			public Weapon weapon;
+			public Armor armor;
+			public Weapon.Enchantment enchant;
+			public Armor.Glyph glyph;
+		}
+
+		public static Reward rollReward() {
+			Reward r = new Reward();
+
+			//50%:tier2, 30%:tier3, 15%:tier4, 5%:tier5
+			switch (Random.chances(new float[]{0, 0, 10, 6, 3, 1})){
+				default:
+				case 2: r.armor = new LeatherArmor(); break;
+				case 3: r.armor = new MailArmor();    break;
+				case 4: r.armor = new ScaleArmor();   break;
+				case 5: r.armor = new PlateArmor();   break;
+			}
+			//50%:tier2, 30%:tier3, 15%:tier4, 5%:tier5
+			int wepTier = Random.chances(new float[]{0, 0, 10, 6, 3, 1});
+			r.weapon = (Weapon) Generator.random(Generator.wepTiers[wepTier - 1]);
+
+			//clear weapon's starting properties
+			r.weapon.level(0);
+			r.weapon.enchant(null);
+			r.weapon.cursed = false;
+
+			float itemLevelRoll = Random.Float();
+			int itemLevel;
+			if (itemLevelRoll < 0.8f){
+				itemLevel = 1;
+			} else if (itemLevelRoll < 0.95f){
+				itemLevel = 2;
+			} else {
+				itemLevel = 3;
+			}
+			r.weapon.upgrade(itemLevel);
+			r.armor.upgrade(itemLevel);
+
+			// 20% base chance to be enchanted, stored separately so status isn't revealed early
+			//we generate first so that the outcome doesn't affect the number of RNG rolls
+			r.enchant = Weapon.Enchantment.random();
+			r.glyph = Armor.Glyph.random();
+
+			float enchantRoll = Random.Float();
+			if (enchantRoll > 0.2f * ParchmentScrap.enchantChanceMultiplier()){
+				r.enchant = null;
+				r.glyph = null;
+			}
+
+			return r;
+		}
+
 		public static void process() {
 			if (spawned && given && !processed && (depth == Dungeon.depth)) {
 				GLog.n( Messages.get(Ghost.class, "find_me") );

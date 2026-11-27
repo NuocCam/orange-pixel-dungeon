@@ -119,6 +119,16 @@ public class JungleRegion extends Region {
 	}
 
 	@Override
+	public Document loreDoc() {
+		return Document.HUNTER_NOTES;
+	}
+
+	@Override
+	public String ghostIntro() {
+		return "introduce_jungle";
+	}
+
+	@Override
 	public StandardRoom newEntrance() {
 		return new JungleEntranceRoom();
 	}

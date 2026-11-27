@@ -31,6 +31,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.DemonSpawner;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Statue;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Blacksmith;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Ghost;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Hunter;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Imp;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.ImpShopkeeper;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.RatKing;
@@ -48,6 +49,7 @@ import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.BlacksmithSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.GhostSprite;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.HunterSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ImpSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
@@ -134,6 +136,7 @@ public class Notes {
 		BEACON_LOCATION,
 		
 		GHOST,
+		HUNTER,
 		RAT_KING,
 		WANDMAKER,
 		TROLL,
@@ -198,6 +201,8 @@ public class Notes {
 
 				case GHOST:
 					return new Image(new GhostSprite());
+				case HUNTER:
+					return new Image(new HunterSprite());
 				case RAT_KING:
 					return new Image(new RatKingSprite());
 				case WANDMAKER:
@@ -257,6 +262,7 @@ public class Notes {
 				case BEACON_LOCATION:   return Messages.get(LloydsBeacon.class, "desc");
 
 				case GHOST:         return Messages.get(Ghost.class, "desc");
+				case HUNTER:        return Messages.get(Hunter.class, "desc");
 				case RAT_KING:      return new RatKing().description(); //variable description based on holiday/run state
 				case WANDMAKER:     return Messages.get(Wandmaker.class, "desc");
 				case TROLL:         return Messages.get(Blacksmith.class, "desc");

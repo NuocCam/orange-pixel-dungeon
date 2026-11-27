@@ -42,6 +42,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mimic;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Blacksmith;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Ghost;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Hunter;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Imp;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Wandmaker;
 import com.shatteredpixel.shatteredpixeldungeon.items.Amulet;
@@ -128,6 +129,9 @@ public class Dungeon {
 
 		//Other limited enemy drops
 		SLIME_WEP,
+		WOLF_PELT,
+		BEAR_PELT,
+		BEAR_KILLS, //not a drop, the second bear always has the pelt
 		SKELE_WEP,
 		THEIF_MISC,
 		GUARD_ARM,
@@ -143,6 +147,7 @@ public class Dungeon {
 
 		//lore documents
 		LORE_SEWERS,
+		LORE_JUNGLE,
 		LORE_PRISON,
 		LORE_CAVES,
 		LORE_CITY,
@@ -307,6 +312,7 @@ public class Dungeon {
 		chapters = new HashSet<>();
 		
 		Ghost.Quest.reset();
+		Hunter.Quest.reset();
 		Wandmaker.Quest.reset();
 		Blacksmith.Quest.reset();
 		Imp.Quest.reset();
@@ -703,6 +709,7 @@ public class Dungeon {
 			
 			Bundle quests = new Bundle();
 			Ghost		.Quest.storeInBundle( quests );
+			Hunter		.Quest.storeInBundle( quests );
 			Wandmaker	.Quest.storeInBundle( quests );
 			Blacksmith	.Quest.storeInBundle( quests );
 			Imp			.Quest.storeInBundle( quests );
@@ -811,11 +818,13 @@ public class Dungeon {
 			Bundle quests = bundle.getBundle( QUESTS );
 			if (!quests.isNull()) {
 				Ghost.Quest.restoreFromBundle( quests );
+				Hunter.Quest.restoreFromBundle( quests );
 				Wandmaker.Quest.restoreFromBundle( quests );
 				Blacksmith.Quest.restoreFromBundle( quests );
 				Imp.Quest.restoreFromBundle( quests );
 			} else {
 				Ghost.Quest.reset();
+				Hunter.Quest.reset();
 				Wandmaker.Quest.reset();
 				Blacksmith.Quest.reset();
 				Imp.Quest.reset();

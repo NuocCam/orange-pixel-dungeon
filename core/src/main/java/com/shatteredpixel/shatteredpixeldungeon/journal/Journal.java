@@ -49,6 +49,7 @@ public class Journal {
 		Catalog.restore( bundle );
 		Bestiary.restore( bundle );
 		Document.restore( bundle );
+		JungleRecords.restore( bundle );
 		
 		loaded = true;
 	}
@@ -58,6 +59,7 @@ public class Journal {
 		Catalog.unload();
 		Bestiary.unload();
 		Document.unload();
+		JungleRecords.restore( new Bundle() );
 		loaded = false;
 		saveNeeded = false;
 	}
@@ -79,6 +81,7 @@ public class Journal {
 		Catalog.store(bundle);
 		Bestiary.store(bundle);
 		Document.store(bundle);
+		JungleRecords.store(bundle);
 		
 		try {
 			FileUtils.bundleToFile( JOURNAL_FILE, bundle );

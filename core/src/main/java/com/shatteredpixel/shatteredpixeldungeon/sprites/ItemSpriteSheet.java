@@ -784,6 +784,9 @@ public class ItemSpriteSheet {
 	public static final int ESCAPE  = QUEST+9;
 	public static final int STATUE  = QUEST+10;
 	public static final int GECKO_TAIL = QUEST+11;
+	public static final int WOLF_PELT  = QUEST+12;
+	public static final int DIRE_WOLF_PELT = QUEST+13;
+	public static final int BEAR_PELT  = QUEST+14;
 	static{
 		assignItemRect(DUST,    12, 11);
 		assignItemRect(CANDLE,  12, 12);
@@ -796,6 +799,9 @@ public class ItemSpriteSheet {
 		assignItemRect(ESCAPE,   8, 16);
 		assignItemRect(STATUE,  10, 16);
 		assignItemRect(GECKO_TAIL, 16, 13);
+		assignItemRect(WOLF_PELT, 15, 16);
+		assignItemRect(DIRE_WOLF_PELT, 15, 16);
+		assignItemRect(BEAR_PELT, 16, 16);
 	}
 
 	private static final int BAGS       =                                   xy(1, 31);  //16 slots

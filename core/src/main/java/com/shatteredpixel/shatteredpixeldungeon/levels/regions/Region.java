@@ -25,6 +25,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.GamesInProgress;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.MobSpawner;
+import com.shatteredpixel.shatteredpixeldungeon.journal.Document;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.Room;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.secret.SecretRoom;
@@ -84,6 +85,16 @@ public class Region {
 
 	//journal page shown on entering the first region
 	public String introPage(){
+		return null;
+	}
+
+	//the journal pages left lying around the first region
+	public Document loreDoc(){
+		return null;
+	}
+
+	//message key for the first thing the rose's ghost ever says
+	public String ghostIntro(){
 		return null;
 	}
 

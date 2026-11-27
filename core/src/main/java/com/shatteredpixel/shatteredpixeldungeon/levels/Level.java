@@ -1097,6 +1097,16 @@ public abstract class Level implements Bundlable {
 	}
 
 	//true when walking into tall grass takes twice as long
+	//start of the keys for what the rose's ghost says on a floor of the first region,
+	// both when summoned and when a boss shows up
+	public String ghostRemarks() {
+		return "dialogue_sewers_";
+	}
+
+	public String ghostBossWarnings() {
+		return "seen_goo_";
+	}
+
 	public boolean tallGrassSlows(){
 		return false;
 	}

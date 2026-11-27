@@ -23,6 +23,7 @@ package com.shatteredpixel.shatteredpixeldungeon.actors.mobs.jungle;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
+import com.shatteredpixel.shatteredpixeldungeon.items.quest.BearPelt;
 import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.BearSprite;
@@ -61,6 +62,19 @@ public class Bear extends JungleAnimal {
 	@Override
 	public int berryTurns() {
 		return 6;
+	}
+
+	//one pelt a run: half the time from the first bear, otherwise the second one has it for sure
+	@Override
+	public void rollToDropLoot() {
+		if (!prey && !Dungeon.LimitedDrops.BEAR_PELT.dropped()){
+			Dungeon.LimitedDrops.BEAR_KILLS.count++;
+			if (Dungeon.LimitedDrops.BEAR_KILLS.count >= 2 || Random.Int(2) == 0){
+				Dungeon.LimitedDrops.BEAR_PELT.drop();
+				Dungeon.level.drop(new BearPelt(), pos).sprite.drop();
+			}
+		}
+		super.rollToDropLoot();
 	}
 
 	//weapons are shared with the slimes, each one makes the next 1/4 as likely

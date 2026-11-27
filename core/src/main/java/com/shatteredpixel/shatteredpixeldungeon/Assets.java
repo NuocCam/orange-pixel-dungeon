@@ -331,6 +331,7 @@ public class Assets {
 		public static final String TROLL    = "sprites/blacksmith.png";
 		public static final String IMP      = "sprites/imp.png";
 		public static final String RATKING  = "sprites/ratking.png";
+		public static final String HUNTER   = "sprites/hunter.png";
 		public static final String BEE      = "sprites/bee.png";
 		public static final String MIMIC    = "sprites/mimic.png";
 		public static final String ROT_LASH = "sprites/rot_lasher.png";
