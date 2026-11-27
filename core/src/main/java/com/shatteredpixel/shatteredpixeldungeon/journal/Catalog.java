@@ -26,6 +26,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.Amulet;
 import com.shatteredpixel.shatteredpixeldungeon.items.Ankh;
 import com.shatteredpixel.shatteredpixeldungeon.items.ArcaneResin;
 import com.shatteredpixel.shatteredpixeldungeon.items.BrokenSeal;
+import com.shatteredpixel.shatteredpixeldungeon.items.CultistMask;
 import com.shatteredpixel.shatteredpixeldungeon.items.Dewdrop;
 import com.shatteredpixel.shatteredpixeldungeon.items.EnergyCrystal;
 import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
@@ -275,7 +276,7 @@ public enum Catalog {
 				IronKey.class, GoldenKey.class, CrystalKey.class, WornKey.class,
 				TrinketCatalyst.class, Stylus.class, Torch.class, Honeypot.class, Ankh.class,
 				CorpseDust.class, Embers.class, CeremonialCandle.class, DarkGold.class, EscapeCrystal.class, VaultBeacon.class, DwarfToken.class, ImpStatue.class,
-				GooBlob.class, BeastMarrow.class, TengusMask.class, MetalShard.class, KingsCrown.class,
+				GooBlob.class, BeastMarrow.class, TengusMask.class, CultistMask.class, MetalShard.class, KingsCrown.class,
 				LiquidMetal.class, ArcaneResin.class,
 				SealShard.class, BrokenStaff.class, CloakScrap.class, BowFragment.class, BrokenHilt.class, TornPage.class,
 				GeckoTail.class, WolfPelt.class, DireWolfPelt.class, BearPelt.class);

@@ -26,6 +26,9 @@ import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Cripple;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Dread;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Terror;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Vesk;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Chains;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Effects;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Pushing;
@@ -65,6 +68,22 @@ public class Guard extends Mob {
 	@Override
 	public int damageRoll() {
 		return Random.NormalIntRange(4, 12);
+	}
+
+	//an escaped prisoner comes before anyone else, even the hero
+	@Override
+	protected Char chooseEnemy() {
+		if (Vesk.isKeeper(this) && state != SLEEPING && state != FLEEING
+				&& buff(Terror.class) == null && buff(Dread.class) == null){
+			for (Mob m : Dungeon.level.mobs){
+				if (m instanceof Vesk && fieldOfView[m.pos]){
+					((Vesk) m).spottedBy(this);
+					state = HUNTING;
+					return m;
+				}
+			}
+		}
+		return super.chooseEnemy();
 	}
 
 	private boolean chain(int target){

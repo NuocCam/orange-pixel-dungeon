@@ -26,6 +26,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.Statistics;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Adrenaline;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Amok;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.AllyBuff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Dread;
@@ -171,6 +172,35 @@ public class Ijiraq extends Mob {
 
 		properties.clear();
 		properties.addAll(form.properties());
+	}
+
+	//the one that was living inside vesk. It comes out wearing the guard's strength, and
+	//it doesnt count against how many the floor may have
+	private boolean fromVesk = false;
+
+	public static Ijiraq ambush( int pos ){
+		Ijiraq beast = new Ijiraq();
+		beast.disguiseAs(Guard.class);
+		beast.revealed = true;
+		beast.fromVesk = true;
+		beast.pos = pos;
+		beast.state = beast.HUNTING;
+		Buff.affect(beast, Adrenaline.class, ADRENALINE_TURNS);
+		//mad from losing its host, it goes for whatever is closest
+		Buff.affect(beast, Amok.class, 99f);
+		GameScene.add(beast);
+
+		if (beast.sprite != null){
+			CellEmitter.get(pos).burst(ShadowParticle.UP, 8);
+			PixelScene.shake(3, 0.7f);
+			Sample.INSTANCE.play(Assets.Sounds.CHALLENGE, 1f, 0.7f);
+			Dungeon.hero.interrupt();
+		}
+		return beast;
+	}
+
+	public boolean fromVesk(){
+		return fromVesk;
 	}
 
 	public Class<? extends Mob> disguise(){
@@ -372,6 +402,7 @@ public class Ijiraq extends Mob {
 	private static final String FORM     = "form";
 	private static final String REVEALED = "revealed";
 	private static final String ANNOUNCED = "announced";
+	private static final String FROM_VESK = "from_vesk";
 
 	@Override
 	public void storeInBundle( Bundle bundle ) {
@@ -379,6 +410,7 @@ public class Ijiraq extends Mob {
 		if (form != null) bundle.put(FORM, form.getClass());
 		bundle.put(REVEALED, revealed);
 		bundle.put(ANNOUNCED, announced);
+		bundle.put(FROM_VESK, fromVesk);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -390,6 +422,7 @@ public class Ijiraq extends Mob {
 		}
 		revealed = bundle.getBoolean(REVEALED);
 		announced = bundle.getBoolean(ANNOUNCED);
+		fromVesk = bundle.getBoolean(FROM_VESK);
 		super.restoreFromBundle(bundle);
 	}
 

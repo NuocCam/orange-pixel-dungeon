@@ -467,6 +467,10 @@ public class Blacksmith extends NPC {
 			if (favor >= 2500){
 				freePickaxe = true;
 			}
+
+			//favor vesk traded for a cloak. Added last, so it isnt score and cant earn the pickaxe
+			favor += Vesk.Quest.heldFavor;
+			Vesk.Quest.heldFavor = 0;
 		}
 
 		public static boolean rewardsAvailable(){

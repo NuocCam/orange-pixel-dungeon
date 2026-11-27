@@ -583,7 +583,7 @@ public abstract class Level implements Bundlable {
 	public boolean ijiraqAllowed(){
 		if (ijiraqWaiting || ijiraqSpawned >= Ijiraq.MAX_PER_FLOOR) return false;
 		for (Mob m : mobs){
-			if (m instanceof Ijiraq && m.isAlive()) return false;
+			if (m instanceof Ijiraq && !((Ijiraq) m).fromVesk() && m.isAlive()) return false;
 		}
 		return true;
 	}
