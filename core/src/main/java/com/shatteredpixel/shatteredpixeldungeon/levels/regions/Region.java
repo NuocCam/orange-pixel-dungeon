@@ -116,9 +116,20 @@ public class Region {
 		return rolled;
 	}
 
-	//takes rooms which don't belong here off a floor's lists. Only ever give these a copy,
-	// the run's own lists are shared with the later regions
-	public void removeSpecials( ArrayList<Class<? extends Room>> specials ){
+	//takes rooms which don't belong here off a floor's lists, or swaps in the ones which do.
+	// Only ever give these a copy, the run's own lists are shared with the later regions
+	public void adjustSpecials( ArrayList<Class<? extends Room>> specials ){
+	}
+
+	//the room in the run's list which this one was swapped in for, normally just itself
+	public Class<? extends Room> originalSpecial( Class<? extends Room> type ){
+		return type;
+	}
+
+	//whether the lab room goes on this floor. Only asked while the region still needs its one,
+	// rolled is what the dice came up with
+	public boolean labHere( boolean rolled ){
+		return rolled;
 	}
 
 	public void removeSecrets( ArrayList<Class<? extends SecretRoom>> secrets ){

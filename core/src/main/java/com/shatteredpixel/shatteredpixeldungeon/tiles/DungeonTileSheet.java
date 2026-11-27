@@ -200,6 +200,7 @@ public class DungeonTileSheet {
 			Terrain.TRAP, Terrain.INACTIVE_TRAP, Terrain.EMPTY_DECO,
 			Terrain.CUSTOM_DECO, Terrain.WELL, Terrain.STATUE, Terrain.REGION_DECO, Terrain.ALCHEMY,
 			Terrain.CUSTOM_DECO_EMPTY, Terrain.MINE_CRYSTAL, Terrain.MINE_BOULDER,
+			Terrain.THORNS, Terrain.BLOSSOM, Terrain.IDOL,
 			Terrain.DOOR, Terrain.OPEN_DOOR, Terrain.LOCKED_DOOR, Terrain.HERO_LKD_DR, Terrain.CRYSTAL_DOOR
 	));
 
@@ -250,6 +251,7 @@ public class DungeonTileSheet {
 		//the bushes are drawn from further down the sheet, but they're ground like any other
 		return tile == Terrain.WATER || tile == Terrain.DEEP_WATER
 				|| tile == Terrain.BERRY_BUSH || tile == Terrain.BERRY_BUSH_PICKED
+				|| tile == Terrain.THORNS || tile == Terrain.BLOSSOM
 				|| directVisuals.get(tile, CHASM) < CHASM;
 	}
 
@@ -273,6 +275,11 @@ public class DungeonTileSheet {
 	public static final int FLAT_DOOR_CRYSTAL   = FLAT_WALLS+11;
 	public static final int UNLOCKED_EXIT       = FLAT_WALLS+12;
 	public static final int LOCKED_EXIT         = FLAT_WALLS+13;
+	//jungle only, and floor despite where they sit on the sheet
+	public static final int FLAT_IDOL           = FLAT_WALLS+3;
+	public static final int IDOL_OVERHANG       = FLAT_WALLS+7;
+	public static final int BLOSSOM             = FLAT_WALLS+14;
+	public static final int THORNS              = FLAT_WALLS+15;
 
 	public static final int FLAT_OTHER          =                           xy(1, 5);   //16 slots
 	//free slots which no other terrain or alt visual draws from. Only the jungle sheet fills them
@@ -297,6 +304,8 @@ public class DungeonTileSheet {
 	public static final int FLAT_MINE_BOULDER         = FLAT_OTHER+12;
 	public static final int FLAT_MINE_BOULDER_ALT     = FLAT_OTHER+13;
 	public static final int FLAT_MINE_BOULDER_ALT_2   = FLAT_OTHER+14;
+	//the standing idol, its flat view and overhang are up with the walls
+	public static final int RAISED_IDOL               = FLAT_OTHER+15;
 
 	/**********************************************************************
 	 * Raised Tiles, Lower Layer
@@ -504,6 +513,8 @@ public class DungeonTileSheet {
 		directVisuals.put(Terrain.PEDESTAL,         PEDESTAL);
 		directVisuals.put(Terrain.BERRY_BUSH,       BERRY_BUSH);
 		directVisuals.put(Terrain.BERRY_BUSH_PICKED,BERRY_BUSH_PICKED);
+		directVisuals.put(Terrain.THORNS,           THORNS);
+		directVisuals.put(Terrain.BLOSSOM,          BLOSSOM);
 		directVisuals.put(Terrain.EMPTY_SP,         FLOOR_SP);
 		directVisuals.put(Terrain.ENTRANCE_SP,      ENTRANCE_SP);
 
@@ -542,6 +553,7 @@ public class DungeonTileSheet {
 		directFlatVisuals.put(Terrain.STATUE_SP,        FLAT_STATUE_SP);
 		directFlatVisuals.put(Terrain.REGION_DECO,      FLAT_REGION_DECO);
 		directFlatVisuals.put(Terrain.REGION_DECO_ALT,  FLAT_REGION_DECO_ALT);
+		directFlatVisuals.put(Terrain.IDOL,             FLAT_IDOL);
 
 		directFlatVisuals.put(Terrain.MINE_CRYSTAL,     FLAT_MINE_CRYSTAL);
 		directFlatVisuals.put(Terrain.MINE_BOULDER,     FLAT_MINE_BOULDER);

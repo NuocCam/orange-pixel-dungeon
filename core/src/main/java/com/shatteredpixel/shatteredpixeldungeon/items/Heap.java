@@ -45,6 +45,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.wands.Wand;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.darts.Dart;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.darts.TippedDart;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Document;
+import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.IdolRoom;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
@@ -78,6 +79,7 @@ public class Heap implements Bundlable {
 	public boolean haunted = false;
 	public boolean autoExplored = false; //used to determine if this heap should count for exploration bonus
 	public boolean hidden = false; //sets alpha to 15%
+	public boolean idolAlarm = false; //the jungle idol's prize chest, until it's been opened
 	
 	public LinkedList<Item> items = new LinkedList<>();
 	
@@ -113,6 +115,14 @@ public class Heap implements Bundlable {
 		}
 		sprite.link();
 		sprite.drop();
+		soundAlarm();
+	}
+
+	private void soundAlarm(){
+		if (idolAlarm){
+			idolAlarm = false;
+			IdolRoom.prizeTaken( Dungeon.level, pos );
+		}
 	}
 	
 	public Heap setHauntedIfCursed(){
@@ -272,6 +282,7 @@ public class Heap implements Bundlable {
 			type = Type.HEAP;
 			sprite.link();
 			sprite.drop();
+			soundAlarm();
 			return;
 		}
 
@@ -425,6 +436,7 @@ public class Heap implements Bundlable {
 	private static final String HAUNTED	= "haunted";
 	private static final String AUTO_EXPLORED	= "auto_explored";
 	private static final String HIDDEN	= "hidden";
+	private static final String IDOL_ALARM	= "idol_alarm";
 	
 	@SuppressWarnings("unchecked")
 	@Override
@@ -451,6 +463,7 @@ public class Heap implements Bundlable {
 		haunted = bundle.getBoolean( HAUNTED );
 		autoExplored = bundle.getBoolean( AUTO_EXPLORED );
 		hidden = bundle.getBoolean( HIDDEN );
+		idolAlarm = bundle.getBoolean( IDOL_ALARM );
 	}
 
 	@Override
@@ -462,6 +475,7 @@ public class Heap implements Bundlable {
 		bundle.put( HAUNTED, haunted );
 		bundle.put( AUTO_EXPLORED, autoExplored );
 		bundle.put( HIDDEN, hidden );
+		bundle.put( IDOL_ALARM, idolAlarm );
 	}
 	
 }

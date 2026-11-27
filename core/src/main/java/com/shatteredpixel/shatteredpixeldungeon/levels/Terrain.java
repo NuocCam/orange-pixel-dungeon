@@ -78,6 +78,12 @@ public class Terrain {
 
 	//a fallen log laid across deep water. Burns away, and leaves the water behind
 	public static final int LOG             = 43;
+
+	//vines which cut and root whoever walks in, and a rafflesia which breathes toxic gas
+	public static final int THORNS          = 44;
+	public static final int BLOSSOM         = 45;
+	//a stone idol standing in the way of a vault, until it's been fed
+	public static final int IDOL            = 46;
 	
 	public static final int PASSABLE		= 0x01;
 	public static final int LOS_BLOCKING	= 0x02;
@@ -99,6 +105,9 @@ public class Terrain {
 		flags[BERRY_BUSH]	= PASSABLE | FLAMABLE;
 		flags[BERRY_BUSH_PICKED] = flags[BERRY_BUSH];
 		flags[LOG]			= PASSABLE | FLAMABLE;
+		flags[THORNS]		= AVOID;
+		flags[BLOSSOM]		= PASSABLE;
+		flags[IDOL]			= SOLID;
 		flags[WALL]			= LOS_BLOCKING | SOLID;
 		flags[DOOR]			= PASSABLE | LOS_BLOCKING | FLAMABLE | SOLID;
 		flags[OPEN_DOOR]	= PASSABLE | FLAMABLE;

@@ -91,6 +91,8 @@ public class DungeonTerrainTilemap extends DungeonTilemap {
 						);
 			} else if (tile == Terrain.STATUE) {
 				return DungeonTileSheet.RAISED_STATUE;
+			} else if (tile == Terrain.IDOL) {
+				return DungeonTileSheet.RAISED_IDOL;
 			} else if (tile == Terrain.STATUE_SP) {
 				return DungeonTileSheet.RAISED_STATUE_SP;
 			} else if (tile == Terrain.REGION_DECO) {

@@ -70,16 +70,28 @@ public class TrapsRoom extends SpecialRoom {
 				break;
 		}
 
-		if (trapClass == null){
-			Painter.fill(level, this, 1, Terrain.CHASM);
-		} else {
-			Painter.fill(level, this, 1, Terrain.TRAP);
+		int lastRow = trapClass == null ? Terrain.CHASM : Terrain.EMPTY;
+		int pos = paintLayout( level, trapClass == null ? Terrain.CHASM : Terrain.TRAP, lastRow );
+
+		for(Point p : getPoints()) {
+			int cell = level.pointToCell(p);
+			if (level.map[cell] == Terrain.TRAP){
+				level.setTrap(Reflection.newInstance(trapClass).reveal(), cell);
+			}
 		}
-		
+
+		placePrize( level, pos, lastRow );
+
+		level.addItemToSpawn( new PotionOfLevitation() );
+	}
+
+	//fills the inside with whatever's dangerous, all but the strip furthest from the door,
+	// and returns the cell in that strip where the prize goes
+	protected int paintLayout( Level level, int hazard, int lastRow ) {
+		Painter.fill(level, this, 1, hazard);
+
 		Door door = entrance();
 		door.set( Door.Type.REGULAR );
-		
-		int lastRow = level.map[left + 1 + (top + 1) * level.width()] == Terrain.CHASM ? Terrain.CHASM : Terrain.EMPTY;
 
 		int x = -1;
 		int y = -1;
@@ -101,28 +113,26 @@ public class TrapsRoom extends SpecialRoom {
 			Painter.fill( level, left + 1, y, width() - 2, 1 , lastRow );
 		}
 
-		for(Point p : getPoints()) {
-			int cell = level.pointToCell(p);
-			if (level.map[cell] == Terrain.TRAP){
-				level.setTrap(Reflection.newInstance(trapClass).reveal(), cell);
-			}
-		}
-		
-		int pos = x + y * level.width();
+		return x + y * level.width();
+	}
+
+	protected void placePrize( Level level, int pos, int lastRow ) {
 		if (Random.Int( 3 ) == 0) {
 			if (lastRow == Terrain.CHASM) {
 				Painter.set( level, pos, Terrain.EMPTY );
 			}
-			level.drop( prize( level ), pos ).type = Heap.Type.CHEST;
+			level.drop( reward( level ), pos ).type = Heap.Type.CHEST;
 		} else {
 			Painter.set( level, pos, Terrain.PEDESTAL );
-			level.drop( prize( level ), pos ).type = Heap.Type.CHEST;
+			level.drop( reward( level ), pos ).type = Heap.Type.CHEST;
 		}
-		
-		level.addItemToSpawn( new PotionOfLevitation() );
 	}
-	
-	private static Item prize( Level level ) {
+
+	protected Item reward( Level level ) {
+		return prize( level );
+	}
+
+	protected static Item prize( Level level ) {
 
 		Item prize;
 

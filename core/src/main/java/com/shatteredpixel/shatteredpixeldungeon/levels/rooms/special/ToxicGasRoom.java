@@ -68,9 +68,7 @@ public class ToxicGasRoom extends SpecialRoom {
 			do {
 				cell = level.pointToCell(random(2));
 			} while (level.map[cell] != Terrain.EMPTY);
-			level.setTrap(new ToxicVent().reveal(), cell);
-			Blob.seed(cell, 12, ToxicGasSeed.class, level);
-			Painter.set(level, cell, Terrain.INACTIVE_TRAP);
+			addVent(level, cell);
 		}
 
 		//skeleton with 2x gold, somewhat far from entry
@@ -110,6 +108,12 @@ public class ToxicGasRoom extends SpecialRoom {
 
 	}
 
+	protected void addVent(Level level, int cell){
+		level.setTrap(new ToxicVent().reveal(), cell);
+		Blob.seed(cell, 12, ToxicGasSeed.class, level);
+		Painter.set(level, cell, Terrain.INACTIVE_TRAP);
+	}
+
 	@Override
 	public boolean canPlaceCharacter(Point p, Level l) {
 		if (!super.canPlaceCharacter(p, l)) {
@@ -126,6 +130,11 @@ public class ToxicGasRoom extends SpecialRoom {
 
 	public static class ToxicGasSeed extends Blob {
 
+		//the gas only keeps coming from cells of this terrain
+		protected int ventTerrain(){
+			return Terrain.INACTIVE_TRAP;
+		}
+
 		@Override
 		protected void evolve() {
 			int cell;
@@ -134,7 +143,7 @@ public class ToxicGasRoom extends SpecialRoom {
 				for (int j = area.left-1; j <= area.right; j++) {
 					cell = j + i* Dungeon.level.width();
 					if (Dungeon.level.insideMap(cell)) {
-						if (Dungeon.level.map[cell] != Terrain.INACTIVE_TRAP){
+						if (Dungeon.level.map[cell] != ventTerrain()){
 							off[cell] = 0;
 							continue;
 						}

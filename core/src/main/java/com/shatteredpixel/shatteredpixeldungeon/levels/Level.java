@@ -99,6 +99,7 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.features.Door;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.HighGrass;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.LevelTransition;
 import com.shatteredpixel.shatteredpixeldungeon.levels.painters.Painter;
+import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.ThornHollowRoom;
 import com.shatteredpixel.shatteredpixeldungeon.levels.regions.Region;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.Trap;
 import com.shatteredpixel.shatteredpixeldungeon.mechanics.ShadowCaster;
@@ -1096,7 +1097,6 @@ public abstract class Level implements Bundlable {
 		return (Dungeon.depth-1)/5;
 	}
 
-	//true when walking into tall grass takes twice as long
 	//start of the keys for what the rose's ghost says on a floor of the first region,
 	// both when summoned and when a boss shows up
 	public String ghostRemarks() {
@@ -1107,6 +1107,7 @@ public abstract class Level implements Bundlable {
 		return "seen_goo_";
 	}
 
+	//true when walking into tall grass takes twice as long
 	public boolean tallGrassSlows(){
 		return false;
 	}
@@ -1340,6 +1341,10 @@ public abstract class Level implements Bundlable {
 				return;
 			}
 			
+			if (map[ch.pos] == Terrain.THORNS){
+				ThornHollowRoom.prick(ch);
+			}
+
 			if (map[ch.pos] == Terrain.BERRY_BUSH && ch == Dungeon.hero){
 				pickBerry(ch.pos);
 			}
@@ -1756,6 +1761,12 @@ public abstract class Level implements Bundlable {
 				return Messages.get(Level.class, "berry_bush_name");
 			case Terrain.BERRY_BUSH_PICKED:
 				return Messages.get(Level.class, "berry_bush_picked_name");
+			case Terrain.THORNS:
+				return Messages.get(Level.class, "thorns_name");
+			case Terrain.BLOSSOM:
+				return Messages.get(Level.class, "blossom_name");
+			case Terrain.IDOL:
+				return Messages.get(Level.class, "idol_name");
 			case Terrain.WALL:
 			case Terrain.WALL_DECO:
 			case Terrain.SECRET_DOOR:
@@ -1821,6 +1832,12 @@ public abstract class Level implements Bundlable {
 				return Messages.get(Level.class, "berry_bush_desc");
 			case Terrain.BERRY_BUSH_PICKED:
 				return Messages.get(Level.class, "berry_bush_picked_desc");
+			case Terrain.THORNS:
+				return Messages.get(Level.class, "thorns_desc");
+			case Terrain.BLOSSOM:
+				return Messages.get(Level.class, "blossom_desc");
+			case Terrain.IDOL:
+				return Messages.get(Level.class, "idol_desc");
 			case Terrain.ENTRANCE:
 			case Terrain.ENTRANCE_SP:
 				return Messages.get(Level.class, "entrance_desc");

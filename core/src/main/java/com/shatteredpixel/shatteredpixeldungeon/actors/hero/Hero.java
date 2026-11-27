@@ -170,6 +170,7 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.VaultLevel;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.Chasm;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.DeepWater;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.LevelTransition;
+import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.IdolRoom;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.WeakFloorRoom;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.Trap;
 import com.shatteredpixel.shatteredpixeldungeon.mechanics.Ballistica;
@@ -1330,7 +1331,14 @@ public class Hero extends Char {
 			
 			boolean hasKey = false;
 			int door = Dungeon.level.map[doorCell];
-			
+
+			//no key opens this one, it wants feeding
+			if (door == Terrain.IDOL){
+				ready();
+				IdolRoom.interact( this, doorCell );
+				return false;
+			}
+
 			if (Dungeon.branch != 0) {
 
 				//keys currently do not apply to sub-floors
@@ -2124,7 +2132,8 @@ public class Hero extends Char {
 		} else if (Dungeon.level.map[cell] == Terrain.LOCKED_DOOR
 				|| Dungeon.level.map[cell] == Terrain.HERO_LKD_DR
 				|| Dungeon.level.map[cell] == Terrain.CRYSTAL_DOOR
-				|| Dungeon.level.map[cell] == Terrain.LOCKED_EXIT) {
+				|| Dungeon.level.map[cell] == Terrain.LOCKED_EXIT
+				|| Dungeon.level.map[cell] == Terrain.IDOL) {
 			
 			curAction = new HeroAction.Unlock( cell );
 			

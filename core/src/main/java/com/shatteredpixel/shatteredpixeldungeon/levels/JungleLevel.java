@@ -151,6 +151,9 @@ public class JungleLevel extends RegularLevel {
 	public void addItemToSpawn( Item item ) {
 		if (isRation(item)){
 			bushesToPlace += berriesFor(item);
+		} else if (item instanceof JungleBerry){
+			//a spare one asked for by a room, it grows on a bush too
+			bushesToPlace += item.quantity();
 		} else {
 			super.addItemToSpawn(item);
 		}

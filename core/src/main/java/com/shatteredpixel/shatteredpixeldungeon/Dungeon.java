@@ -638,9 +638,8 @@ public class Dungeon {
 		int region = 1+depth/5;
 		if (region > LimitedDrops.LAB_ROOM.count){
 			int floorThisRegion = depth%5;
-			if (floorThisRegion >= 4 || (floorThisRegion == 3 && Random.Int(2) == 0)){
-				return true;
-			}
+			boolean rolled = floorThisRegion >= 4 || (floorThisRegion == 3 && Random.Int(2) == 0);
+			return Region.at(depth).labHere(rolled);
 		}
 		return false;
 	}

@@ -101,7 +101,8 @@ public abstract class SpecialRoom extends Room {
 
 	//only one special that generates a potion per floor
 	private static final ArrayList<Class<? extends SpecialRoom>> POTION_SPAWN_ROOMS = new ArrayList<>( Arrays.asList(
-			PoolRoom.class, SentryRoom.class, StorageRoom.class, ToxicGasRoom.class, MagicalFireRoom.class, TrapsRoom.class
+			PoolRoom.class, SentryRoom.class, StorageRoom.class, ToxicGasRoom.class, MagicalFireRoom.class, TrapsRoom.class,
+			BlossomRoom.class, ThornHollowRoom.class
 	) );
 
 	public static ArrayList<Class<? extends Room>> runSpecials = new ArrayList<>();
@@ -131,7 +132,7 @@ public abstract class SpecialRoom extends Room {
 	
 	public static void initForFloor(){
 		floorSpecials = (ArrayList<Class<?extends Room>>) runSpecials.clone();
-		Region.at(Dungeon.depth).removeSpecials(floorSpecials);
+		Region.at(Dungeon.depth).adjustSpecials(floorSpecials);
 		
 		//laboratory rooms spawn on floor 3 or 4 each chapter
 		if (Dungeon.labRoomNeeded()){
@@ -148,8 +149,9 @@ public abstract class SpecialRoom extends Room {
 		if (POTION_SPAWN_ROOMS.contains(type)){
 			floorSpecials.removeAll(POTION_SPAWN_ROOMS);
 		}
-		if (runSpecials.remove( type )) {
-			runSpecials.add( type );
+		Class<? extends Room> original = Region.at(Dungeon.depth).originalSpecial( type );
+		if (runSpecials.remove( original )) {
+			runSpecials.add( original );
 		}
 	}
 
@@ -168,7 +170,13 @@ public abstract class SpecialRoom extends Room {
 		
 			useType(LaboratoryRoom.class);
 			return new LaboratoryRoom();
-		
+
+		//the jungle's idol has to turn up, so it doesn't wait in line either
+		} else if (floorSpecials.contains(IdolRoom.class)) {
+
+			useType(IdolRoom.class);
+			return new IdolRoom();
+
 		} else {
 			
 			if (Dungeon.bossLevel(Dungeon.depth + 1)){

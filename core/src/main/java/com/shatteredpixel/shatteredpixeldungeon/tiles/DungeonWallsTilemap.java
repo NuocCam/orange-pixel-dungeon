@@ -100,6 +100,8 @@ public class DungeonWallsTilemap extends DungeonTilemap {
 			return DungeonTileSheet.DOOR_OVERHANG_CRYSTAL;
 		} else if (pos + mapWidth < size && map[pos+mapWidth] == Terrain.STATUE){
 			return DungeonTileSheet.STATUE_OVERHANG;
+		} else if (pos + mapWidth < size && map[pos+mapWidth] == Terrain.IDOL){
+			return DungeonTileSheet.IDOL_OVERHANG;
 		} else if (pos + mapWidth < size && map[pos+mapWidth] == Terrain.STATUE_SP){
 			return DungeonTileSheet.STATUE_SP_OVERHANG;
 		} else if (pos + mapWidth < size && map[pos+mapWidth] == Terrain.REGION_DECO){

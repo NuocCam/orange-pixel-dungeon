@@ -42,6 +42,9 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.secret.SecretChestC
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.secret.SecretHoardRoom;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.secret.SecretRoom;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.secret.SecretSummoningRoom;
+import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.BlossomRoom;
+import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.IdolRoom;
+import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.ThornHollowRoom;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.ToxicGasRoom;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.TrapsRoom;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.WeakFloorRoom;
@@ -58,6 +61,7 @@ import com.watabou.utils.Random;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 
 //takes the place of the sewers in about half of all runs
 public class JungleRegion extends Region {
@@ -165,10 +169,31 @@ public class JungleRegion extends Region {
 	}
 
 	@Override
-	public void removeSpecials( ArrayList<Class<? extends Room>> specials ) {
+	public void adjustSpecials( ArrayList<Class<? extends Room>> specials ) {
 		specials.remove(WeakFloorRoom.class);
-		specials.remove(ToxicGasRoom.class);
-		specials.remove(TrapsRoom.class);
+		//these two come as their jungle versions, in the same place in line
+		Collections.replaceAll(specials, ToxicGasRoom.class, BlossomRoom.class);
+		Collections.replaceAll(specials, TrapsRoom.class, ThornHollowRoom.class);
+		if (Dungeon.depth == IdolRoom.depthForRun(Dungeon.seed)){
+			specials.add(0, IdolRoom.class);
+		}
+	}
+
+	@Override
+	public boolean labHere( boolean rolled ) {
+		//a floor with just one special room can't take both the lab and the idol, so the
+		// lab takes whichever of floors 3 and 4 the idol leaves free
+		int idol = IdolRoom.depthForRun(Dungeon.seed);
+		if (Dungeon.depth == idol)              return false;
+		if (Dungeon.depth == 3 && idol == 4)    return true;
+		return rolled;
+	}
+
+	@Override
+	public Class<? extends Room> originalSpecial( Class<? extends Room> type ) {
+		if (type == BlossomRoom.class)      return ToxicGasRoom.class;
+		if (type == ThornHollowRoom.class)  return TrapsRoom.class;
+		return type;
 	}
 
 	@Override
