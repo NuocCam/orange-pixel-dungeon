@@ -201,6 +201,7 @@ public class ItemSpriteSheet {
 	public static final int NOISEMAKER      = BOMBS+9;
 	public static final int ARCANE_BOMB     = BOMBS+10;
 	public static final int SHRAPNEL_BOMB   = BOMBS+11;
+	public static final int STAMPEDE_BOMB   = BOMBS+12;
 	
 	static{
 		assignItemRect(BOMB,            10, 13);
@@ -215,6 +216,7 @@ public class ItemSpriteSheet {
 		assignItemRect(NOISEMAKER,      10, 13);
 		assignItemRect(ARCANE_BOMB,     10, 13);
 		assignItemRect(SHRAPNEL_BOMB,   10, 13);
+		assignItemRect(STAMPEDE_BOMB,   10, 13);
 	}
 
 	private static final int WEP_TIER1      =                               xy(1, 7);   //8 slots
@@ -677,6 +679,17 @@ public class ItemSpriteSheet {
 		assignItemRect(BREW_AQUA,        9, 11);
 	}
 	
+	//the brew and elixir rows are full, these use the empty end of the seed row
+	private static final int JUNGLE_BREWS   =                               xy(13, 25); //4 slots
+	public static final int BREW_FERAL      = JUNGLE_BREWS+0;
+	public static final int ELIXIR_VERDANT  = JUNGLE_BREWS+1;
+	public static final int ELIXIR_HUNT     = JUNGLE_BREWS+2;
+	static{
+		assignItemRect(BREW_FERAL,      12, 14);
+		assignItemRect(ELIXIR_VERDANT,  12, 14);
+		assignItemRect(ELIXIR_HUNT,     12, 14);
+	}
+
 	private static final int SPELLS         =                               xy(1, 27);  //16 slots
 	public static final int WILD_ENERGY     = SPELLS+0;
 	public static final int PHASE_SHIFT     = SPELLS+1;

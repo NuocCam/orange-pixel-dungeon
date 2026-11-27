@@ -21,6 +21,7 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs;
 
+import com.shatteredpixel.shatteredpixeldungeon.Badges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
@@ -175,6 +176,7 @@ public class Hunter extends NPC {
 
 		carried.detach(Dungeon.hero.belongings.backpack);
 		JungleRecords.sold(pelt);
+		Badges.validateMasterTrader();
 
 		reward.identify(false);
 		if (reward.doPickUp( Dungeon.hero )) {

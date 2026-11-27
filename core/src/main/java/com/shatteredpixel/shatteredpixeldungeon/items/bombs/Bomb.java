@@ -38,6 +38,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfFrost;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfHealing;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfInvisibility;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfLiquidFlame;
+import com.shatteredpixel.shatteredpixeldungeon.items.quest.BeastMarrow;
 import com.shatteredpixel.shatteredpixeldungeon.items.quest.GooBlob;
 import com.shatteredpixel.shatteredpixeldungeon.items.quest.MetalShard;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfMirrorImage;
@@ -391,6 +392,8 @@ public class Bomb extends Item {
 			
 			validIngredients.put(GooBlob.class,                 ArcaneBomb.class);
 			validIngredients.put(MetalShard.class,              ShrapnelBomb.class);
+
+		validIngredients.put(BeastMarrow.class,             StampedeBomb.class);
 		}
 		
 		private static final HashMap<Class<?extends Bomb>, Integer> bombCosts = new HashMap<>();
@@ -409,6 +412,7 @@ public class Bomb extends Item {
 			
 			bombCosts.put(ArcaneBomb.class,     6);
 			bombCosts.put(ShrapnelBomb.class,   6);
+		bombCosts.put(StampedeBomb.class,   6);
 		}
 		
 		@Override
@@ -449,7 +453,9 @@ public class Bomb extends Item {
 				}
 			}
 
-			if (result instanceof ArcaneBomb){
+			if (result instanceof StampedeBomb){
+				Catalog.countUse(BeastMarrow.class);
+			} else if (result instanceof ArcaneBomb){
 				Catalog.countUse(GooBlob.class);
 			} else if (result instanceof ShrapnelBomb){
 				Catalog.countUse(MetalShard.class);

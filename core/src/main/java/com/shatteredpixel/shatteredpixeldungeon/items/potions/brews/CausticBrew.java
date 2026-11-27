@@ -60,12 +60,17 @@ public class CausticBrew extends Brew {
 				Char ch = Actor.findChar(i);
 				
 				if (ch != null){
-					Buff.affect(ch, Ooze.class).set( Ooze.DURATION );
+					splatter(ch);
 				}
 			}
 		}
 	}
 	
+	//what happens to each character caught in the splash
+	protected void splatter( Char ch ){
+		Buff.affect(ch, Ooze.class).set( Ooze.DURATION );
+	}
+
 	public static class Recipe extends com.shatteredpixel.shatteredpixeldungeon.items.Recipe.SimpleRecipe {
 		
 		{

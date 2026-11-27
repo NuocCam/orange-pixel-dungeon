@@ -73,10 +73,14 @@ public class ElixirOfAquaticRejuvenation extends Elixir {
 			left += duration;
 		}
 		
+		protected boolean healsHere(){
+			return !target.flying && Dungeon.level.water[target.pos];
+		}
+
 		@Override
 		public boolean act() {
 			
-			if (!target.flying && Dungeon.level.water[target.pos] && target.HP < target.HT){
+			if (healsHere() && target.HP < target.HT){
 				float healAmt = GameMath.gate( 1, target.HT/50f, left );
 				healAmt = Math.min(healAmt, target.HT - target.HP);
 				if (Random.Float() < (healAmt % 1)){

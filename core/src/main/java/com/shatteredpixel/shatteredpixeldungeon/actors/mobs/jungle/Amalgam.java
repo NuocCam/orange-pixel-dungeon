@@ -248,7 +248,7 @@ public class Amalgam extends Mob {
 	private void charge(){
 		ArrayList<Integer> path = chargePath;
 		chargePath = null;
-		Buff.affect(this, ChargeCooldown.class, CHARGE_COOLDOWN);
+		Buff.prolong(this, ChargeCooldown.class, CHARGE_COOLDOWN);
 
 		charging = true;
 		LineCharge.Result result = LineCharge.run(this, path, this);
@@ -441,6 +441,12 @@ public class Amalgam extends Mob {
 						return moveSprite(oldPos, pos);
 					}
 				}
+				//no way through to any of them, so whoever is in the way gets bitten
+				Char hero = Dungeon.hero;
+				if (Dungeon.level.adjacent(pos, hero.pos) && hero.invisible <= 0 && !isCharmedBy(hero)){
+					enemy = hero;
+					return doAttack(hero);
+				}
 			}
 
 			spend(TICK);
@@ -488,7 +494,7 @@ public class Amalgam extends Mob {
 		if (sprite instanceof AmalgamSprite) ((AmalgamSprite)sprite).doubleBite(target.pos);
 
 		move = Graft.WOLF;
-		for (int i = 0; i < 2 && target.isAlive() && !feeding
+		for (int i = 0; i < 2 && isAlive() && target.isAlive() && !feeding
 				&& Dungeon.level.adjacent(pos, target.pos); i++){
 			attack(target);
 		}
@@ -637,6 +643,7 @@ public class Amalgam extends Mob {
 		}
 
 		Badges.validateBossSlain();
+		Badges.validateAmalgamSlain(eatenCount());
 		if (Statistics.qualifiedForBossChallengeBadge){
 			Badges.validateBossChallengeCompleted();
 		}

@@ -21,6 +21,8 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.items.food;
 
+import com.shatteredpixel.shatteredpixeldungeon.Badges;
+import com.shatteredpixel.shatteredpixeldungeon.journal.JungleRecords;
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
@@ -48,6 +50,8 @@ public class JungleBerry extends Food {
 			if (animal.berryTurns() > 0 && !animal.prey && animal.alignment == Char.Alignment.ENEMY
 					&& !animal.isImmune(BerryCharm.class)){
 				Buff.affect(animal, BerryCharm.class).set(animal.berryTurns());
+				JungleRecords.wonOver(animal.getClass());
+				Badges.validateWildCompanion();
 				Sample.INSTANCE.play(Assets.Sounds.EAT);
 				return;
 			}

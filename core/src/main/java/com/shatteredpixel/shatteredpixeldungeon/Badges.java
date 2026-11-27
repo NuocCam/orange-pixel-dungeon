@@ -24,8 +24,10 @@ package com.shatteredpixel.shatteredpixeldungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.AscensionChallenge;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroSubClass;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.Artifact;
+import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.DriedRose;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.MagicalHolster;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.PotionBandolier;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.ScrollHolder;
@@ -39,6 +41,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MeleeWeapon;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Bestiary;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Catalog;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Document;
+import com.shatteredpixel.shatteredpixeldungeon.journal.JungleRecords;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
@@ -98,6 +101,8 @@ public class Badges {
 		RESEARCHER_1                ( 22, BadgeType.JOURNAL ),
 		GAMES_PLAYED_1              ( 23, BadgeType.GLOBAL ),
 		HIGH_SCORE_1                ( 24 ),
+		APEX_PREDATOR               ( 25 ),
+		BURNT_BRIDGES               ( 26 ),
 
 		//silver
 		NO_MONSTERS_SLAIN           ( 32 ),
@@ -132,6 +137,8 @@ public class Badges {
 		RESEARCHER_2                ( 55, BadgeType.JOURNAL ),
 		GAMES_PLAYED_2              ( 56, BadgeType.GLOBAL ),
 		HIGH_SCORE_2                ( 57 ),
+		WILD_COMPANION              ( 58, BadgeType.GLOBAL ),
+		STARVE_THE_BEAST            ( 59 ),
 
 		//gold
 		ENEMY_HAZARDS               ( 64 ),
@@ -162,6 +169,9 @@ public class Badges {
 		RESEARCHER_3                ( 85, BadgeType.JOURNAL ),
 		GAMES_PLAYED_3              ( 86, BadgeType.GLOBAL ),
 		HIGH_SCORE_3                ( 87 ),
+		FULL_COURSE                 ( 88 ),
+		HUNT_IS_OVER                ( 89 ),
+		MASTER_TRADER               ( 90, BadgeType.GLOBAL ),
 
 		//platinum
 		MANY_BUFFS                  ( 96 ),
@@ -1087,6 +1097,43 @@ public class Badges {
 		}
 	}
 	
+	//on top of the usual boss badge, these go by what it ate and who was there
+	public static void validateAmalgamSlain( int eaten ) {
+		earnedThisRun( Badge.APEX_PREDATOR );
+		if (eaten == 0)         earnedThisRun( Badge.STARVE_THE_BEAST );
+		else if (eaten >= 3)    earnedThisRun( Badge.FULL_COURSE );
+
+		for (Mob mob : Dungeon.level.mobs) {
+			if (mob instanceof DriedRose.GhostHero && mob.isAlive()) {
+				earnedThisRun( Badge.HUNT_IS_OVER );
+			}
+		}
+	}
+
+	public static void validateBurntBridges() {
+		earnedThisRun( Badge.BURNT_BRIDGES );
+	}
+
+	//these two count across every run, the journal keeps track of how far along they are
+	public static void validateWildCompanion() {
+		if (JungleRecords.wonOverKinds() >= 5) {
+			displayBadge( Badge.WILD_COMPANION );
+		}
+	}
+
+	public static void validateMasterTrader() {
+		if (JungleRecords.soldAllPelts()) {
+			displayBadge( Badge.MASTER_TRADER );
+		}
+	}
+
+	private static void earnedThisRun( Badge badge ) {
+		if (!local.contains( badge )) {
+			local.add( badge );
+			displayBadge( badge );
+		}
+	}
+
 	public static void validateGamesPlayed() {
 		Badge badge = null;
 		if (Rankings.INSTANCE.totalNumber >= 10 || Rankings.INSTANCE.wonNumber >= 1) {

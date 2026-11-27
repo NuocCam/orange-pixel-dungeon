@@ -76,14 +76,24 @@ public class ArcaneBomb extends Bomb {
 		}
 		
 		for (Char ch : affected){
-			//pierces armor, and damage in 5x5 instead of 3x3
-			int damage = Math.round(Random.NormalIntRange( 4 + Dungeon.scalingDepth(), 12 + 3*Dungeon.scalingDepth() ));
-			ch.damage(damage, this);
-			if (ch == Dungeon.hero && !ch.isAlive()){
-				Badges.validateDeathFromFriendlyMagic();
-				Dungeon.fail(this);
-			}
+			hit(ch, cell);
 		}
+	}
+
+	//what happens to each character caught in the blast
+	protected void hit( Char ch, int cell ){
+		//pierces armor, and damage in 5x5 instead of 3x3
+		int damage = Math.round(Random.NormalIntRange( 4 + Dungeon.scalingDepth(), 12 + 3*Dungeon.scalingDepth() ));
+		ch.damage(damage, this);
+		if (ch == Dungeon.hero && !ch.isAlive()){
+			Badges.validateDeathFromFriendlyMagic();
+			Dungeon.fail(this);
+		}
+	}
+
+	//what marks out the blast area while the fuse burns
+	protected Emitter.Factory warnParticle(){
+		return GooSprite.GooParticle.FACTORY;
 	}
 	
 	@Override
@@ -117,7 +127,7 @@ public class ArcaneBomb extends Bomb {
 							if (PathFinder.distance[i] < Integer.MAX_VALUE) {
 								Emitter e = CellEmitter.get(i);
 								if (e != null) {
-									e.pour(GooSprite.GooParticle.FACTORY, 0.03f);
+									e.pour(((ArcaneBomb)bomb).warnParticle(), 0.03f);
 									gooWarnEmitters.add(e);
 								}
 							}
