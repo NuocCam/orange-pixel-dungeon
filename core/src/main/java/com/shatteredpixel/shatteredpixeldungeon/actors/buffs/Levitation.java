@@ -25,6 +25,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.ShatteredPixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.TimekeepersHourglass;
+import com.shatteredpixel.shatteredpixeldungeon.levels.features.DeepWater;
 import com.shatteredpixel.shatteredpixeldungeon.plants.Swiftthistle;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
@@ -54,6 +55,9 @@ public class Levitation extends FlavourBuff {
 	public void detach() {
 		target.flying = false;
 		super.detach();
+		if (target.isAlive()) {
+			DeepWater.expel(target);
+		}
 		//only press tiles if we're current in the game screen
 		if (ShatteredPixelDungeon.scene() instanceof GameScene) {
 			Dungeon.level.occupyCell(target );

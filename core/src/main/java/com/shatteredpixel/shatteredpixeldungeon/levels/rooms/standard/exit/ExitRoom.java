@@ -26,6 +26,7 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.LevelTransition;
 import com.shatteredpixel.shatteredpixeldungeon.levels.painters.Painter;
+import com.shatteredpixel.shatteredpixeldungeon.levels.regions.Region;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.Room;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.StandardRoom;
 import com.watabou.utils.Point;
@@ -119,6 +120,12 @@ public class ExitRoom extends StandardRoom {
 	}
 
 	public static StandardRoom createExit(){
-		return Reflection.newInstance(rooms.get(Random.chances(chances[Dungeon.depth])));
+		//same as the entrance, always roll first
+		int index = Random.chances(chances[Dungeon.depth]);
+		StandardRoom own = Region.at(Dungeon.depth).newExit();
+		if (own != null){
+			return own;
+		}
+		return Reflection.newInstance(rooms.get(index));
 	}
 }

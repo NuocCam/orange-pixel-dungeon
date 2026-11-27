@@ -73,9 +73,9 @@ public class Honeypot extends Item {
 
 			Item item = shatter( hero, hero.pos );
 			if (!item.collect()){
-				Dungeon.level.drop(item, hero.pos);
+				Heap heap = Dungeon.level.drop(item, hero.pos);
 				if (item instanceof ShatteredPot){
-					((ShatteredPot) item).dropPot(hero, hero.pos);
+					((ShatteredPot) item).dropPot(hero, heap.pos);
 				}
 			}
 
@@ -90,7 +90,12 @@ public class Honeypot extends Item {
 			super.onThrow( cell );
 		} else {
 			Catalog.countUse(getClass());
-			Dungeon.level.drop(shatter( null, cell ), cell);
+			Item item = shatter( null, cell );
+			Heap heap = Dungeon.level.drop(item, cell);
+			//the pot may have washed ashore, the bee needs to know where
+			if (heap.pos != cell && item instanceof ShatteredPot){
+				((ShatteredPot) item).movePot(cell, heap.pos);
+			}
 		}
 	}
 	
@@ -168,16 +173,23 @@ public class Honeypot extends Item {
 			}
 		}
 
+		//both of these are Item's versions, except the bee is told where the pot ended up
 		@Override
 		public void doDrop(Hero hero) {
-			super.doDrop(hero);
-			dropPot(hero, hero.pos);
+			hero.spendAndNext(TIME_TO_DROP);
+			int pos = hero.pos;
+			Heap heap = Dungeon.level.drop(detachAll(hero.belongings.backpack), pos);
+			heap.sprite.drop(pos);
+			dropPot(hero, heap.pos);
 		}
 
 		@Override
 		protected void onThrow(int cell) {
-			super.onThrow(cell);
-			dropPot(curUser, cell);
+			Heap heap = Dungeon.level.drop(this, cell);
+			if (!heap.isEmpty()) {
+				heap.sprite.drop(cell);
+			}
+			dropPot(curUser, heap.pos);
 		}
 
 		public void pickupPot(Char holder){

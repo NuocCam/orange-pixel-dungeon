@@ -23,6 +23,7 @@ package com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.ShatteredPixelDungeon;
+import com.shatteredpixel.shatteredpixeldungeon.levels.regions.Region;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.Room;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Random;
@@ -130,6 +131,7 @@ public abstract class SpecialRoom extends Room {
 	
 	public static void initForFloor(){
 		floorSpecials = (ArrayList<Class<?extends Room>>) runSpecials.clone();
+		Region.at(Dungeon.depth).removeSpecials(floorSpecials);
 		
 		//laboratory rooms spawn on floor 3 or 4 each chapter
 		if (Dungeon.labRoomNeeded()){

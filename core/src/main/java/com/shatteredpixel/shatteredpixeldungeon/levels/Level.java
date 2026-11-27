@@ -92,10 +92,12 @@ import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfRegrowth;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfWarding;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.HeavyBoomerang;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.Chasm;
+import com.shatteredpixel.shatteredpixeldungeon.levels.features.DeepWater;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.Door;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.HighGrass;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.LevelTransition;
 import com.shatteredpixel.shatteredpixeldungeon.levels.painters.Painter;
+import com.shatteredpixel.shatteredpixeldungeon.levels.regions.Region;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.Trap;
 import com.shatteredpixel.shatteredpixeldungeon.mechanics.ShadowCaster;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
@@ -302,6 +304,7 @@ public abstract class Level implements Bundlable {
 							feeling = Feeling.NONE;
 						}
 				}
+				feeling = Region.at(Dungeon.depth).feeling(feeling);
 			}
 		}
 		
@@ -1002,12 +1005,15 @@ public abstract class Level implements Bundlable {
 		solid[cell]         = (flags & Terrain.SOLID) != 0;
 		avoid[cell]         = (flags & Terrain.AVOID) != 0;
 		pit[cell]           = (flags & Terrain.PIT) != 0;
-		water[cell]         = terrain == Terrain.WATER;
+		water[cell]         = (flags & Terrain.LIQUID) != 0;
 
 		if (this instanceof SewerLevel){
 			if (map[cell] == Terrain.REGION_DECO || map[cell] == Terrain.REGION_DECO_ALT){
 				flamable[cell] = true;
 			}
+		}
+		if (burnableDeco(map[cell])){
+			flamable[cell] = true;
 		}
 
 		for (Blob b : blobs.values()){
@@ -1017,6 +1023,28 @@ public abstract class Level implements Bundlable {
 		updateOpenSpace(cell);
 	}
 	
+	//region decorations which catch fire, even though their terrain normally can't
+	protected boolean burnableDeco( int terrain ){
+		return false;
+	}
+
+	//true when the tile sheet has art for paths cut into a wall, which the way up and
+	//down are then drawn as
+	public boolean wallPaths(){
+		return false;
+	}
+
+	//true when the tile sheet draws its own grass, doors, statues and other fixtures, so
+	//the shared terrain features and door posts mustn't be drawn on top of them
+	public boolean sheetHasFeatures(){
+		return false;
+	}
+
+	//row of the raised terrain image with this floor's front layer of tall grass
+	public int raisedGrassRow(){
+		return (Dungeon.depth-1)/5;
+	}
+
 	public Heap drop( Item item, int cell ) {
 
 		if (item == null || Challenges.isItemBlocked(item)){
@@ -1030,6 +1058,13 @@ public abstract class Level implements Bundlable {
 
 		}
 		
+		//nothing sinks, it washes up on the nearest bit of floor. A bomb about to blow stays
+		if (map[cell] == Terrain.DEEP_WATER
+				&& !(item instanceof Bomb && ((Bomb) item).goesOffOnDeepWater())){
+			int shore = DeepWater.shore( this, cell );
+			if (shore != -1) cell = shore;
+		}
+
 		Heap heap = heaps.get( cell );
 		if (heap == null) {
 			
@@ -1177,6 +1212,9 @@ public abstract class Level implements Bundlable {
 	}
 	
 	public void occupyCell( Char ch ){
+		//whatever put them here, anything on foot comes straight back out of deep water
+		DeepWater.expel(ch);
+
 		if (!ch.isImmune(Web.class) && Blob.volumeAt(ch.pos, Web.class) > 0){
 			blobs.get(Web.class).clear(ch.pos);
 			Web.affectChar( ch );
@@ -1615,6 +1653,8 @@ public abstract class Level implements Bundlable {
 				return Messages.get(Level.class, "grass_name");
 			case Terrain.WATER:
 				return Messages.get(Level.class, "water_name");
+			case Terrain.DEEP_WATER:
+				return Messages.get(Level.class, "deep_water_name");
 			case Terrain.WALL:
 			case Terrain.WALL_DECO:
 			case Terrain.SECRET_DOOR:
@@ -1672,6 +1712,8 @@ public abstract class Level implements Bundlable {
 				return Messages.get(Level.class, "chasm_desc");
 			case Terrain.WATER:
 				return Messages.get(Level.class, "water_desc");
+			case Terrain.DEEP_WATER:
+				return Messages.get(Level.class, "deep_water_desc");
 			case Terrain.ENTRANCE:
 			case Terrain.ENTRANCE_SP:
 				return Messages.get(Level.class, "entrance_desc");

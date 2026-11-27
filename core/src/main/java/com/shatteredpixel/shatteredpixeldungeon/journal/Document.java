@@ -23,6 +23,7 @@ package com.shatteredpixel.shatteredpixeldungeon.journal;
 
 import com.shatteredpixel.shatteredpixeldungeon.Badges;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfIdentify;
+import com.shatteredpixel.shatteredpixeldungeon.levels.regions.Region;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
@@ -255,6 +256,19 @@ public enum Document {
 
 	public static final String KING_ATTRITION       = "attrition";
 
+	public static final String INTRO_JUNGLE         = "Jungle";
+
+	//which intro to show on entering a region. Pages sit in region order, except that
+	// another first region can bring its own page, kept at the very end
+	public static String introPage( int region ){
+		//checks the run, not the floor, as depth may not be updated while loading
+		String own = Region.ofRun().introPage();
+		if (region == 1 && own != null){
+			return own;
+		}
+		return INTROS.pageNames().toArray(new String[0])[region];
+	}
+
 	//pages and default states
 	static {
 		boolean debug = DeviceCompat.isDebug();
@@ -293,6 +307,8 @@ public enum Document {
 		INTROS.pagesStates.put("Caves",                         debug ? READ : NOT_FOUND);
 		INTROS.pagesStates.put("City",                          debug ? READ : NOT_FOUND);
 		INTROS.pagesStates.put("Halls",                         debug ? READ : NOT_FOUND);
+		//has to stay last, the pages above are looked up by region number
+		INTROS.pagesStates.put(INTRO_JUNGLE,                    debug ? READ : NOT_FOUND);
 
 		SEWERS_GUARD.pagesStates.put("new_position",            debug ? READ : NOT_FOUND);
 		SEWERS_GUARD.pagesStates.put("dangerous",               debug ? READ : NOT_FOUND);

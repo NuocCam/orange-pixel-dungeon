@@ -66,7 +66,8 @@ public class WallOcclusionTilemap extends DungeonTilemap {
 				curr = DOOR_VERT + 8*region;
 			}
 
-		} else if (!DungeonTileSheet.wallStitcheable(tile) && !Dungeon.level.pit[pos]) {
+		} else if (!DungeonTileSheet.wallStitcheable(DungeonTileSheet.stitchTerrain(tile, map, pos, mapWidth))
+				&& !Dungeon.level.pit[pos]) {
 
 			//branch for above wall
 			//we specifically skip this for alchemy pots to preserve their passthrough to water layer
@@ -125,7 +126,7 @@ public class WallOcclusionTilemap extends DungeonTilemap {
 	}
 
 	private boolean wall(int cell) {
-		return DungeonTileSheet.wallStitcheable(map[cell]);
+		return DungeonTileSheet.wallStitcheable(stitchAt(cell));
 	}
 
 	private boolean door(int cell) {

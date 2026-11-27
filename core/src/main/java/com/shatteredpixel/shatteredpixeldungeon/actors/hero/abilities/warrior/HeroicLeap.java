@@ -33,6 +33,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.ArmorAbility;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.ClassArmor;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfBlastWave;
+import com.shatteredpixel.shatteredpixeldungeon.levels.features.DeepWater;
 import com.shatteredpixel.shatteredpixeldungeon.mechanics.Ballistica;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
@@ -77,9 +78,18 @@ public class HeroicLeap extends ArmorAbility {
 
 			//can't occupy the same cell as another char, so move back one.
 			int backTrace = route.dist-1;
-			while (Actor.findChar( cell ) != null && cell != hero.pos) {
+			//there's nowhere to come down on deep water either
+			boolean wet = false;
+			while ((Actor.findChar( cell ) != null || DeepWater.blocks( hero, cell )) && cell != hero.pos) {
+				wet |= DeepWater.blocks( hero, cell );
 				cell = route.path.get(backTrace);
 				backTrace--;
+			}
+
+			//if the water leaves nowhere to go then don't waste the charge
+			if (wet && cell == hero.pos){
+				PixelScene.shake( 1, 1f );
+				return;
 			}
 
 			armor.charge -= chargeUse( hero );

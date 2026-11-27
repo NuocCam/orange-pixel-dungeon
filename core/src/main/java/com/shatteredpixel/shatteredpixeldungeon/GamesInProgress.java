@@ -148,7 +148,8 @@ public class GamesInProgress {
 		info.customSeed = Dungeon.customSeedText;
 		info.daily = Dungeon.daily;
 		info.dailyReplay = Dungeon.dailyReplay;
-		
+		info.jungle = Dungeon.jungle;
+
 		info.level = Dungeon.hero.lvl;
 		info.str = Dungeon.hero.STR;
 		info.strBonus = Dungeon.hero.STR() - Dungeon.hero.STR;
@@ -185,6 +186,7 @@ public class GamesInProgress {
 		public String customSeed;
 		public boolean daily;
 		public boolean dailyReplay;
+		public boolean jungle;
 		public long lastPlayed;
 
 		public int level;

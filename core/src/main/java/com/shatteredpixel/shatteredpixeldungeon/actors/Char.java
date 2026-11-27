@@ -146,6 +146,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.MissileWea
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.darts.ShockingDart;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.Chasm;
+import com.shatteredpixel.shatteredpixeldungeon.levels.features.DeepWater;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.Door;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.GeyserTrap;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.GnollRockfallTrap;
@@ -257,6 +258,11 @@ public abstract class Char extends Actor {
 		//don't allow char to swap onto hazard unless they're flying
 		//you can swap onto a hazard though, as you're not the one instigating the swap
 		if (!Dungeon.level.passable[pos] && !c.flying){
+			return true;
+		}
+
+		//nor can we be traded into deep water
+		if (DeepWater.blocks(this, c.pos)){
 			return true;
 		}
 
@@ -1361,6 +1367,11 @@ public abstract class Char extends Actor {
 				return; //don't move
 			}
 			step = newPos;
+		}
+
+		//if we're already there then let it through, occupyCell gets us back out
+		if (step != pos && DeepWater.blocks(this, step)) {
+			return;
 		}
 
 		if (Dungeon.level.map[pos] == Terrain.OPEN_DOOR) {

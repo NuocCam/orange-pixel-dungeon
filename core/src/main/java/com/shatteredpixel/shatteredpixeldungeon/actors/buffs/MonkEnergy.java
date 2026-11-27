@@ -37,6 +37,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfForce;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfBlastWave;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MeleeWeapon;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
+import com.shatteredpixel.shatteredpixeldungeon.levels.features.DeepWater;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.Door;
 import com.shatteredpixel.shatteredpixeldungeon.mechanics.Ballistica;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
@@ -515,6 +516,7 @@ public class MonkEnergy extends Buff implements ActionIndicator.Action {
 				Ballistica dash = new Ballistica(hero.pos, target, Ballistica.PROJECTILE);
 
 				if (!dash.collisionPos.equals(target)
+						|| DeepWater.blocks(hero, target)
 						|| (Dungeon.level.solid[target] && !Dungeon.level.passable[target])){
 					GLog.w(Messages.get(MeleeWeapon.class, "ability_target_range"));
 					return;

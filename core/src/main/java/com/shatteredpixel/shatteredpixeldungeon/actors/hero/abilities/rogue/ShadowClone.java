@@ -37,6 +37,7 @@ import com.shatteredpixel.shatteredpixeldungeon.effects.particles.SmokeParticle;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.ClassArmor;
 import com.shatteredpixel.shatteredpixeldungeon.levels.CityLevel;
+import com.shatteredpixel.shatteredpixeldungeon.levels.features.DeepWater;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.HeroSprite;
@@ -289,6 +290,10 @@ public class ShadowClone extends ArmorAbility {
 
 			//some checks from super.interact
 			if (!Dungeon.level.passable[pos] && !c.flying){
+				return true;
+			}
+
+			if (DeepWater.blocks(this, c.pos)){
 				return true;
 			}
 

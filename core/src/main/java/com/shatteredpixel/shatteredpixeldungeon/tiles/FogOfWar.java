@@ -290,7 +290,8 @@ public class FogOfWar extends Image {
 	}
 	
 	private boolean wall(int cell) {
-		return DungeonTileSheet.wallStitcheable(Dungeon.level.map[cell]);
+		return DungeonTileSheet.wallStitcheable(
+				DungeonTileSheet.stitchTerrain(Dungeon.level.map, cell, mapWidth));
 	}
 
 	//if multiple cells are referenced, we pick the darkest value between them.

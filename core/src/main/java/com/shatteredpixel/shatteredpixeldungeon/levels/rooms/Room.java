@@ -301,6 +301,17 @@ public abstract class Room extends Rect implements Graph.Node, Bundlable {
 	
 	public abstract void paint(Level level);
 	
+	//rooms that can fail to paint say so, they get painted before all the others.
+	//This has to be overridden together with paintFailed, one is no good without the other
+	public boolean canFailPaint(){
+		return false;
+	}
+
+	//a room that couldn't be painted properly says so here, and the level gets built again
+	public boolean paintFailed(){
+		return false;
+	}
+
 	//whether or not a painter can make its own modifications to a specific point
 	public boolean canPlaceWater(Point p){
 		return true;

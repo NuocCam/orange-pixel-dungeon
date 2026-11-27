@@ -46,8 +46,7 @@ public class RaisedTerrainTilemap extends DungeonTilemap {
 			return -1;
 		}
 
-		int region = (Dungeon.depth-1)/5;
-		int regionOffset = region*8;
+		int regionOffset = Dungeon.level.raisedGrassRow()*8;
 
 		if (tile == Terrain.HIGH_GRASS){
 			if (DungeonTileSheet.getVisualWithAlts(DungeonTileSheet.RAISED_HIGH_GRASS, pos) == DungeonTileSheet.RAISED_HIGH_GRASS_ALT){
@@ -61,7 +60,8 @@ public class RaisedTerrainTilemap extends DungeonTilemap {
 			} else {
 				return regionOffset + 1;
 			}
-		} else if (DungeonTileSheet.doorTile(tile) && wall(pos-1) && wall(pos+1)) {
+		} else if (!Dungeon.level.sheetHasFeatures()
+				&& DungeonTileSheet.doorTile(tile) && wall(pos-1) && wall(pos+1)) {
 			return regionOffset + 4;
 		}
 		

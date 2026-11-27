@@ -39,6 +39,7 @@ import com.shatteredpixel.shatteredpixeldungeon.journal.Bestiary;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Catalog;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
+import com.shatteredpixel.shatteredpixeldungeon.levels.features.DeepWater;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
@@ -156,6 +157,7 @@ public abstract class Plant implements Bundlable {
 		protected void onThrow( int cell ) {
 			if (Dungeon.level.map[cell] == Terrain.ALCHEMY
 					|| Dungeon.level.pit[cell]
+					|| Dungeon.level.map[cell] == Terrain.DEEP_WATER
 					|| Dungeon.level.traps.get(cell) != null
 					|| Dungeon.isChallenged(Challenges.NO_HERBALISM)) {
 				super.onThrow( cell );

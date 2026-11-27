@@ -83,6 +83,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.exotic.ScrollOfSir
 import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.WondrousResin;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
+import com.shatteredpixel.shatteredpixeldungeon.levels.features.DeepWater;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.BurningTrap;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.ChillingTrap;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.CursingTrap;
@@ -443,6 +444,7 @@ public class CursedWand {
 
 			if (Dungeon.level.map[pos] != Terrain.ALCHEMY
 					&& !Dungeon.level.pit[pos]
+					&& Dungeon.level.map[pos] != Terrain.DEEP_WATER
 					&& Dungeon.level.traps.get(pos) == null
 					&& !Dungeon.isChallenged(Challenges.NO_HERBALISM)) {
 				return true;
@@ -714,6 +716,8 @@ public class CursedWand {
 				Dungeon.level.mobs.remove(ch);
 				TargetHealthIndicator.instance.target(null);
 				GameScene.add(sheep);
+				//whatever it was might have been floating over deep water
+				DeepWater.expel(sheep);
 				CellEmitter.get(sheep.pos).burst(Speck.factory(Speck.WOOL), 4);
 				Sample.INSTANCE.play(Assets.Sounds.PUFF);
 				Sample.INSTANCE.play(Assets.Sounds.SHEEP);

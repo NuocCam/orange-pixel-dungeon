@@ -40,6 +40,7 @@ public class Assets {
 		public static final String OCCLUSION_SHADOWS    = "environment/occlusion_shadows.png";
 
 		public static final String TILES_SEWERS = "environment/tiles_sewers.png";
+		public static final String TILES_JUNGLE = "environment/tiles_jungle.png";
 		public static final String TILES_PRISON = "environment/tiles_prison.png";
 		public static final String TILES_CAVES  = "environment/tiles_caves.png";
 		public static final String TILES_CITY   = "environment/tiles_city.png";
@@ -49,6 +50,7 @@ public class Assets {
 		public static final String TILES_CAVES_GNOLL    = "environment/tiles_caves_gnoll.png";
 
 		public static final String WATER_SEWERS = "environment/water0.png";
+		public static final String WATER_JUNGLE = "environment/water_jungle.png";
 		public static final String WATER_PRISON = "environment/water1.png";
 		public static final String WATER_CAVES  = "environment/water2.png";
 		public static final String WATER_CITY   = "environment/water3.png";
@@ -56,6 +58,7 @@ public class Assets {
 
 		public static final String CARPET           = "environment/custom_tiles/carpet.png";
 		public static final String RAT_KING_ROOM    = "environment/custom_tiles/rat_king_room.png";
+		public static final String JUNGLE_DECOR     = "environment/custom_tiles/jungle_decor.png";
 		public static final String WEAK_FLOOR       = "environment/custom_tiles/weak_floor.png";
 		public static final String SEWER_BOSS       = "environment/custom_tiles/sewer_boss.png";
 		public static final String PRISON_QUEST     = "environment/custom_tiles/prison_quest.png";
@@ -253,6 +256,7 @@ public class Assets {
 		public static final String CLERIC   = "splashes/cleric.jpg";
 
 		public static final String SEWERS   = "splashes/sewers.jpg";
+		public static final String JUNGLE   = "splashes/jungle.jpg";
 		public static final String PRISON   = "splashes/prison.jpg";
 		public static final String CAVES    = "splashes/caves.jpg";
 		public static final String CITY     = "splashes/city.jpg";

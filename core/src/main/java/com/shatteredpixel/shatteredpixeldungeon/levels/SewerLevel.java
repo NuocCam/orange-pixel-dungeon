@@ -73,6 +73,11 @@ public class SewerLevel extends RegularLevel {
 	public static final float[] SEWER_TRACK_CHANCES = new float[]{1f, 1f, 0.5f, 0.25f, 1f, 0.5f};
 
 	public void playLevelMusic(){
+		playSewerMusic();
+	}
+
+	//the jungle shares this, finale track and all
+	static void playSewerMusic(){
 		if (Ghost.Quest.active() || Statistics.amuletObtained){
 			if (Statistics.amuletObtained && Dungeon.depth == 1){
 				Music.INSTANCE.play(Assets.Music.THEME_FINALE, true);
@@ -145,34 +150,39 @@ public class SewerLevel extends RegularLevel {
 	@Override
 	public boolean activateTransition(Hero hero, LevelTransition transition) {
 		if (transition.type == LevelTransition.Type.SURFACE){
-			if (hero.belongings.getItem( Amulet.class ) == null) {
-				Game.runOnRenderThread(new Callback() {
-					@Override
-					public void call() {
-						GameScene.show( new WndMessage( Messages.get(hero, "leave") ) );
-					}
-				});
-				return false;
-			} else {
-				Statistics.ascended = true;
-				Game.switchScene(SurfaceScene.class, new Game.SceneChangeCallback() {
-					@Override
-					public void beforeCreate() {
-
-					}
-
-					@Override
-					public void afterCreate() {
-						Badges.validateHappyEnd();
-						Dungeon.win( Amulet.class );
-						Dungeon.deleteGame( GamesInProgress.curSlot, true );
-						Badges.saveGlobal();
-					}
-				});
-				return true;
-			}
+			return useSurfaceExit(hero);
 		} else {
 			return super.activateTransition(hero, transition);
+		}
+	}
+
+	//the way out of the dungeon, only opens for whoever carries the amulet
+	static boolean useSurfaceExit(Hero hero) {
+		if (hero.belongings.getItem( Amulet.class ) == null) {
+			Game.runOnRenderThread(new Callback() {
+				@Override
+				public void call() {
+					GameScene.show( new WndMessage( Messages.get(hero, "leave") ) );
+				}
+			});
+			return false;
+		} else {
+			Statistics.ascended = true;
+			Game.switchScene(SurfaceScene.class, new Game.SceneChangeCallback() {
+				@Override
+				public void beforeCreate() {
+
+				}
+
+				@Override
+				public void afterCreate() {
+					Badges.validateHappyEnd();
+					Dungeon.win( Amulet.class );
+					Dungeon.deleteGame( GamesInProgress.curSlot, true );
+					Badges.saveGlobal();
+				}
+			});
+			return true;
 		}
 	}
 

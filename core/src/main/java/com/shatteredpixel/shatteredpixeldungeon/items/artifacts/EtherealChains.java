@@ -37,6 +37,7 @@ import com.shatteredpixel.shatteredpixeldungeon.effects.Effects;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Pushing;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Catalog;
 import com.shatteredpixel.shatteredpixeldungeon.levels.MiningLevel;
+import com.shatteredpixel.shatteredpixeldungeon.levels.features.DeepWater;
 import com.shatteredpixel.shatteredpixeldungeon.mechanics.Ballistica;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.CellSelector;
@@ -162,6 +163,7 @@ public class EtherealChains extends Artifact {
 		for (int i : chain.subPath(1, chain.dist)){
 			//prefer to the earliest point on the path
 			if (!Dungeon.level.solid[i]
+					&& !DeepWater.blocks(enemy, i)
 					&& Actor.findChar(i) == null
 					&& (!Char.hasProp(enemy, Char.Property.LARGE) || Dungeon.level.openSpace[i])){
 				bestPos = i;
@@ -229,6 +231,12 @@ public class EtherealChains extends Artifact {
 			return;
 		}
 		
+		//or out over deep water, if we'd have to stand in it
+		if (DeepWater.blocks(hero, chain.collisionPos)){
+			GLog.i( Messages.get(this, "does_nothing") );
+			return;
+		}
+
 		//don't pull if there are no solid objects next to the pull location
 		boolean solidFound = false;
 		for (int i : PathFinder.NEIGHBOURS8){

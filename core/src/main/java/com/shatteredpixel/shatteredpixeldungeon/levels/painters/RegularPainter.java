@@ -121,13 +121,14 @@ public abstract class RegularPainter extends Painter {
 		
 		Random.shuffle(rooms);
 		
-		for (Room r : rooms.toArray(new Room[0])) {
+		for (Room r : paintOrder( rooms )) {
 			if (r.connected.isEmpty()){
 				Game.reportException( new RuntimeException("Painting a room with no connections! Room:" + r.getClass().getSimpleName() + " Seed:" + Dungeon.seed + " Depth:" + Dungeon.depth));
 				if (r instanceof SpecialRoom) return false;
 			}
 			placeDoors( r );
 			r.paint( level );
+			if (r.paintFailed()) return false;
 		}
 		
 		paintDoors( level, rooms );
@@ -156,6 +157,19 @@ public abstract class RegularPainter extends Painter {
 	}
 	
 	protected abstract void decorate(Level level, ArrayList<Room> rooms);
+	
+	//rooms which can give up on the layout go first, before the others have used anything
+	// up. Everything else stays in the same order
+	private static ArrayList<Room> paintOrder( ArrayList<Room> rooms ){
+		ArrayList<Room> order = new ArrayList<>();
+		for (Room r : rooms){
+			if (r.canFailPaint()) order.add( r );
+		}
+		for (Room r : rooms){
+			if (!r.canFailPaint()) order.add( r );
+		}
+		return order;
+	}
 	
 	private void placeDoors( Room r ) {
 		for (Room n : r.connected.keySet()) {

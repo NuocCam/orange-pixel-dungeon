@@ -45,6 +45,7 @@ import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.ClassArmor;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfTeleportation;
+import com.shatteredpixel.shatteredpixeldungeon.levels.features.DeepWater;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
@@ -96,6 +97,7 @@ public class SmokeBomb extends ArmorAbility {
 
 			if ( PathFinder.distance[target] == Integer.MAX_VALUE ||
 					!Dungeon.level.heroFOV[target] ||
+					DeepWater.blocks( hero, target ) ||
 					(target != hero.pos && Actor.findChar( target ) != null)) {
 
 				GLog.w( Messages.get(this, "fov") );
@@ -116,19 +118,6 @@ public class SmokeBomb extends ArmorAbility {
 					}
 				}
 
-				if (hero.hasTalent(Talent.BODY_REPLACEMENT)) {
-					for (Char ch : Actor.chars()){
-						if (ch instanceof NinjaLog){
-							ch.die(null);
-						}
-					}
-
-					NinjaLog n = new NinjaLog();
-					n.pos = hero.pos;
-					GameScene.add(n);
-					Dungeon.level.occupyCell(n);
-				}
-
 				if (hero.hasTalent(Talent.HASTY_RETREAT)){
 					//effectively 1/2/3/4 turns
 					float duration = 0.67f + hero.pointsInTalent(Talent.HASTY_RETREAT);
@@ -138,7 +127,24 @@ public class SmokeBomb extends ArmorAbility {
 			}
 
 			CellEmitter.get( hero.pos ).burst( Speck.factory( Speck.WOOL ), 10 );
+			int from = hero.pos;
 			ScrollOfTeleportation.appear( hero, target );
+
+			//the log goes where we left from, but only once we've landed. If we were floating
+			// over deep water it gets pushed ashore, and mustn't end up where we're headed
+			if (!shadowStepping && hero.hasTalent(Talent.BODY_REPLACEMENT)) {
+				for (Char ch : Actor.chars()){
+					if (ch instanceof NinjaLog){
+						ch.die(null);
+					}
+				}
+
+				NinjaLog n = new NinjaLog();
+				n.pos = from;
+				GameScene.add(n);
+				Dungeon.level.occupyCell(n);
+			}
+
 			Sample.INSTANCE.play( Assets.Sounds.PUFF );
 			Dungeon.level.occupyCell( hero );
 			Dungeon.observe();

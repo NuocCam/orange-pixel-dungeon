@@ -41,8 +41,11 @@ public class DungeonWallsTilemap extends DungeonTilemap {
 
 		if (flat) return -1;
 
+		//a jungle path in a top wall counts as wall here, the same as a locked exit
+		tile = DungeonTileSheet.stitchTerrain(tile, map, pos, mapWidth);
+
 		if (DungeonTileSheet.wallStitcheable(tile)) {
-			if (pos + mapWidth < size && !DungeonTileSheet.wallStitcheable(map[pos + mapWidth])){
+			if (pos + mapWidth < size && !DungeonTileSheet.wallStitcheable(stitchAt(pos + mapWidth))){
 
 				if (map[pos + mapWidth] == Terrain.DOOR){
 					return DungeonTileSheet.DOOR_SIDEWAYS;
@@ -59,11 +62,11 @@ public class DungeonWallsTilemap extends DungeonTilemap {
 			} else {
 				return DungeonTileSheet.stitchInternalWallTile(
 						tile,
-						(pos+1) % mapWidth != 0 ?                           map[pos + 1] : -1,
-						(pos+1) % mapWidth != 0 && pos + mapWidth < size ?  map[pos + 1 + mapWidth] : -1,
-						pos + mapWidth < size ?                             map[pos + mapWidth] : -1,
-						pos % mapWidth != 0 && pos + mapWidth < size ?      map[pos - 1 + mapWidth] : -1,
-						pos % mapWidth != 0 ?                               map[pos - 1] : -1
+						(pos+1) % mapWidth != 0 ?                           stitchAt(pos + 1) : -1,
+						(pos+1) % mapWidth != 0 && pos + mapWidth < size ?  stitchAt(pos + 1 + mapWidth) : -1,
+						pos + mapWidth < size ?                             stitchAt(pos + mapWidth) : -1,
+						pos % mapWidth != 0 && pos + mapWidth < size ?      stitchAt(pos - 1 + mapWidth) : -1,
+						pos % mapWidth != 0 ?                               stitchAt(pos - 1) : -1
 				);
 			}
 
@@ -73,15 +76,16 @@ public class DungeonWallsTilemap extends DungeonTilemap {
 			return -1;
 		}
 
-		if (map[pos] == Terrain.LOCKED_EXIT || map[pos] == Terrain.UNLOCKED_EXIT){
+		int here = stitchAt(pos);
+		if (here == Terrain.LOCKED_EXIT || here == Terrain.UNLOCKED_EXIT){
 			return DungeonTileSheet.EXIT_UNDERHANG;
-		} else if (pos + mapWidth < size && DungeonTileSheet.wallStitcheable(map[pos+mapWidth])) {
+		} else if (pos + mapWidth < size && DungeonTileSheet.wallStitcheable(stitchAt(pos+mapWidth))) {
 
 			return DungeonTileSheet.stitchWallOverhangTile(
 					tile,
-					(pos+1) % mapWidth != 0 ?   map[pos + 1 + mapWidth] : -1,
-												map[pos + mapWidth],
-					pos % mapWidth != 0 ?       map[pos - 1 + mapWidth] : -1
+					(pos+1) % mapWidth != 0 ?   stitchAt(pos + 1 + mapWidth) : -1,
+												stitchAt(pos + mapWidth),
+					pos % mapWidth != 0 ?       stitchAt(pos - 1 + mapWidth) : -1
 			);
 
 		} else if (Dungeon.level.insideMap(pos) && map[pos+mapWidth] == Terrain.DOOR ) {

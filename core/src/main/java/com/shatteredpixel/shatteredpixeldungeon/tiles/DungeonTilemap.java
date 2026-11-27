@@ -75,6 +75,11 @@ public abstract class DungeonTilemap extends Tilemap {
 
 	protected abstract int getTileVisual(int pos, int tile, boolean flat);
 
+	//what a cell counts as when its neighbours are working out how to look
+	protected int stitchAt(int cell){
+		return DungeonTileSheet.stitchTerrain(map, cell, mapWidth);
+	}
+
 	public int screenToTile(int x, int y ){
 		return screenToTile(x, y, false);
 	}

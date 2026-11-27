@@ -49,6 +49,12 @@ public class Noisemaker extends Bomb {
 		return new NoisemakerFuse();
 	}
 
+	//it waits for someone to walk up to it, which nobody on foot could do out there
+	@Override
+	public boolean goesOffOnDeepWater() {
+		return false;
+	}
+
 	@Override
 	public boolean doPickUp(Hero hero, int pos) {
 		//cannot pickup after first trigger

@@ -70,7 +70,9 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.PrisonLevel;
 import com.shatteredpixel.shatteredpixeldungeon.levels.RegularLevel;
 import com.shatteredpixel.shatteredpixeldungeon.levels.SewerBossLevel;
 import com.shatteredpixel.shatteredpixeldungeon.levels.SewerLevel;
+import com.shatteredpixel.shatteredpixeldungeon.levels.regions.Region;
 import com.shatteredpixel.shatteredpixeldungeon.levels.VaultLevel;
+import com.shatteredpixel.shatteredpixeldungeon.levels.features.DeepWater;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.LevelTransition;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.secret.SecretRoom;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.SpecialRoom;
@@ -84,6 +86,7 @@ import com.watabou.noosa.Game;
 import com.watabou.utils.BArray;
 import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
+import com.watabou.utils.DeviceCompat;
 import com.watabou.utils.FileUtils;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
@@ -214,6 +217,9 @@ public class Dungeon {
 	public static long seed;
 	public static long lastPlayed;
 
+	//half of all runs go through a jungle instead of the sewers
+	public static boolean jungle;
+
 	//we initialize the seed separately so that things like interlevelscene can access it early
 	public static void initSeed(){
 		if (daily) {
@@ -229,8 +235,34 @@ public class Dungeon {
 			customSeedText = "";
 			seed = DungeonSeed.randomSeed();
 		}
+		//picked here as well, the loading screen needs it before init() runs
+		jungle = rollJungle(seed);
 	}
-	
+
+	//decides the first region from the seed alone, so replaying a seed gives the same one.
+	//Uses its own generator so the rest of levelgen isn't shifted
+	public static boolean rollJungle(long seed){
+		if (DeviceCompat.isDebug()){
+			//lets us force a region while testing
+			String forced = System.getenv("OPD_REGION");
+			if ("jungle".equals(forced)) return true;
+			if ("sewers".equals(forced)) return false;
+		}
+		Random.pushGenerator( seed + 0x4A554E474C45L );
+			boolean result = Random.Int(2) == 0;
+		Random.popGenerator();
+		return result;
+	}
+
+	public static boolean inJungle(){
+		return inJungle(depth);
+	}
+
+	//the given depth is on the current branch. Quest sub-floors are never jungle
+	public static boolean inJungle(int depth){
+		return jungle && branch == 0 && depth <= 5;
+	}
+
 	public static void init() {
 
 		initialVersion = version = Game.versionCode;
@@ -307,7 +339,8 @@ public class Dungeon {
 				case 2:
 				case 3:
 				case 4:
-					level = new SewerLevel();
+					level = Region.at(depth).newLevel();
+					if (level == null) level = new SewerLevel();
 					break;
 				case 5:
 					level = new SewerBossLevel();
@@ -489,6 +522,13 @@ public class Dungeon {
 
 		Actor.init();
 
+		//a beacon can send us back to a spot in deep water. If we can't float, wade out
+		DeepWater.expel( hero );
+		//same for allies who found no room next to us
+		for (Mob m : level.mobs){
+			DeepWater.expel( m );
+		}
+
 		level.addRespawner();
 		
 		for(Mob m : level.mobs){
@@ -605,6 +645,7 @@ public class Dungeon {
 	private static final String CUSTOM_SEED	= "custom_seed";
 	private static final String DAILY	    = "daily";
 	private static final String DAILY_REPLAY= "daily_replay";
+	private static final String JUNGLE		= "jungle";
 	private static final String LAST_PLAYED = "last_played";
 	private static final String CHALLENGES	= "challenges";
 	private static final String MOBS_TO_CHAMPION	= "mobs_to_champion";
@@ -632,6 +673,7 @@ public class Dungeon {
 			bundle.put( CUSTOM_SEED, customSeedText );
 			bundle.put( DAILY, daily );
 			bundle.put( DAILY_REPLAY, dailyReplay );
+			bundle.put( JUNGLE, jungle );
 			bundle.put( LAST_PLAYED, lastPlayed = Game.realTime);
 			bundle.put( CHALLENGES, challenges );
 			bundle.put( MOBS_TO_CHAMPION, mobsToChampion );
@@ -732,6 +774,8 @@ public class Dungeon {
 		customSeedText = bundle.getString( CUSTOM_SEED );
 		daily = bundle.getBoolean( DAILY );
 		dailyReplay = bundle.getBoolean( DAILY_REPLAY );
+		//false when the key is missing, so saves from older verisons stay in the sewers
+		jungle = bundle.getBoolean( JUNGLE );
 
 		Actor.clear();
 		Actor.restoreNextID( bundle );
@@ -864,6 +908,7 @@ public class Dungeon {
 		info.customSeed = bundle.getString( CUSTOM_SEED );
 		info.daily = bundle.getBoolean( DAILY );
 		info.dailyReplay = bundle.getBoolean( DAILY_REPLAY );
+		info.jungle = bundle.getBoolean( JUNGLE );
 		info.lastPlayed = bundle.getLong( LAST_PLAYED );
 
 		Hero.preview( info, bundle.getBundle( HERO ) );

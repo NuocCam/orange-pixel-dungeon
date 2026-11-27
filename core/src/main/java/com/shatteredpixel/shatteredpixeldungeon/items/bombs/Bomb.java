@@ -45,6 +45,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfRage;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfRecharging;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfRemoveCurse;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Catalog;
+import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Languages;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
@@ -132,7 +133,27 @@ public class Bomb extends Item {
 			fuse.snuff();
 			fuse = null;
 		}
-		return super.doPickUp(hero, pos);
+		if (super.doPickUp(hero, pos)){
+			return true;
+		}
+		washAshore();
+		return false;
+	}
+
+	//a lit bomb thrown onto deep water explodes right there, like it would anywhere else
+	public boolean goesOffOnDeepWater(){
+		return fuse != null;
+	}
+
+	//once it isn't going to explode, a bomb left on deep water washes up like anything else
+	private void washAshore(){
+		for (Heap heap : Dungeon.level.heaps.valueList()) {
+			if (heap.items.contains(this) && Dungeon.level.map[heap.pos] == Terrain.DEEP_WATER) {
+				heap.remove(this);
+				Dungeon.level.drop(this, heap.pos);
+				return;
+			}
+		}
 	}
 
 	public void explode(int cell){
@@ -321,6 +342,7 @@ public class Bomb extends Item {
 		public boolean freeze(){
 			bomb.fuse = null;
 			snuff();
+			bomb.washAshore();
 			return true;
 		}
 

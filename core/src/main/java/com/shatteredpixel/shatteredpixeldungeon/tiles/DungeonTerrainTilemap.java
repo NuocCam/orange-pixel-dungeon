@@ -51,15 +51,24 @@ public class DungeonTerrainTilemap extends DungeonTilemap {
 					}
 				}
 			}
+			visual = DungeonTileSheet.pathVisual(visual, map, pos, mapWidth);
 			return DungeonTileSheet.getVisualWithAlts(visual, pos);
 		}
 
 		if (tile == Terrain.WATER) {
 			return DungeonTileSheet.stitchWaterTile(
-					map[pos + PathFinder.CIRCLE4[0]],
-					map[pos + PathFinder.CIRCLE4[1]],
-					map[pos + PathFinder.CIRCLE4[2]],
-					map[pos + PathFinder.CIRCLE4[3]]
+					stitchAt(pos + PathFinder.CIRCLE4[0]),
+					stitchAt(pos + PathFinder.CIRCLE4[1]),
+					stitchAt(pos + PathFinder.CIRCLE4[2]),
+					stitchAt(pos + PathFinder.CIRCLE4[3])
+			);
+
+		} else if (tile == Terrain.DEEP_WATER) {
+			return DungeonTileSheet.stitchDeepWaterTile(
+					stitchAt(pos + PathFinder.CIRCLE4[0]),
+					stitchAt(pos + PathFinder.CIRCLE4[1]),
+					stitchAt(pos + PathFinder.CIRCLE4[2]),
+					stitchAt(pos + PathFinder.CIRCLE4[3])
 			);
 
 		} else if (tile == Terrain.CHASM) {
@@ -73,9 +82,9 @@ public class DungeonTerrainTilemap extends DungeonTilemap {
 				return DungeonTileSheet.getRaisedWallTile(
 						tile,
 						pos,
-						(pos+1) % mapWidth != 0 ?   map[pos + 1] : -1,
-						pos + mapWidth < size ?     map[pos + mapWidth] : -1,
-						pos % mapWidth != 0 ?       map[pos - 1] : -1
+						(pos+1) % mapWidth != 0 ?   stitchAt(pos + 1) : -1,
+						pos + mapWidth < size ?     stitchAt(pos + mapWidth) : -1,
+						pos % mapWidth != 0 ?       stitchAt(pos - 1) : -1
 						);
 			} else if (tile == Terrain.STATUE) {
 				return DungeonTileSheet.RAISED_STATUE;

@@ -24,6 +24,7 @@ package com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
+import com.shatteredpixel.shatteredpixeldungeon.levels.regions.Region;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.Room;
 import com.watabou.utils.Point;
 import com.watabou.utils.Random;
@@ -188,7 +189,9 @@ public abstract class StandardRoom extends Room {
 	
 	
 	public static StandardRoom createRoom(){
-		return Reflection.newInstance(rooms.get(Random.chances(chances[Dungeon.depth])));
+		int index = Random.chances(chances[Dungeon.depth]);
+		StandardRoom local = Region.at(Dungeon.depth).newStandardRoom(index);
+		return local != null ? local : Reflection.newInstance(rooms.get(index));
 	}
 	
 }

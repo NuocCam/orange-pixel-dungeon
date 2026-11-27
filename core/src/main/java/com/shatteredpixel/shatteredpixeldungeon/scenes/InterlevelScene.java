@@ -40,6 +40,7 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.Chasm;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.LevelTransition;
+import com.shatteredpixel.shatteredpixeldungeon.levels.regions.Region;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.SpecialRoom;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.ui.GameLog;
@@ -116,7 +117,16 @@ public class InterlevelScene extends PixelScene {
 	{
 		inGameScene = true;
 	}
-	
+
+	//like the seed, a continued game isn't loaded yet when this screen is built,
+	// so we have to ask the save slot wich region it was in
+	public static Region loadingRegion(){
+		if (mode == Mode.CONTINUE){
+			return Region.ofSave(GamesInProgress.check(GamesInProgress.curSlot));
+		}
+		return Region.ofRun();
+	}
+
 	@Override
 	public void create() {
 		super.create();
@@ -177,6 +187,12 @@ public class InterlevelScene extends PixelScene {
 		Random.pushGenerator(seed+lastRegion);
 			switch (lastRegion){
 				case 1:
+					Region first = loadingRegion();
+					if (first.loadingSplash() != null){
+						loadingAsset = first.loadingSplash();
+						loadingCenter = first.loadingCenter();
+						break;
+					}
 					loadingAsset = Assets.Splashes.SEWERS;
 					switch (Random.Int(2)){
 						case 0: loadingCenter = 180; break; //focus on rats and left side
@@ -278,7 +294,8 @@ public class InterlevelScene extends PixelScene {
 
 		if (mode == Mode.DESCEND && lastRegion <= 5 && !DeviceCompat.isDebug()){
 			if (Dungeon.hero == null || (loadingDepth > Statistics.deepestFloor && loadingDepth % 5 == 1)){
-					storyMessage = PixelScene.renderTextBlock(Document.INTROS.pageBody(region), 6);
+					String introPage = Document.introPage(region);
+					storyMessage = PixelScene.renderTextBlock(Document.INTROS.pageBody(introPage), 6);
 					storyMessage.maxWidth( PixelScene.landscape() ? 180 : 125);
 					storyMessage.setPos(insets.left+(w-storyMessage.width())/2f, insets.top+(h-storyMessage.height())/2f);
 
@@ -295,7 +312,7 @@ public class InterlevelScene extends PixelScene {
 							timeLeft = fadeTime;
 
 							btnContinue.enable(false);
-							Document.INTROS.readPage(region);
+							Document.INTROS.readPage(introPage);
 						}
 					};
 					btnContinue.icon(Icons.STAIRS.get());
@@ -327,7 +344,7 @@ public class InterlevelScene extends PixelScene {
 									phase = Phase.FADE_OUT;
 									timeLeft = fadeTime;
 									btnContinue.enable(false);
-									Document.INTROS.readPage(region);
+									Document.INTROS.readPage(introPage);
 								}
 								return true;
 							}

@@ -32,6 +32,7 @@ import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
 import com.shatteredpixel.shatteredpixeldungeon.levels.RegularLevel;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
+import com.shatteredpixel.shatteredpixeldungeon.levels.features.DeepWater;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.Room;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.quest.vault.treasure.VaultTreasureRoom;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.secret.SecretRoom;
@@ -73,6 +74,7 @@ public class ScrollOfTeleportation extends Scroll {
 		PathFinder.buildDistanceMap(pos, BArray.or(Dungeon.level.passable, Dungeon.level.avoid, null));
 		if (PathFinder.distance[ch.pos] == Integer.MAX_VALUE
 				|| (!Dungeon.level.passable[pos] && !Dungeon.level.avoid[pos])
+				|| DeepWater.blocks(ch, pos)
 				|| (Actor.findChar(pos) != null && Actor.findChar(pos) != ch)){
 			if (ch == Dungeon.hero){
 				GLog.w( Messages.get(ScrollOfTeleportation.class, "cant_reach") );

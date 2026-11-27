@@ -21,11 +21,15 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.items.stones;
 
+import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfTeleportation;
+import com.shatteredpixel.shatteredpixeldungeon.levels.features.DeepWater;
 import com.shatteredpixel.shatteredpixeldungeon.mechanics.Ballistica;
+import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
+import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 
 public class StoneOfBlink extends Runestone {
 	
@@ -47,6 +51,13 @@ public class StoneOfBlink extends Runestone {
 			cell = throwPath.path.get(throwPath.dist-1);
 		}
 		throwPath = null;
+
+		//nowhere to blink to out there, so the stone isn't used up
+		if (DeepWater.blocks(curUser, cell)){
+			GLog.w( Messages.get(ScrollOfTeleportation.class, "cant_reach") );
+			if (!anonymous) Dungeon.level.drop( this, cell ).sprite.drop( cell );
+			return;
+		}
 		super.onThrow(cell);
 	}
 	

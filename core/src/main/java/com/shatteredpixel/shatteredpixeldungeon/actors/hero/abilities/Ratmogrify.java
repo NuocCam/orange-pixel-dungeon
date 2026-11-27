@@ -43,6 +43,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfTeleportat
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.exotic.ScrollOfSirensSong;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Bestiary;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Notes;
+import com.shatteredpixel.shatteredpixeldungeon.levels.features.DeepWater;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.RatSprite;
@@ -161,6 +162,8 @@ public class Ratmogrify extends ArmorAbility {
 			}
 
 			GameScene.add(rat);
+			//rats can't float, whatever they used to be
+			DeepWater.expel(rat);
 
 			TargetHealthIndicator.instance.target(null);
 			CellEmitter.get(rat.pos).burst(Speck.factory(Speck.WOOL), 4);

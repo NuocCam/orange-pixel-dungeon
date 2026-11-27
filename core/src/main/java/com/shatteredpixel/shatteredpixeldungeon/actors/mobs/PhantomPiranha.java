@@ -63,7 +63,7 @@ public class PhantomPiranha extends Piranha {
 				if (!Dungeon.level.adjacent(pos, dmgSource.pos)) {
 					ArrayList<Integer> candidates = new ArrayList<>();
 					for (int i : PathFinder.NEIGHBOURS8) {
-						if (Dungeon.level.water[dmgSource.pos + i] && Actor.findChar(dmgSource.pos + i) == null) {
+						if (Dungeon.level.water[dmgSource.pos + i] && Dungeon.level.passable[dmgSource.pos + i] && Actor.findChar(dmgSource.pos + i) == null) {
 							candidates.add(dmgSource.pos + i);
 						}
 					}
@@ -105,7 +105,7 @@ public class PhantomPiranha extends Piranha {
 		ArrayList<Integer> inFOVCandidates = new ArrayList<>();
 		ArrayList<Integer> outFOVCandidates = new ArrayList<>();
 		for (int i = 0; i < Dungeon.level.length(); i++){
-			if (Dungeon.level.water[i] && Actor.findChar(i) == null){
+			if (Dungeon.level.water[i] && Dungeon.level.passable[i] && Actor.findChar(i) == null){
 				if (Dungeon.level.heroFOV[i]){
 					inFOVCandidates.add(i);
 				} else {

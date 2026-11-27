@@ -39,6 +39,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.ClassArmor;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
+import com.shatteredpixel.shatteredpixeldungeon.levels.features.DeepWater;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.Door;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
@@ -95,7 +96,7 @@ public class Feint extends ArmorAbility {
 			return;
 		}
 
-		if (Dungeon.level.solid[target] || Actor.findChar(target) != null){
+		if (Dungeon.level.solid[target] || DeepWater.blocks(hero, target) || Actor.findChar(target) != null){
 			GLog.w(Messages.get(this, "bad_location"));
 			return;
 		}

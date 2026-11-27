@@ -21,7 +21,9 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.levels.rooms.secret;
 
+import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.ShatteredPixelDungeon;
+import com.shatteredpixel.shatteredpixeldungeon.levels.regions.Region;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.SpecialRoom;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Random;
@@ -89,13 +91,19 @@ public abstract class SecretRoom extends SpecialRoom {
 	
 	public static SecretRoom createRoom(){
 
+		//some floors can't have every secret. Those ones keep their place in the queue
+		ArrayList<Class<? extends SecretRoom>> queue = new ArrayList<>(runSecrets);
+		Region.at(Dungeon.depth).removeSecrets(queue);
+
 		//60% chance for front of queue, 30% chance for next, 10% for one after that
 		int index = Random.chances(new float[]{6, 3, 1});
-		while (index >= runSecrets.size()) index--;
+		while (index >= queue.size()) index--;
 
-		SecretRoom r = Reflection.newInstance(runSecrets.get( index ));
+		Class<? extends SecretRoom> type = queue.get( index );
+		SecretRoom r = Reflection.newInstance(type);
 		
-		runSecrets.add(runSecrets.remove(index));
+		runSecrets.remove(type);
+		runSecrets.add(type);
 		
 		return r;
 	}

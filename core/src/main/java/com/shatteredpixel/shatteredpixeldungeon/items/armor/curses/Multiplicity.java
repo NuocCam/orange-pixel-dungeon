@@ -37,6 +37,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.MirrorImage;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.NPC;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfTeleportation;
+import com.shatteredpixel.shatteredpixeldungeon.levels.features.DeepWater;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.watabou.utils.Bundle;
@@ -90,12 +91,11 @@ public class Multiplicity extends Armor.Glyph {
 
 				if (m != null) {
 
-					if (Char.hasProp(m, Char.Property.LARGE)){
-						for ( int i : spawnPoints.toArray(new Integer[0])){
-							if (!Dungeon.level.openSpace[i]){
-								//remove the value, not at the index
-								spawnPoints.remove((Integer) i);
-							}
+					for ( int i : spawnPoints.toArray(new Integer[0])){
+						if ((Char.hasProp(m, Char.Property.LARGE) && !Dungeon.level.openSpace[i])
+								|| DeepWater.blocks(m, i)){
+							//remove the value, not at the index
+							spawnPoints.remove((Integer) i);
 						}
 					}
 

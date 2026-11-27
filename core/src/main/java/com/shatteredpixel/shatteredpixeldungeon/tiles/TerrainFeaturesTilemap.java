@@ -66,6 +66,13 @@ public class TerrainFeaturesTilemap extends DungeonTilemap {
 			return plants.get(pos).image + 7*16;
 		}
 
+		//grass, doors, statues and such may already be on the level's own tile sheet.
+		//Embers and the mine pieces still come from here
+		if (Dungeon.level.sheetHasFeatures() && tile != Terrain.EMBERS
+				&& tile != Terrain.MINE_CRYSTAL && tile != Terrain.MINE_BOULDER){
+			return -1;
+		}
+
 		int stage = (Dungeon.depth-1)/5;
 		if (Dungeon.depth == 21 && Dungeon.level instanceof LastShopLevel) stage--;
 		stage = Math.min(stage, 4);

@@ -33,6 +33,7 @@ import com.shatteredpixel.shatteredpixeldungeon.effects.MagicMissile;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfTeleportation;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
+import com.shatteredpixel.shatteredpixeldungeon.levels.features.DeepWater;
 import com.shatteredpixel.shatteredpixeldungeon.mechanics.Ballistica;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.CellSelector;
@@ -158,6 +159,10 @@ public class LloydsBeacon extends Artifact {
 		} else if (action == AC_RETURN) {
 			
 			if (returnDepth == Dungeon.depth) {
+				if (DeepWater.blocks( hero, returnPos )){
+					GLog.w( Messages.get(ScrollOfTeleportation.class, "cant_reach") );
+					return;
+				}
 				ScrollOfTeleportation.appear( hero, returnPos );
 				for(Mob m : Dungeon.level.mobs){
 					if (m.pos == hero.pos){

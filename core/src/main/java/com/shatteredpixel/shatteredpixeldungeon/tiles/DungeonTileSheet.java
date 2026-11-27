@@ -25,6 +25,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Blacksmith;
 import com.shatteredpixel.shatteredpixeldungeon.levels.MiningLevel;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
+import com.shatteredpixel.shatteredpixeldungeon.levels.features.WallPath;
 import com.watabou.utils.Random;
 import com.watabou.utils.SparseArray;
 
@@ -75,6 +76,40 @@ public class DungeonTileSheet {
 	public static final int PEDESTAL        = GROUND +20;
 
 	public static final int ENTRANCE_SP     = GROUND +22;
+
+	//for sheets with Level.wallPaths(): the way up and down as a notch in the side or bottom of the tree line.
+	//+0 in a left wall, +1 in a right wall, +2 in a bottom wall.
+	//A path in a top wall just uses ENTRANCE, EXIT or ENTRANCE_SP.
+	public static final int PATH_UP         =                               xy(14, 1);  //3 slots
+	public static final int PATH_DOWN       =                               xy(14, 2);  //3 slots
+
+	public static int pathVisual(int visual, int[] map, int pos, int width){
+		if (visual != ENTRANCE && visual != ENTRANCE_SP && visual != EXIT) return visual;
+		if (!Dungeon.level.wallPaths()) return visual;
+
+		int path = visual == EXIT ? PATH_DOWN : PATH_UP;
+		int opening = WallPath.opening(map, pos, width);
+		if (opening == 1)               return path;
+		else if (opening == -1)         return path+1;
+		else if (opening == -width)     return path+2;
+		else                            return visual;
+	}
+
+	//The terrain a cell should be stitched as, which is nearly allways just what it is.
+	//With wall paths, stairs in a top wall are part of the tree line: still floor to walk on,
+	// but drawn like a locked exit, with wall either side and canopy over the top.
+	public static int stitchTerrain(int tile, int[] map, int pos, int width){
+		if ((tile == Terrain.ENTRANCE || tile == Terrain.ENTRANCE_SP || tile == Terrain.EXIT)
+				&& Dungeon.level.wallPaths()
+				&& WallPath.opening(map, pos, width) == width){
+			return Terrain.UNLOCKED_EXIT;
+		}
+		return tile;
+	}
+
+	public static int stitchTerrain(int[] map, int pos, int width){
+		return stitchTerrain(map[pos], map, pos, width);
+	}
 
 	public static final int CHASM           =                               xy(9, 2);   //8 slots
 	//chasm stitching visuals...
@@ -175,8 +210,31 @@ public class DungeonTileSheet {
 		return result;
 	}
 
+	//deep water is see-through, over the same moving water as the shallows. Its tiles are
+	// scattered over spare slots on the sheet, same bits as above.
+	//against land there's a steep bank, and the bits are for ground on that side
+	private static final int[] DEEP_BANK = {
+			132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 248, 249, 250, 251};
+	//next to shallow water it just fades out, bits are for anything which isn't deep
+	private static final int[] DEEP_SOFT = {
+			117, 118, 119, 124, 127, 204, 205, 206, 207, 231, 236, 239, 252, 253, 254, 255};
+
+	public static int stitchDeepWaterTile(int top, int right, int bottom, int left){
+		int[] sides = {top, right, bottom, left};
+		int ground = 0, edge = 0;
+		boolean shallows = false;
+		for (int i = 0; i < sides.length; i++){
+			if (sides[i] == Terrain.WATER) shallows = true;
+			if (sides[i] != Terrain.DEEP_WATER){
+				edge += 1 << i;
+				if (sides[i] != Terrain.WATER && !wallStitcheable(sides[i])) ground += 1 << i;
+			}
+		}
+		return shallows ? DEEP_SOFT[edge] : DEEP_BANK[ground];
+	}
+
 	public static boolean floorTile(int tile){
-		return tile == Terrain.WATER || directVisuals.get(tile, CHASM) < CHASM;
+		return tile == Terrain.WATER || tile == Terrain.DEEP_WATER || directVisuals.get(tile, CHASM) < CHASM;
 	}
 
 

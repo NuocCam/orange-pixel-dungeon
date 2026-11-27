@@ -36,6 +36,7 @@ import com.shatteredpixel.shatteredpixeldungeon.effects.Pushing;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Weapon;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MagesStaff;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
+import com.shatteredpixel.shatteredpixeldungeon.levels.features.DeepWater;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.Door;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.TenguDartTrap;
 import com.shatteredpixel.shatteredpixeldungeon.mechanics.Ballistica;
@@ -139,6 +140,15 @@ public class WandOfBlastWave extends DamageWand {
 					collided = true;
 					break;
 				}
+			}
+		}
+
+		//anything on foot is pulled up short at the edge of deep water, unhurt
+		for (int i = 1; i <= dist; i++) {
+			if (DeepWater.blocks(ch, trajectory.path.get(i))){
+				dist = i-1;
+				collided = false;
+				break;
 			}
 		}
 

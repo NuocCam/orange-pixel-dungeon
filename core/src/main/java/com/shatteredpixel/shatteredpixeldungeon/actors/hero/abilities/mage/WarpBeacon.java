@@ -36,6 +36,7 @@ import com.shatteredpixel.shatteredpixeldungeon.effects.Pushing;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.ClassArmor;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfTeleportation;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
+import com.shatteredpixel.shatteredpixeldungeon.levels.features.DeepWater;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.InterlevelScene;
@@ -111,6 +112,14 @@ public class WarpBeacon extends ArmorAbility {
 							return;
 						}
 
+						//checked before anything is spent or anyone gets shoved. From
+						// another floor switchLevel takes care of it
+						if (tracker.depth == Dungeon.depth && tracker.branch == Dungeon.branch
+								&& DeepWater.blocks(hero, tracker.pos)){
+							GLog.w( Messages.get(ScrollOfTeleportation.class, "cant_reach") );
+							return;
+						}
+
 						armor.charge -= chargeNeeded;
 						armor.updateQuickslot();
 
@@ -144,6 +153,7 @@ public class WarpBeacon extends ArmorAbility {
 									for (int n : PathFinder.NEIGHBOURS8) {
 										int cell = tracker.pos + n;
 										if (!Dungeon.level.solid[cell] && Actor.findChar( cell ) == null
+												&& !DeepWater.blocks(toPush, cell)
 												&& (!Char.hasProp(toPush, Char.Property.LARGE) || Dungeon.level.openSpace[cell])) {
 											candidates.add( cell );
 										}

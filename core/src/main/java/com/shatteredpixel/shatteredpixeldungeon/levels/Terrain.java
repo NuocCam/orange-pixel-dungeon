@@ -69,6 +69,8 @@ public class Terrain {
 	public static final int MINE_BOULDER    = 36;
 
 	public static final int WATER		    = 29;
+	//too deep to wade into, only things which float get across. Nothing falls into it
+	public static final int DEEP_WATER	    = 40;
 	
 	public static final int PASSABLE		= 0x01;
 	public static final int LOS_BLOCKING	= 0x02;
@@ -86,6 +88,7 @@ public class Terrain {
 		flags[GRASS]		= PASSABLE | FLAMABLE;
 		flags[EMPTY_WELL]	= PASSABLE;
 		flags[WATER]		= PASSABLE | LIQUID;
+		flags[DEEP_WATER]	= AVOID | LIQUID;
 		flags[WALL]			= LOS_BLOCKING | SOLID;
 		flags[DOOR]			= PASSABLE | LOS_BLOCKING | FLAMABLE | SOLID;
 		flags[OPEN_DOOR]	= PASSABLE | FLAMABLE;

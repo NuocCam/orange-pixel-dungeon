@@ -168,6 +168,7 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.MiningLevel;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.levels.VaultLevel;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.Chasm;
+import com.shatteredpixel.shatteredpixeldungeon.levels.features.DeepWater;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.LevelTransition;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.WeakFloorRoom;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.Trap;
@@ -1951,7 +1952,8 @@ public class Hero extends Char {
 			path = null;
 
 			if (Actor.findChar( target ) == null) {
-				if (Dungeon.level.passable[target] || Dungeon.level.avoid[target]) {
+				if ((Dungeon.level.passable[target] || Dungeon.level.avoid[target])
+						&& !DeepWater.blocks(this, target)) {
 					step = target;
 				}
 				if (walkingToVisibleTrapInFog

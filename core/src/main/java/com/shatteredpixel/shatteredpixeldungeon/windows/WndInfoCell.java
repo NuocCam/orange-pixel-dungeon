@@ -41,7 +41,7 @@ public class WndInfoCell extends Window {
 
 	public static Image cellImage( int cell ){
 		int tile = Dungeon.level.map[cell];
-		if (Dungeon.level.water[cell]) {
+		if (Dungeon.level.water[cell] && tile != Terrain.DEEP_WATER) {
 			tile = Terrain.WATER;
 		} else if (Dungeon.level.pit[cell]) {
 			tile = Terrain.CHASM;

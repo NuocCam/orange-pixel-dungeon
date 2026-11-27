@@ -30,6 +30,7 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.LevelTransition;
 import com.shatteredpixel.shatteredpixeldungeon.levels.painters.Painter;
+import com.shatteredpixel.shatteredpixeldungeon.levels.regions.Region;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.Room;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.StandardRoom;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.exit.CircleWallEntranceRoom;
@@ -182,7 +183,13 @@ public class EntranceRoom extends StandardRoom {
 	}
 
 	public static StandardRoom createEntrance(){
-		return Reflection.newInstance(rooms.get(Random.chances(chances[Dungeon.depth])));
+		//the roll happens in every region, even in one which then uses its own room
+		int index = Random.chances(chances[Dungeon.depth]);
+		StandardRoom own = Region.at(Dungeon.depth).newEntrance();
+		if (own != null){
+			return own;
+		}
+		return Reflection.newInstance(rooms.get(index));
 	}
 
 }
