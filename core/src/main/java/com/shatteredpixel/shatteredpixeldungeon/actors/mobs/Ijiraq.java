@@ -31,7 +31,9 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Dread;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.jungle.*;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.ShadowParticle;
+import com.shatteredpixel.shatteredpixeldungeon.items.Gold;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
+import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfHealing;
 import com.shatteredpixel.shatteredpixeldungeon.items.quest.GeckoTail;
 import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.RatSkull;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
@@ -302,6 +304,21 @@ public class Ijiraq extends Mob {
 		Item item = form.createLoot();
 		//there's no tail to take, it was never really a gecko
 		return item instanceof GeckoTail ? null : item;
+	}
+
+	//so the reward is only handed out once, however many things finish it off
+	private boolean rewarded = false;
+
+	//always there on top of the disguise's own loot, whatever the hero's level is
+	@Override
+	public void die( Object cause ) {
+		super.die( cause );
+		if (!rewarded){
+			rewarded = true;
+			//dropping on deep water washes things up on the shore
+			Dungeon.level.drop( new PotionOfHealing(), pos ).sprite.drop();
+			Dungeon.level.drop( new Gold().random(), pos ).sprite.drop();
+		}
 	}
 
 	private static final String FORM     = "form";

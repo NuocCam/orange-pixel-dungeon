@@ -21,6 +21,7 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.journal;
 
+import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.items.quest.BearPelt;
 import com.shatteredpixel.shatteredpixeldungeon.items.quest.DireWolfPelt;
 import com.shatteredpixel.shatteredpixeldungeon.items.quest.WolfPelt;
@@ -36,6 +37,8 @@ public class JungleRecords {
 	private static final LinkedHashSet<Class<?>> wonOver = new LinkedHashSet<>();
 
 	public static void sold( Class<?> item ){
+		//same as the badges themselves, picked seeds don't count
+		if (!Dungeon.customSeedText.isEmpty()) return;
 		if (sold.add(item)) Journal.saveNeeded = true;
 	}
 
@@ -45,6 +48,7 @@ public class JungleRecords {
 
 	//an animal which took a berry and joined the hero
 	public static void wonOver( Class<?> animal ){
+		if (!Dungeon.customSeedText.isEmpty()) return;
 		if (wonOver.add(animal)) Journal.saveNeeded = true;
 	}
 

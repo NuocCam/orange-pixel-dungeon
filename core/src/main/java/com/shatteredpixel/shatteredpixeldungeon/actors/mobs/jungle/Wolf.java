@@ -36,7 +36,7 @@ public class Wolf extends JungleAnimal {
 		HP = HT = 15;
 		defenseSkill = 5;
 
-		EXP = 4;
+		EXP = 3;
 		maxLvl = 9;
 	}
 

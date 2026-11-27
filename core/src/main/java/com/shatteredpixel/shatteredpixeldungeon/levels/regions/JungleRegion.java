@@ -92,10 +92,21 @@ public class JungleRegion extends Region {
 
 	@Override
 	public Class<? extends Mob> rareAlt( int depth, Class<? extends Mob> cls ) {
-		//no geckos waiting on the very first floor
+		//a gecko is too much for a fresh hero
 		if (cls == Skink.class)  return depth > 1 ? Gecko.class : null;
 		if (cls == Wolf.class)   return DireWolf.class;
 		return super.rareAlt(depth, cls);
+	}
+
+	//floors should see as many rare ones as the sewer floors do. There 3, 4, 5 and 5 mobs
+	// of a rotation have a rare version, here it's only 3, 2, 2 and 2
+	@Override
+	public float rareAltScale( int depth ) {
+		switch (depth){
+			case 2:             return 4/2f;
+			case 3: case 4:     return 5/2f;
+			default:            return 1f;
+		}
 	}
 
 	@SafeVarargs

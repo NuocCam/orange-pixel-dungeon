@@ -21,6 +21,7 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.items.artifacts;
 
+import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
@@ -29,7 +30,11 @@ import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.ui.BuffIndicator;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
+import com.watabou.noosa.audio.Sample;
+import com.watabou.utils.Bundle;
 import com.watabou.utils.Random;
+
+import java.util.ArrayList;
 
 public class CapeOfThorns extends Artifact {
 
@@ -42,7 +47,65 @@ public class CapeOfThorns extends Artifact {
 		chargeCap = 100;
 		cooldown = 0;
 
-		defaultAction = "NONE"; //so it can be quickslotted
+		defaultAction = AC_ACTIVATE;
+	}
+
+	public static final String AC_ACTIVATE = "ACTIVATE";
+
+	@Override
+	public ArrayList<String> actions(Hero hero) {
+		ArrayList<String> actions = super.actions(hero);
+		if (isEquipped(hero) && cooldown == 0 && charge >= chargeCap) {
+			actions.add(AC_ACTIVATE);
+		}
+		return actions;
+	}
+
+	@Override
+	public void execute(Hero hero, String action) {
+		super.execute(hero, action);
+
+		if (action.equals(AC_ACTIVATE)) {
+			if (!isEquipped(hero)) {
+				GLog.i(Messages.get(Artifact.class, "need_to_equip"));
+			} else if (cooldown > 0 || charge < chargeCap) {
+				GLog.i(Messages.get(this, "not_charged"));
+			} else {
+				//takes no time, so it can be saved for the right moment
+				charge = 0;
+				cooldown = 10+level();
+				Sample.INSTANCE.play(Assets.Sounds.CHARGEUP);
+				GLog.p(Messages.get(Thorns.class, "radiating"));
+				updateQuickslot();
+				//no turn goes by, so the buff icon has to be told
+				BuffIndicator.refreshHero();
+			}
+		}
+	}
+
+	private static final String COOLDOWN = "cooldown";
+
+	//the turns left while it's switched on
+	@Override
+	public void storeInBundle(Bundle bundle) {
+		super.storeInBundle(bundle);
+		bundle.put(COOLDOWN, cooldown);
+	}
+
+	@Override
+	public void restoreFromBundle(Bundle bundle) {
+		super.restoreFromBundle(bundle);
+		//older saves don't have it, which reads as 0
+		cooldown = bundle.getInt(COOLDOWN);
+	}
+
+	//fills up and then waits to be used
+	private void gain(int amount) {
+		if (charge >= chargeCap) return;
+		charge = Math.min(chargeCap, charge + amount);
+		if (charge == chargeCap) {
+			GLog.p(Messages.get(Thorns.class, "ready"));
+		}
 	}
 
 	@Override
@@ -53,11 +116,8 @@ public class CapeOfThorns extends Artifact {
 	@Override
 	public void charge(Hero target, float amount) {
 		if (cooldown == 0) {
-			charge += Math.round(4*amount);
+			gain(Math.round(4*amount));
 			updateQuickslot();
-		}
-		if (charge >= chargeCap){
-			target.buff(Thorns.class).proc(0, null, null);
 		}
 	}
 	
@@ -92,12 +152,7 @@ public class CapeOfThorns extends Artifact {
 
 		public int proc(int damage, Char attacker, Char defender){
 			if (cooldown == 0){
-				charge += damage*(0.5+level()*0.05);
-				if (charge >= chargeCap){
-					charge = 0;
-					cooldown = 10+level();
-					GLog.p( Messages.get(this, "radiating") );
-				}
+				gain((int)(damage*(0.5+level()*0.05)));
 			}
 
 			if (cooldown != 0){
@@ -110,8 +165,8 @@ public class CapeOfThorns extends Artifact {
 
 				exp+= deflected;
 
-				if (exp >= (level()+1)*5 && level() < levelCap){
-					exp -= (level()+1)*5;
+				if (exp >= (level()+1)*3 && level() < levelCap){
+					exp -= (level()+1)*3;
 					upgrade();
 					Catalog.countUse(CapeOfThorns.class);
 					GLog.p( Messages.get(this, "levelup") );

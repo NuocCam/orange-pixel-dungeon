@@ -50,6 +50,11 @@ public class Paralysis extends FlavourBuff {
 		}
 	}
 	
+	//time which no resistance cuts short
+	public void extend( float time ){
+		spend( time );
+	}
+
 	public void processDamage( int damage ){
 		if (target == null) return;
 		ParalysisResist resist = target.buff(ParalysisResist.class);

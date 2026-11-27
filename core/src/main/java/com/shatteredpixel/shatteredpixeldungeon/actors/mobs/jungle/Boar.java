@@ -65,7 +65,10 @@ public class Boar extends JungleAnimal {
 
 	//the marked cells of a charge which goes off next turn, otherwise null
 	private ArrayList<Integer> chargePath;
+	//where that one starts, and what it was aimed at
+	private int chargeFrom, chargeAim;
 	private boolean stunned = false;
+	private final LineCharge.SureSwing sureSwing = new LineCharge.SureSwing();
 
 	public static class ChargeCooldown extends FlavourBuff {}
 
@@ -75,6 +78,8 @@ public class Boar extends JungleAnimal {
 
 	@Override
 	protected boolean act() {
+		sureSwing.newTurn();
+
 		//it only gets another turn once the stun has worn off
 		if (stunned){
 			stunned = false;
@@ -98,10 +103,14 @@ public class Boar extends JungleAnimal {
 				|| Dungeon.level.distance(pos, enemy.pos) < CHARGE_RANGE){
 			return false;
 		}
-		ArrayList<Integer> path = LineCharge.path(pos, enemy.pos);
-		if (!path.contains(enemy.pos)) return false;
+		//nobody gets charged while they can't move out of the way
+		if (enemy.paralysed > 0) return false;
+		ArrayList<Integer> path = LineCharge.aim(pos, enemy.pos);
+		if (path == null) return false;
 
 		chargePath = path;
+		chargeFrom = pos;
+		chargeAim = enemy.pos;
 		//the same timing as Goo on badder bosses, so a slow hero still gets their turn
 		float delay = GameMath.gate(attackDelay(), (int)Math.ceil(enemy.cooldown()), 3*attackDelay());
 		for (int cell : path){
@@ -124,7 +133,7 @@ public class Boar extends JungleAnimal {
 		chargePath = null;
 		Buff.affect(this, ChargeCooldown.class, COOLDOWN);
 
-		LineCharge.Result result = LineCharge.run(this, path, this);
+		LineCharge.Result result = LineCharge.run(this, chargeFrom, chargeAim, path, this);
 		if (result.hit != null){
 			Invisibility.dispel(this);
 		} else if (result.hitWall){
@@ -132,7 +141,13 @@ public class Boar extends JungleAnimal {
 			stunned = isAlive();
 		}
 
-		spend(stunned ? attackDelay() + STUN_TURNS*TICK : attackDelay());
+		if (result.hit != null){
+			sureSwing.ready(result.hit);
+			//being slowed can't cost it the second swing
+			spendConstant(Math.min(TICK, attackDelay()));
+		} else {
+			spend(stunned ? attackDelay() + STUN_TURNS*TICK : attackDelay());
+		}
 		if (sprite != null && isAlive()){
 			sprite.idle();
 			updateSpriteState();
@@ -144,6 +159,11 @@ public class Boar extends JungleAnimal {
 			chargePath = null;
 			if (sprite != null) sprite.idle();
 		}
+	}
+
+	@Override
+	public boolean attack( Char enemy, float dmgMulti, float dmgBonus, float accMulti ) {
+		return super.attack(enemy, dmgMulti, dmgBonus, sureSwing.accuracy(enemy, accMulti));
 	}
 
 	//a boar which just made a friend isn't going to run them over
@@ -181,6 +201,8 @@ public class Boar extends JungleAnimal {
 	}
 
 	private static final String CHARGE_PATH = "charge_path";
+	private static final String CHARGE_FROM = "charge_from";
+	private static final String CHARGE_AIM  = "charge_aim";
 	private static final String STUNNED     = "stunned";
 
 	@Override
@@ -190,8 +212,11 @@ public class Boar extends JungleAnimal {
 			int[] cells = new int[chargePath.size()];
 			for (int i = 0; i < cells.length; i++) cells[i] = chargePath.get(i);
 			bundle.put(CHARGE_PATH, cells);
+			bundle.put(CHARGE_FROM, chargeFrom);
+			bundle.put(CHARGE_AIM, chargeAim);
 		}
 		bundle.put(STUNNED, stunned);
+		sureSwing.store(bundle);
 	}
 
 	@Override
@@ -200,8 +225,11 @@ public class Boar extends JungleAnimal {
 		if (bundle.contains(CHARGE_PATH)){
 			chargePath = new ArrayList<>();
 			for (int cell : bundle.getIntArray(CHARGE_PATH)) chargePath.add(cell);
+			chargeFrom = bundle.getInt(CHARGE_FROM);
+			chargeAim = bundle.getInt(CHARGE_AIM);
 		}
 		stunned = bundle.getBoolean(STUNNED);
+		sureSwing.restore(bundle);
 	}
 
 	@Override

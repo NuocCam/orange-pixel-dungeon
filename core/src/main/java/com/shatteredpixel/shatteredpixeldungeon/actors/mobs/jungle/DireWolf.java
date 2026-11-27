@@ -39,7 +39,7 @@ public class DireWolf extends JungleAnimal {
 		defenseSkill = 8;
 		baseSpeed = 2f;
 
-		EXP = 5;
+		EXP = 4;
 		maxLvl = 9;
 	}
 

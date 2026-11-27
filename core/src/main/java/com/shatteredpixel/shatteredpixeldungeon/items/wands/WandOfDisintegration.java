@@ -97,7 +97,8 @@ public class WandOfDisintegration extends DamageWand {
 						&& !(Dungeon.level.mapped[c] || Dungeon.level.visited[c])){
 					//avoid harming undiscovered passive chars
 				//a burning log can push someone further along the beam, they're only hit once
-				} else if (!chars.contains(ch)) {
+				//and the caster can get pushed into it too, which doesn't count
+				} else if (ch != Dungeon.hero && !chars.contains(ch)) {
 					chars.add(ch);
 				}
 			}

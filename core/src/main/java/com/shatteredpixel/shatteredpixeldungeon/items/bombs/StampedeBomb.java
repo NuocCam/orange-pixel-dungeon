@@ -52,7 +52,8 @@ public class StampedeBomb extends ArcaneBomb {
 		int damage = Random.NormalIntRange( 4 + Dungeon.scalingDepth(), 12 + 3*Dungeon.scalingDepth() );
 		damage -= ch.drRoll();
 		if (damage > 0) {
-			ch.damage(damage, this);
+			//a plain bomb as the source, or magic resistances would treat it like the arcane bomb
+			ch.damage(damage, new Bomb());
 		}
 
 		if (!ch.isAlive()){

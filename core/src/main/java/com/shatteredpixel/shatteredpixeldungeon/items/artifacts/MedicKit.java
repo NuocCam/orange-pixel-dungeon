@@ -36,6 +36,7 @@ import com.shatteredpixel.shatteredpixeldungeon.effects.FloatingText;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.Waterskin;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
+import com.shatteredpixel.shatteredpixeldungeon.items.bags.PotionBandolier;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfHealing;
 import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.VialOfBlood;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
@@ -288,7 +289,9 @@ public class MedicKit extends Artifact {
 
 		@Override
 		public Class<? extends Bag> preferredBag() {
-			return null;
+			//that's where the healing potions are. Without one, whichever bag was open last
+			return Dungeon.hero.belongings.getItem(PotionBandolier.class) != null
+					? PotionBandolier.class : null;
 		}
 
 		@Override

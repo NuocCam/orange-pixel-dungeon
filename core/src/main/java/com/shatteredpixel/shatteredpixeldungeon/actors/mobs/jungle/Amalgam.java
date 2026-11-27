@@ -41,6 +41,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Dread;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.FlavourBuff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Invisibility;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.LockedFloor;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Paralysis;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Terror;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.DriedRose;
@@ -111,8 +112,10 @@ public class Amalgam extends Mob {
 	private static final int PATIENCE = 10;
 	private static final int MEAL_HEALING = 10;
 
-	private static final float MOVE_COOLDOWN = 5;
+	private static final float MOVE_COOLDOWN = 4;
 	private static final int SPIT_RANGE = 6;
+	private static final float SLAM_PARALYSIS = 2;
+	private static final int SWEEP_KNOCKBACK = 3;
 
 	//how many have started, counting one which is still going
 	private int feedings = 0;
@@ -149,9 +152,12 @@ public class Amalgam extends Mob {
 
 	//the marked cells of a charge which goes off next turn, otherwise null
 	private ArrayList<Integer> chargePath;
+	//where that one starts, and what it was aimed at
+	private int chargeFrom, chargeAim;
 	//only true while that charge is being run
 	private boolean charging = false;
 	private boolean stunned = false;
+	private final LineCharge.SureSwing sureSwing = new LineCharge.SureSwing();
 	//on badder bosses one charge is followed by another, as soon as it can line one up
 	private boolean secondCharge = false;
 
@@ -159,7 +165,7 @@ public class Amalgam extends Mob {
 
 	@Override
 	public int damageRoll() {
-		if (move == Graft.BEAR) return Random.NormalIntRange( 6, 14 );
+		if (move == Graft.BEAR) return Random.NormalIntRange( 15, 25 );
 		return Random.NormalIntRange( 1, 8 );
 	}
 
@@ -180,6 +186,8 @@ public class Amalgam extends Mob {
 
 	@Override
 	protected boolean act() {
+		sureSwing.newTurn();
+
 		//it only gets another turn once the stun has worn off
 		if (stunned){
 			stunned = false;
@@ -217,10 +225,14 @@ public class Amalgam extends Mob {
 				|| Dungeon.level.distance(pos, enemy.pos) < CHARGE_RANGE)){
 			return false;
 		}
-		ArrayList<Integer> path = LineCharge.path(pos, enemy.pos);
-		if (!path.contains(enemy.pos)) return false;
+		//nobody gets charged while they can't move out of the way
+		if (enemy.paralysed > 0) return false;
+		ArrayList<Integer> path = LineCharge.aim(pos, enemy.pos);
+		if (path == null) return false;
 
 		chargePath = path;
+		chargeFrom = pos;
+		chargeAim = enemy.pos;
 		secondCharge = !secondCharge && Dungeon.isChallenged(Challenges.STRONGER_BOSSES);
 
 		warn(path, "charge");
@@ -251,7 +263,7 @@ public class Amalgam extends Mob {
 		Buff.prolong(this, ChargeCooldown.class, CHARGE_COOLDOWN);
 
 		charging = true;
-		LineCharge.Result result = LineCharge.run(this, path, this);
+		LineCharge.Result result = LineCharge.run(this, chargeFrom, chargeAim, path, this);
 		charging = false;
 
 		if (result.hit != null){
@@ -261,7 +273,13 @@ public class Amalgam extends Mob {
 			damage(Random.NormalIntRange(1, 4), this);
 		}
 
-		spend(stunned ? attackDelay() + STUN_TURNS*TICK : attackDelay());
+		if (result.hit != null){
+			sureSwing.ready(result.hit);
+			//being slowed can't cost it the second swing
+			spendConstant(Math.min(TICK, attackDelay()));
+		} else {
+			spend(stunned ? attackDelay() + STUN_TURNS*TICK : attackDelay());
+		}
 		if (sprite != null && isAlive()){
 			sprite.idle();
 			updateSpriteState();
@@ -462,6 +480,8 @@ public class Amalgam extends Mob {
 
 		ArrayList<Graft> usable = new ArrayList<>();
 		for (Graft graft : grafts){
+			//same rule as the charge, no wind up on somebody who can't get away
+			if (graft == Graft.BEAR && enemy.paralysed > 0) continue;
 			if (graft == Graft.TOAD ? canSpit() : Dungeon.level.adjacent(pos, enemy.pos)){
 				usable.add(graft);
 			}
@@ -531,7 +551,9 @@ public class Amalgam extends Mob {
 			Char ch = Actor.findChar(pos + offset);
 			if (ch != null && ch.alignment != Alignment.NEUTRAL && isAlive()){
 				//no dodging it, being somewhere else is how you do that
-				attack(ch, 1f, 0f, Char.INFINITE_ACCURACY);
+				if (attack(ch, 1f, 0f, Char.INFINITE_ACCURACY) && ch.isAlive()){
+					Buff.prolong(ch, Paralysis.class, SLAM_PARALYSIS);
+				}
 			}
 		}
 		move = null;
@@ -546,7 +568,13 @@ public class Amalgam extends Mob {
 			}
 		}
 		if (Dungeon.level.heroFOV[pos]) GLog.w(Messages.get(this, "spit"));
-		Buff.affect(enemy, Poison.class).set(5);
+		enemy.damage(Random.NormalIntRange(3, 6), this);
+		if (enemy.isAlive()){
+			Buff.affect(enemy, Poison.class).set(7);
+		} else if (enemy == Dungeon.hero){
+			Dungeon.fail(this);
+			GLog.n(Messages.capitalize(Messages.get(Char.class, "kill", name())));
+		}
 		moveUsed();
 	}
 
@@ -558,9 +586,14 @@ public class Amalgam extends Mob {
 		if (attack(target) && target.isAlive()){
 			WandOfBlastWave.throwChar(target,
 					new Ballistica(target.pos, target.pos + away, Ballistica.MAGIC_BOLT),
-					2, false, true, this);
+					SWEEP_KNOCKBACK, false, true, this);
 		}
 		moveUsed();
+	}
+
+	@Override
+	public boolean attack( Char enemy, float dmgMulti, float dmgBonus, float accMulti ) {
+		return super.attack(enemy, dmgMulti, dmgBonus, sureSwing.accuracy(enemy, accMulti));
 	}
 
 	@Override
@@ -571,8 +604,8 @@ public class Amalgam extends Mob {
 			Statistics.qualifiedForBossChallengeBadge = false;
 			Statistics.bossScores[0] -= 100;
 		}
-		if (move == Graft.WOLF && Random.Int(3) == 0){
-			Buff.affect(enemy, Bleeding.class).set(4);
+		if (move == Graft.WOLF && Random.Int(2) == 0){
+			Buff.affect(enemy, Bleeding.class).set(6);
 		}
 		return damage;
 	}
@@ -680,6 +713,8 @@ public class Amalgam extends Mob {
 	}
 
 	private static final String CHARGE_PATH   = "charge_path";
+	private static final String CHARGE_FROM   = "charge_from";
+	private static final String CHARGE_AIM    = "charge_aim";
 	private static final String STUNNED       = "stunned";
 	private static final String SECOND_CHARGE = "second_charge";
 	private static final String GRAFTS        = "grafts";
@@ -696,8 +731,11 @@ public class Amalgam extends Mob {
 			int[] cells = new int[chargePath.size()];
 			for (int i = 0; i < cells.length; i++) cells[i] = chargePath.get(i);
 			bundle.put(CHARGE_PATH, cells);
+			bundle.put(CHARGE_FROM, chargeFrom);
+			bundle.put(CHARGE_AIM, chargeAim);
 		}
 		bundle.put(STUNNED, stunned);
+		sureSwing.store(bundle);
 		bundle.put(SECOND_CHARGE, secondCharge);
 
 		String[] names = new String[grafts.size()];
@@ -717,8 +755,11 @@ public class Amalgam extends Mob {
 		if (bundle.contains(CHARGE_PATH)){
 			chargePath = new ArrayList<>();
 			for (int cell : bundle.getIntArray(CHARGE_PATH)) chargePath.add(cell);
+			chargeFrom = bundle.getInt(CHARGE_FROM);
+			chargeAim = bundle.getInt(CHARGE_AIM);
 		}
 		stunned = bundle.getBoolean(STUNNED);
+		sureSwing.restore(bundle);
 		secondCharge = bundle.getBoolean(SECOND_CHARGE);
 
 		grafts.clear();

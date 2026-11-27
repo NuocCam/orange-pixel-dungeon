@@ -37,7 +37,7 @@ public class Mantis extends JungleAnimal {
 		HP = HT = 9;
 		defenseSkill = 6;
 
-		EXP = 4;
+		EXP = 3;
 		maxLvl = 9;
 	}
 

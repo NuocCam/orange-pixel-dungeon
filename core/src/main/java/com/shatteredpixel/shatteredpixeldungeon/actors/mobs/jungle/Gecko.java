@@ -42,7 +42,7 @@ public class Gecko extends JungleAnimal {
 		HP = HT = 14;
 		defenseSkill = 12;
 
-		EXP = 4;
+		EXP = 3;
 		maxLvl = 9;
 
 		loot = GeckoTail.class;

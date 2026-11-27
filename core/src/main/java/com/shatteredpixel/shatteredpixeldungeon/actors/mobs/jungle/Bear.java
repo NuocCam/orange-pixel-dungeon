@@ -38,7 +38,7 @@ public class Bear extends JungleAnimal {
 		HP = HT = 25;
 		defenseSkill = 5;
 
-		EXP = 4;
+		EXP = 3;
 		maxLvl = 9;
 
 		lootChance = 0.2f; //by default, see lootChance()

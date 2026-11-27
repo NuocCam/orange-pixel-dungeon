@@ -140,6 +140,8 @@ public class AscendantCitrine extends Artifact {
 	public Item upgrade() {
 		super.upgrade();
 		updateImage();
+		//transmuted ones already have a ring when their levels get handed over
+		if (ring != null) ring.level(level());
 		return this;
 	}
 

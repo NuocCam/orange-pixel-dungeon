@@ -386,11 +386,13 @@ public class Ring extends KindofMisc {
 	public static float getBonusF(Char target, Class<?extends RingBuff> type){
 		if (target.buff(MagicImmune.class) != null) return 0;
 		float bonus = 0;
+		float worn = 0; //real rings only, spirit form still lends one beside the citrine
 		for (RingBuff buff : target.buffs(type)) {
 			bonus += buff.levelF();
+			if (!buff.fromCitrine()) worn += buff.levelF();
 		}
 		SpiritForm.SpiritFormBuff spiritForm = target.buff(SpiritForm.SpiritFormBuff.class);
-		if (bonus == 0
+		if (worn == 0
 				&& spiritForm != null
 				&& spiritForm.ring() != null
 				&& spiritForm.ring().buffClass == type){
@@ -402,10 +404,12 @@ public class Ring extends KindofMisc {
 	public static float getBuffedBonusF(Char target, Class<?extends RingBuff> type){
 		if (target.buff(MagicImmune.class) != null) return 0;
 		float bonus = 0;
+		float worn = 0;
 		for (RingBuff buff : target.buffs(type)) {
 			bonus += buff.buffedLvlF();
+			if (!buff.fromCitrine()) worn += buff.buffedLvlF();
 		}
-		if (bonus == 0
+		if (worn == 0
 				&& target.buff(SpiritForm.SpiritFormBuff.class) != null
 				&& target.buff(SpiritForm.SpiritFormBuff.class).ring() != null
 				&& target.buff(SpiritForm.SpiritFormBuff.class).ring().buffClass == type){
@@ -499,6 +503,10 @@ public class Ring extends KindofMisc {
 
 		public int buffedLvl(){
 			return (int) Ring.this.soloBuffedBonusF();
+		}
+
+		public boolean fromCitrine(){
+			return Ring.this.citrine != null;
 		}
 
 		public float levelF(){
