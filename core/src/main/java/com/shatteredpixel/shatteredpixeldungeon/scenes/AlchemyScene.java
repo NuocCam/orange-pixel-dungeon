@@ -37,6 +37,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.LiquidMetal;
 import com.shatteredpixel.shatteredpixeldungeon.items.Recipe;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.AlchemistsToolkit;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
+import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.SkullChalice;
 import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.TrinketCatalyst;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.MissileWeapon;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Catalog;
@@ -740,6 +741,10 @@ public class AlchemyScene extends PixelScene {
 		int resultQuantity = result.quantity();
 		if (!result.collect()){
 			Dungeon.level.drop(result, Dungeon.hero.pos);
+		}
+		//before the save, so the two can't come apart
+		if (result instanceof SkullChalice){
+			((SkullChalice) result).onCrafted();
 		}
 
 		Statistics.itemsCrafted++;

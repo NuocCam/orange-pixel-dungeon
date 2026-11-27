@@ -23,6 +23,7 @@ package com.shatteredpixel.shatteredpixeldungeon.actors.mobs;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.Statistics;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Adrenaline;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.AllyBuff;
@@ -36,6 +37,8 @@ import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfHealing;
 import com.shatteredpixel.shatteredpixeldungeon.items.quest.GeckoTail;
 import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.RatSkull;
+import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.SkullChalice;
+import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
@@ -55,7 +58,8 @@ import java.util.HashMap;
 //It borrows that enemy's stats, but none of its special abilities
 public class Ijiraq extends Mob {
 
-	private static final float BASE_CHANCE = 1/100f;
+	public static final int MAX_PER_FLOOR = 3;     //ever, and never two alive at once
+	public static final int POTIONS_PER_REGION = 2; //later ones only drop gold
 
 	private static final int REVEAL_RANGE = 2;
 	private static final float ADRENALINE_TURNS = 12f;
@@ -130,16 +134,17 @@ public class Ijiraq extends Mob {
 	}
 
 	public static float spawnChance(){
-		float chance = BASE_CHANCE * RatSkull.exoticChanceMultiplier();
-		if (chance > BASE_CHANCE) chance = (chance + BASE_CHANCE)/2f; //rat skull is 1/2 as effective here
+		float base = SkullChalice.ijiraqChance();
+		float chance = base * RatSkull.exoticChanceMultiplier();
+		if (chance > base) chance = (chance + base)/2f; //rat skull is 1/2 as effective here
 		return chance;
 	}
 
 	//returns an ijiraq instead of the given enemy on a rare roll, or null
-	public static Ijiraq rollToReplace( Class<? extends Mob> cls ){
+	public static Ijiraq rollToReplace( Class<? extends Mob> cls, Level level ){
 		//always roll, so that the number of RNG calls during levelgen doesn't change
 		float roll = Random.Float();
-		if (!canDisguiseAs(cls) || roll >= spawnChance()) return null;
+		if (!canDisguiseAs(cls) || roll >= spawnChance() || !level.ijiraqAllowed()) return null;
 
 		Ijiraq result = new Ijiraq();
 		result.disguiseAs(cls);
@@ -175,6 +180,15 @@ public class Ijiraq extends Mob {
 
 	@Override
 	protected boolean act() {
+		int chalice = SkullChalice.carriedLevel();
+		if (chalice >= 0 && !announced && disguised()){
+			announced = true;
+			GLog.w(Messages.get(this, "announce"));
+		}
+		if (chalice >= 2 && alignment == Alignment.ENEMY){
+			seekHero();
+		}
+
 		if (disguised()
 				&& alignment == Alignment.ENEMY
 				&& Dungeon.hero.invisible <= 0
@@ -187,7 +201,24 @@ public class Ijiraq extends Mob {
 				target = Dungeon.hero.pos;
 			}
 		}
+		//topped up every turn, so it never runs out
+		if (chalice >= 1 && form != null && revealed){
+			Buff.prolong(this, Adrenaline.class, ADRENALINE_TURNS);
+		}
 		return super.act();
+	}
+
+	//it always knows where the hero is. It only walks over though, the disguise still
+	// comes off the usual ways
+	private void seekHero(){
+		if (paralysed > 0 || Dungeon.hero.invisible > 0) return;
+
+		//no alert, it just gets up
+		if (state == SLEEPING || state == INVESTIGATING) state = WANDERING;
+
+		if (state == WANDERING || (state == HUNTING && (enemy == null || enemy == Dungeon.hero))){
+			target = Dungeon.hero.pos;
+		}
 	}
 
 	@Override
@@ -245,6 +276,13 @@ public class Ijiraq extends Mob {
 		result.texture(Assets.Sprites.IJIRAQ_EYES + DISGUISES.get(form.getClass()) + ".png");
 		result.frame(frame);
 		return result;
+	}
+
+	//a pretend mantis leaves the grass up too. Without this, floors would lose grass
+	// depending on how many ijiraq turned up
+	@Override
+	public boolean flattensGrass() {
+		return disguised() ? form.flattensGrass() : super.flattensGrass();
 	}
 
 	@Override
@@ -309,26 +347,35 @@ public class Ijiraq extends Mob {
 	//so the reward is only handed out once, however many things finish it off
 	private boolean rewarded = false;
 
-	//always there on top of the disguise's own loot, whatever the hero's level is
+	//on top of the disguise's own loot, whatever the hero's level is
 	@Override
 	public void die( Object cause ) {
 		super.die( cause );
 		if (!rewarded){
 			rewarded = true;
 			//dropping on deep water washes things up on the shore
-			Dungeon.level.drop( new PotionOfHealing(), pos ).sprite.drop();
+			int region = Math.min(4, (Dungeon.depth-1)/5);
+			if (Statistics.ijiraqPotions[region] < POTIONS_PER_REGION){
+				Statistics.ijiraqPotions[region]++;
+				Dungeon.level.drop( new PotionOfHealing(), pos ).sprite.drop();
+			}
 			Dungeon.level.drop( new Gold().random(), pos ).sprite.drop();
 		}
 	}
 
+	//whether the skull chalice has warned the hero about this one
+	private boolean announced = false;
+
 	private static final String FORM     = "form";
 	private static final String REVEALED = "revealed";
+	private static final String ANNOUNCED = "announced";
 
 	@Override
 	public void storeInBundle( Bundle bundle ) {
 		super.storeInBundle(bundle);
 		if (form != null) bundle.put(FORM, form.getClass());
 		bundle.put(REVEALED, revealed);
+		bundle.put(ANNOUNCED, announced);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -339,6 +386,7 @@ public class Ijiraq extends Mob {
 			disguiseAs((Class<? extends Mob>) bundle.getClass(FORM));
 		}
 		revealed = bundle.getBoolean(REVEALED);
+		announced = bundle.getBoolean(ANNOUNCED);
 		super.restoreFromBundle(bundle);
 	}
 

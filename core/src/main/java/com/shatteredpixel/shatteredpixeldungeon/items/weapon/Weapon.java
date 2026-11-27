@@ -38,6 +38,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.spells.BodyForm;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.spells.HolyWeapon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.spells.Smite;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.MirrorImage;
+import com.shatteredpixel.shatteredpixeldungeon.items.Masterwork;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.KindOfWeapon;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
@@ -131,6 +132,8 @@ abstract public class Weapon extends KindOfWeapon {
 	
 	public Enchantment enchantment;
 	public boolean enchantHardened = false;
+	//reworked by the troll blacksmith, see Masterwork
+	public boolean masterwork = false;
 	public boolean curseInfusionBonus = false;
 	public boolean masteryPotionBonus = false;
 	
@@ -220,6 +223,7 @@ abstract public class Weapon extends KindOfWeapon {
 	private static final String AVAILABLE_USES  = "available_uses";
 	private static final String ENCHANTMENT	    = "enchantment";
 	private static final String ENCHANT_HARDENED = "enchant_hardened";
+	private static final String MASTERWORK	    = "masterwork";
 	private static final String CURSE_INFUSION_BONUS = "curse_infusion_bonus";
 	private static final String MASTERY_POTION_BONUS = "mastery_potion_bonus";
 	private static final String AUGMENT	        = "augment";
@@ -231,6 +235,7 @@ abstract public class Weapon extends KindOfWeapon {
 		bundle.put( AVAILABLE_USES, availableUsesToID );
 		bundle.put( ENCHANTMENT, enchantment );
 		bundle.put( ENCHANT_HARDENED, enchantHardened );
+		bundle.put( MASTERWORK, masterwork );
 		bundle.put( CURSE_INFUSION_BONUS, curseInfusionBonus );
 		bundle.put( MASTERY_POTION_BONUS, masteryPotionBonus );
 		bundle.put( AUGMENT, augment );
@@ -243,6 +248,7 @@ abstract public class Weapon extends KindOfWeapon {
 		availableUsesToID = bundle.getFloat( AVAILABLE_USES );
 		enchantment = (Enchantment)bundle.get( ENCHANTMENT );
 		enchantHardened = bundle.getBoolean( ENCHANT_HARDENED );
+		masterwork = bundle.getBoolean( MASTERWORK );
 		curseInfusionBonus = bundle.getBoolean( CURSE_INFUSION_BONUS );
 		masteryPotionBonus = bundle.getBoolean( MASTERY_POTION_BONUS );
 
@@ -254,6 +260,8 @@ abstract public class Weapon extends KindOfWeapon {
 		super.reset();
 		usesLeftToID = usesToID();
 		availableUsesToID = usesToID()/2f;
+		//remains from an old run don't hand out the troll's work for free
+		masterwork = false;
 	}
 
 	@Override
@@ -301,12 +309,15 @@ abstract public class Weapon extends KindOfWeapon {
 			ACC /= 5;
 		}
 
+		ACC *= Masterwork.accuracyMulti(this);
+
 		return encumbrance > 0 ? (float)(ACC / Math.pow( 1.5, encumbrance )) : ACC;
 	}
 	
 	@Override
 	public float delayFactor( Char owner ) {
-		return baseDelay(owner) * (1f/speedMultiplier(owner));
+		//masterwork multiplies on its own, so other speed bonuses don't water it down
+		return baseDelay(owner) * (1f/(speedMultiplier(owner) * Masterwork.speedMulti(this)));
 	}
 
 	protected float baseDelay( Char owner ){

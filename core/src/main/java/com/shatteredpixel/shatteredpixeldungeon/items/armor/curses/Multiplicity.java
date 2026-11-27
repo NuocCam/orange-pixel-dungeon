@@ -29,6 +29,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.Ratmogrify;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.DwarfKing;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Ghoul;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Ijiraq;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mimic;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Statue;
@@ -82,7 +83,9 @@ public class Multiplicity extends Armor.Glyph {
 					//FIXME should probably have a mob property for this
 					if (!(toDuplicate instanceof Mob)
 							|| toDuplicate.properties().contains(Char.Property.BOSS) || toDuplicate.properties().contains(Char.Property.MINIBOSS)
-							|| toDuplicate instanceof Mimic || toDuplicate instanceof Statue || toDuplicate instanceof NPC) {
+							|| toDuplicate instanceof Mimic || toDuplicate instanceof Statue || toDuplicate instanceof NPC
+							//there's only ever one of these at a time
+							|| toDuplicate instanceof Ijiraq) {
 						m = Dungeon.level.createMob();
 					} else {
 						m = duplicate((Mob)toDuplicate);
@@ -101,6 +104,7 @@ public class Multiplicity extends Armor.Glyph {
 
 					if (!spawnPoints.isEmpty()) {
 						m.pos = Random.element(spawnPoints);
+						Dungeon.level.countIjiraq(m);
 						GameScene.add(m);
 						ScrollOfTeleportation.appear(m, m.pos);
 					}

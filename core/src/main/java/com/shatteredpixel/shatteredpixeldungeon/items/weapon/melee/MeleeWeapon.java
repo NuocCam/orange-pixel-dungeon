@@ -37,6 +37,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroSubClass;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.spells.HolyWeapon;
 import com.shatteredpixel.shatteredpixeldungeon.effects.FloatingText;
+import com.shatteredpixel.shatteredpixeldungeon.items.Masterwork;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.KindOfWeapon;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfForce;
@@ -304,7 +305,7 @@ public class MeleeWeapon extends Weapon {
 				damage += Hero.heroDamageIntRange( 0, exStr );
 			}
 		}
-		return damage;
+		return Math.round(damage * Masterwork.damageMulti(this));
 	}
 	
 	@Override
@@ -330,6 +331,8 @@ public class MeleeWeapon extends Weapon {
 
 		String statsInfo = statsInfo();
 		if (!statsInfo.equals("")) info += "\n\n" + statsInfo;
+
+		if (masterwork) info += "\n\n" + Masterwork.info(this);
 
 		switch (augment) {
 			case SPEED:

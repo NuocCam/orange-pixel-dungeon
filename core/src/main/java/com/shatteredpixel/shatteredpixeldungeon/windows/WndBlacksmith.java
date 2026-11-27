@@ -28,6 +28,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Belongings;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Blacksmith;
+import com.shatteredpixel.shatteredpixeldungeon.items.Masterwork;
 import com.shatteredpixel.shatteredpixeldungeon.items.BrokenSeal;
 import com.shatteredpixel.shatteredpixeldungeon.items.EquipableItem;
 import com.shatteredpixel.shatteredpixeldungeon.items.Gold;
@@ -45,9 +46,11 @@ import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.ui.ItemButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
+import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollPane;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.watabou.noosa.audio.Sample;
+import com.watabou.noosa.ui.Component;
 
 import java.util.ArrayList;
 
@@ -74,10 +77,10 @@ public class WndBlacksmith extends Window {
 		message.setPos(0, titlebar.bottom() + GAP);
 		add( message );
 
-		ArrayList<RedButton> buttons = new ArrayList<>();
+		ArrayList<ListButton> buttons = new ArrayList<>();
 
 		int pickaxeCost = Blacksmith.Quest.freePickaxe ? 0 : 250;
-		RedButton pickaxe = new RedButton(Messages.get(this, "pickaxe", pickaxeCost), 6){
+		ListButton pickaxe = new ListButton(Messages.get(this, "pickaxe", pickaxeCost), 6){
 			@Override
 			protected void onClick() {
 				GameScene.show(new WndOptions(
@@ -111,7 +114,7 @@ public class WndBlacksmith extends Window {
 		buttons.add(pickaxe);
 
 		int reforgecost = 500 + 1000*Blacksmith.Quest.reforges;
-		RedButton reforge = new RedButton(Messages.get(this, "reforge", reforgecost), 6){
+		ListButton reforge = new ListButton(Messages.get(this, "reforge", reforgecost), 6){
 			@Override
 			protected void onClick() {
 				GameScene.show(new WndReforge(troll, WndBlacksmith.this));
@@ -121,7 +124,7 @@ public class WndBlacksmith extends Window {
 		buttons.add(reforge);
 
 		int hardenCost = 500 + 1000*Blacksmith.Quest.hardens;
-		RedButton harden = new RedButton(Messages.get(this, "harden", hardenCost), 6){
+		ListButton harden = new ListButton(Messages.get(this, "harden", hardenCost), 6){
 			@Override
 			protected void onClick() {
 				GameScene.selectItem(new HardenSelector());
@@ -131,7 +134,7 @@ public class WndBlacksmith extends Window {
 		buttons.add(harden);
 
 		int upgradeCost = 1000 + 1000*Blacksmith.Quest.upgrades;
-		RedButton upgrade = new RedButton(Messages.get(this, "upgrade", upgradeCost), 6){
+		ListButton upgrade = new ListButton(Messages.get(this, "upgrade", upgradeCost), 6){
 			@Override
 			protected void onClick() {
 				GameScene.selectItem(new UpgradeSelector());
@@ -140,7 +143,7 @@ public class WndBlacksmith extends Window {
 		upgrade.enable(Blacksmith.Quest.favor >= upgradeCost);
 		buttons.add(upgrade);
 
-		RedButton smith = new RedButton(Messages.get(this, "smith", 2000), 6){
+		ListButton smith = new ListButton(Messages.get(this, "smith", 2000), 6){
 			@Override
 			protected void onClick() {
 				GameScene.show(new WndOptions(
@@ -165,7 +168,16 @@ public class WndBlacksmith extends Window {
 		smith.enable(Blacksmith.Quest.favor >= 2000);
 		buttons.add(smith);
 
-		RedButton cashOut = new RedButton(Messages.get(this, "cashout"), 6){
+		ListButton masterwork = new ListButton(Messages.get(this, "masterwork", Masterwork.COST), 6){
+			@Override
+			protected void onClick() {
+				GameScene.selectItem(new MasterworkSelector(troll));
+			}
+		};
+		masterwork.enable(Masterwork.affordable());
+		buttons.add(masterwork);
+
+		ListButton cashOut = new ListButton(Messages.get(this, "cashout"), 6){
 			@Override
 			protected void onClick() {
 				GameScene.show(new WndOptions(
@@ -189,19 +201,51 @@ public class WndBlacksmith extends Window {
 		cashOut.enable(Blacksmith.Quest.favor > 0);
 		buttons.add(cashOut);
 
-		float pos = message.bottom() + 3*GAP;
-		for (RedButton b : buttons){
+		Component content = new Component();
+		float pos = 0;
+		for (ListButton b : buttons){
 			b.leftJustify = true;
 			b.multiline = true;
 			b.setSize(width, b.reqHeight());
 			b.setRect(0, pos, width, b.reqHeight());
 			b.enable(b.active); //so that it's visually reflected
-			add(b);
+			content.add(b);
 			pos = b.bottom() + GAP;
 		}
+		content.setSize(width, pos);
 
-		resize(width, (int)pos);
+		//the list scrolls when the screen is too short for every button
+		float top = message.bottom() + 3*GAP;
+		float height = Math.min(pos, PixelScene.uiCamera.height - top - 20);
+		resize(width, (int)(top + height));
 
+		//the pane takes the taps itself, so it has to pass them on to the buttons
+		ScrollPane list = new ScrollPane(content){
+			@Override
+			public void onClick(float x, float y) {
+				for (ListButton b : buttons){
+					if (b.active && b.inside(x, y)){
+						Sample.INSTANCE.play(Assets.Sounds.CLICK);
+						b.click();
+						break;
+					}
+				}
+			}
+		};
+		add(list);
+		list.setRect(0, top, width, height);
+
+	}
+
+	private static class ListButton extends RedButton {
+
+		ListButton( String label, int size ){
+			super(label, size);
+		}
+
+		void click(){
+			onClick();
+		}
 	}
 
 	protected static class WndReforge extends Window {
@@ -447,6 +491,60 @@ public class WndBlacksmith extends Window {
 				}
 
 				Catalog.countUse(item.getClass());
+			}
+		}
+	}
+
+	private class MasterworkSelector extends WndBag.ItemSelector {
+
+		private final Blacksmith troll;
+
+		private MasterworkSelector( Blacksmith troll ){
+			this.troll = troll;
+		}
+
+		@Override
+		public String textPrompt() {
+			return Messages.get(this, "prompt");
+		}
+
+		@Override
+		public Class<?extends Bag> preferredBag(){
+			return Belongings.Backpack.class;
+		}
+
+		@Override
+		public boolean itemSelectable(Item item) {
+			return Masterwork.allowed(item);
+		}
+
+		@Override
+		public void onSelect(Item item) {
+			if (item != null) {
+				GameScene.show(new WndOptions(
+						troll.sprite(),
+						Messages.titleCase( troll.name() ),
+						Messages.get(WndBlacksmith.class, "masterwork_verify", item.name()),
+						Messages.get(WndBlacksmith.class, "masterwork_yes"),
+						Messages.get(WndBlacksmith.class, "masterwork_no")
+				){
+					@Override
+					protected void onSelect(int index) {
+						if (index == 0){
+							Masterwork.forge(item);
+
+							WndBlacksmith.this.hide();
+
+							Sample.INSTANCE.play(Assets.Sounds.EVOKE);
+							Item.evoke( Dungeon.hero );
+							Item.updateQuickslot();
+
+							if (!Blacksmith.Quest.rewardsAvailable()){
+								Notes.remove( Notes.Landmark.TROLL );
+							}
+						}
+					}
+				});
 			}
 		}
 	}

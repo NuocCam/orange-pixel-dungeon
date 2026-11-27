@@ -218,6 +218,11 @@ public class MedicKit extends Artifact {
 	}
 
 	@Override
+	protected int fullCharge() {
+		return maxCharge();
+	}
+
+	@Override
 	public void charge(Hero target, float amount) {
 		if (target.buff(MagicImmune.class) != null) return;
 		if (charge < maxCharge()) {

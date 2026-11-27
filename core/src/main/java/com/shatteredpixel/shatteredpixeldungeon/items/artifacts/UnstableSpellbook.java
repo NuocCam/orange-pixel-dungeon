@@ -137,69 +137,94 @@ public class UnstableSpellbook extends Artifact {
 		}
 	}
 
+	//two different scrolls to pick from
+	public ArrayList<Scroll> rollChoices(){
+		ArrayList<Scroll> choices = new ArrayList<>();
+		while (choices.size() < 2){
+			Scroll scroll = (Scroll) Generator.randomUsingDefaults(Generator.Category.SCROLL);
+			if (scroll == null
+					//reduce the frequency of these scrolls by half
+					||((scroll instanceof ScrollOfIdentify ||
+					scroll instanceof ScrollOfRemoveCurse ||
+					scroll instanceof ScrollOfMagicMapping) && Random.Int(2) == 0)
+					//cannot roll transmutation (upgrade has no weight, so it never shows)
+					|| (scroll instanceof ScrollOfTransmutation)
+					|| (!choices.isEmpty() && choices.get(0).getClass() == scroll.getClass())) {
+				continue;
+			}
+			choices.add(scroll);
+		}
+		return choices;
+	}
+
 	public void doReadEffect(Hero hero){
 		charge--;
 
-		Scroll scroll;
-		do {
-			scroll = (Scroll) Generator.randomUsingDefaults(Generator.Category.SCROLL);
-		} while (scroll == null
-				//reduce the frequency of these scrolls by half
-				||((scroll instanceof ScrollOfIdentify ||
-				scroll instanceof ScrollOfRemoveCurse ||
-				scroll instanceof ScrollOfMagicMapping) && Random.Int(2) == 0)
-				//cannot roll transmutation
-				|| (scroll instanceof ScrollOfTransmutation));
+		final ArrayList<Scroll> choices = rollChoices();
 
-		scroll.anonymize();
-		scroll.talentChance = 0;  //spellbook does not trigger on-scroll talents
-		curItem = scroll;
-		curUser = hero;
-
-		//if there are charges left and the scroll has been given to the book
-		if (charge > 0 && !scrolls.contains(scroll.getClass())) {
-			final Scroll fScroll = scroll;
-
-			final ExploitHandler handler = Buff.affect(hero, ExploitHandler.class);
-			handler.scroll = scroll;
-
-			GameScene.show(new WndOptions(new ItemSprite(this),
-					Messages.get(this, "prompt"),
-					Messages.get(this, "read_empowered"),
-					scroll.trueName(),
-					Messages.get(ExoticScroll.regToExo.get(scroll.getClass()), "name")){
-				@Override
-				protected void onSelect(int index) {
-					handler.detach();
-					if (index == 1){
-						Scroll scroll = Reflection.newInstance(ExoticScroll.regToExo.get(fScroll.getClass()));
-						curItem = scroll;
-						charge--;
-						scroll.anonymize();
-						scroll.talentChance = 0;
-						checkForArtifactProc(curUser, scroll);
-						scroll.doRead();
-						Talent.onArtifactUsed(Dungeon.hero);
-					} else {
-						checkForArtifactProc(curUser, fScroll);
-						fScroll.doRead();
-						Talent.onArtifactUsed(Dungeon.hero);
-					}
-					updateQuickslot();
+		//added scrolls also offer their exotic version, if theres a charge left for it
+		if (charge > 0) {
+			for (int i = 0; i < 2; i++) {
+				Class<?> type = choices.get(i).getClass();
+				if (!scrolls.contains(type)) {
+					choices.add(Reflection.newInstance(ExoticScroll.regToExo.get(type)));
 				}
-
-				@Override
-				public void onBackPressed() {
-					//do nothing
-				}
-			});
-		} else {
-			checkForArtifactProc(curUser, scroll);
-			scroll.doRead();
-			Talent.onArtifactUsed(Dungeon.hero);
+			}
 		}
 
+		final ExploitHandler handler = Buff.affect(hero, ExploitHandler.class);
+		handler.scroll = choices.get(0);
+
+		String[] names = new String[choices.size()];
+		for (int i = 0; i < names.length; i++) {
+			names[i] = choices.get(i).trueName();
+		}
+
+		String message = Messages.get(this, "read_choose");
+		if (choices.size() > 2) message += "\n\n" + Messages.get(this, "read_empowered");
+
+		GameScene.show(new WndOptions(new ItemSprite(this),
+				Messages.get(this, "prompt"),
+				message,
+				names){
+			@Override
+			protected void onSelect(int index) {
+				handler.detach();
+				//anything past the first two is an exotic
+				if (index >= 2) charge--;
+				Scroll scroll = choices.get(index);
+				scroll.anonymize();
+				scroll.talentChance = 0;  //spellbook does not trigger on-scroll talents
+				curItem = scroll;
+				curUser = hero;
+				checkForArtifactProc(curUser, scroll);
+				scroll.doRead();
+				Talent.onArtifactUsed(Dungeon.hero);
+				updateQuickslot();
+			}
+
+			@Override
+			public void onBackPressed() {
+				//do nothing
+			}
+		});
+
 		updateQuickslot();
+	}
+
+	//adding a scroll to the book is worth two levels
+	public void infuse(Class<? extends Scroll> type){
+		scrolls.remove(type);
+		for (int i = 0; i < 2 && level() < levelCap; i++) {
+			upgrade();
+		}
+	}
+
+	//one added scroll for every 2 levels, for artifact transmutation and trinity
+	private void trimScrolls(){
+		while (scrolls.size() > levelCap - level()/2) {
+			scrolls.remove(0);
+		}
 	}
 
 	private void checkForArtifactProc(Hero user, Scroll scroll){
@@ -279,21 +304,16 @@ public class UnstableSpellbook extends Artifact {
 	public Item upgrade() {
 		chargeCap = (int)((level()+1)*0.6f)+2;
 
-		//for artifact transmutation.
-		while (!scrolls.isEmpty() && scrolls.size() > (levelCap-1-level())) {
-			scrolls.remove(0);
-		}
-
-		return super.upgrade();
+		super.upgrade();
+		trimScrolls();
+		return this;
 	}
 
 	@Override
 	public void resetForTrinity(int visibleLevel) {
 		super.resetForTrinity(visibleLevel);
 		setupScrolls();
-		while (!scrolls.isEmpty() && scrolls.size() > (levelCap-1-level())) {
-			scrolls.remove(0);
-		}
+		trimScrolls();
 	}
 
 	@Override
@@ -307,9 +327,11 @@ public class UnstableSpellbook extends Artifact {
 			
 			if (level() < levelCap && scrolls.size() > 0) {
 				desc += "\n\n" + Messages.get(this, "desc_index");
-				desc += "\n" + "_" + Messages.get(scrolls.get(0), "name") + "_";
-				if (scrolls.size() > 1)
-					desc += "\n" + "_" + Messages.get(scrolls.get(1), "name") + "_";
+				ArrayList<String> missing = new ArrayList<>();
+				for (Class<?> scroll : scrolls) {
+					missing.add("_" + Messages.get(scroll, "name") + "_");
+				}
+				desc += "\n" + String.join(", ", missing);
 			}
 		}
 		
@@ -390,22 +412,19 @@ public class UnstableSpellbook extends Artifact {
 		public void onSelect(Item item) {
 			if (item != null && item instanceof Scroll && item.isIdentified()){
 				Hero hero = Dungeon.hero;
-				for (int i = 0; ( i <= 1 && i < scrolls.size() ); i++){
-					if (scrolls.get(i).equals(item.getClass())){
-						hero.sprite.operate( hero.pos );
-						hero.busy();
-						hero.spend( 2f );
-						Sample.INSTANCE.play(Assets.Sounds.BURNING);
-						hero.sprite.emitter().burst( ElmoParticle.FACTORY, 12 );
+				if (scrolls.contains(item.getClass())) {
+					hero.sprite.operate( hero.pos );
+					hero.busy();
+					hero.spend( 2f );
+					Sample.INSTANCE.play(Assets.Sounds.BURNING);
+					hero.sprite.emitter().burst( ElmoParticle.FACTORY, 12 );
 
-						scrolls.remove(i);
-						item.detach(hero.belongings.backpack);
+					item.detach(hero.belongings.backpack);
 
-						upgrade();
-						Catalog.countUse(UnstableSpellbook.class);
-						GLog.i( Messages.get(UnstableSpellbook.class, "infuse_scroll") );
-						return;
-					}
+					infuse(((Scroll) item).getClass());
+					Catalog.countUse(UnstableSpellbook.class);
+					GLog.i( Messages.get(UnstableSpellbook.class, "infuse_scroll") );
+					return;
 				}
 				GLog.w( Messages.get(UnstableSpellbook.class, "unable_scroll") );
 			} else if (item instanceof Scroll && !item.isIdentified()) {

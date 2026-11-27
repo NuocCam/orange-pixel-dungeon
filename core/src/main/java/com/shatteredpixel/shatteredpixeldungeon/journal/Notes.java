@@ -26,6 +26,8 @@ import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Foliage;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.SacrificialFire;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.WaterOfAwareness;
+import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.WaterOfElectricity;
+import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.WaterOfEnchantment;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.WaterOfHealth;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.DemonSpawner;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Statue;
@@ -142,7 +144,11 @@ public class Notes {
 		TROLL,
 		IMP,
 
-		DEMON_SPAWNER;
+		DEMON_SPAWNER,
+
+		//newer ones go at the end
+		WELL_OF_ELECTRICITY,
+		WELL_OF_ENCHANTMENT;
 	}
 	
 	public static class LandmarkRecord extends Record {
@@ -189,6 +195,10 @@ public class Notes {
 					return Icons.get(Icons.WELL_HEALTH);
 				case WELL_OF_AWARENESS:
 					return Icons.get(Icons.WELL_AWARENESS);
+				case WELL_OF_ELECTRICITY:
+					return Icons.get(Icons.WELL_ELECTRICITY);
+				case WELL_OF_ENCHANTMENT:
+					return Icons.get(Icons.WELL_ENCHANTMENT);
 				case SACRIFICIAL_FIRE:
 					return Icons.get(Icons.SACRIFICE_ALTAR);
 				case STATUE:
@@ -255,6 +265,8 @@ public class Notes {
 				case DISTANT_WELL:      return Messages.get(WeakFloorRoom.HiddenWell.class, "desc");
 				case WELL_OF_HEALTH:    return Messages.get(WaterOfHealth.class, "desc");
 				case WELL_OF_AWARENESS: return Messages.get(WaterOfAwareness.class, "desc");
+				case WELL_OF_ELECTRICITY: return Messages.get(WaterOfElectricity.class, "desc");
+				case WELL_OF_ENCHANTMENT: return Messages.get(WaterOfEnchantment.class, "desc");
 				case SACRIFICIAL_FIRE:  return Messages.get(SacrificialFire.class, "desc");
 				case STATUE:            return Messages.get(Statue.class, "desc");
 

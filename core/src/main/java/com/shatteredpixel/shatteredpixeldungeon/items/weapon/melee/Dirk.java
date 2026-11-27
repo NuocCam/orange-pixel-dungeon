@@ -26,6 +26,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
+import com.shatteredpixel.shatteredpixeldungeon.items.Masterwork;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 
 public class Dirk extends MeleeWeapon {
@@ -59,7 +60,7 @@ public class Dirk extends MeleeWeapon {
 				if (exStr > 0) {
 					damage += Hero.heroDamageIntRange(0, exStr);
 				}
-				return damage;
+				return Math.round(damage * Masterwork.damageMulti(this));
 			}
 		}
 		return super.damageRoll(owner);

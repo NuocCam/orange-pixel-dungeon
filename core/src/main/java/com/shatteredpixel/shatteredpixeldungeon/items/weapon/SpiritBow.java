@@ -37,6 +37,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.huntress.NaturesPower;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Splash;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.LeafParticle;
+import com.shatteredpixel.shatteredpixeldungeon.items.Masterwork;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfSharpshooting;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.MissileWeapon;
@@ -164,6 +165,8 @@ public class SpiritBow extends Weapon {
 			case NONE:
 		}
 
+		if (masterwork) info += "\n\n" + Masterwork.info(this);
+
 		if (enchantment != null && (cursedKnown || !enchantment.curse())){
 			info += "\n\n" + Messages.capitalize(Messages.get(Weapon.class, "enchanted", enchantment.name()));
 			if (enchantHardened) info += " " + Messages.get(Weapon.class, "enchant_hardened");
@@ -244,7 +247,7 @@ public class SpiritBow extends Weapon {
 			}
 		}
 		
-		return damage;
+		return Math.round(damage * Masterwork.damageMulti(this));
 	}
 	
 	@Override
@@ -358,7 +361,8 @@ public class SpiritBow extends Weapon {
 			if (sniperSpecial && SpiritBow.this.augment == Augment.DAMAGE){
 				return Float.POSITIVE_INFINITY;
 			} else {
-				return super.accuracyFactor(owner, target);
+				//the arrow itself is never masterworked, the bow is
+				return super.accuracyFactor(owner, target) * Masterwork.accuracyMulti(SpiritBow.this);
 			}
 		}
 		

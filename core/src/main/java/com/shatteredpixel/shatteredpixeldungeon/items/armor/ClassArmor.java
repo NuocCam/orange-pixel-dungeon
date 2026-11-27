@@ -128,6 +128,7 @@ abstract public class ClassArmor extends Armor {
 			classArmor.seal = armor.seal;
 		}
 		classArmor.glyphHardened = armor.glyphHardened;
+		classArmor.masterwork = armor.masterwork;
 		classArmor.cursed = armor.cursed;
 		classArmor.curseInfusionBonus = armor.curseInfusionBonus;
 		classArmor.masteryPotionBonus = armor.masteryPotionBonus;
@@ -243,6 +244,8 @@ abstract public class ClassArmor extends Armor {
 								cursed = armor.cursed;
 								curseInfusionBonus = armor.curseInfusionBonus;
 								masteryPotionBonus = armor.masteryPotionBonus;
+								//from whichever of the two had it, so moving armor never loses it
+								masterwork |= armor.masterwork;
 								if (armor.checkSeal() != null) {
 									inscribe(armor.glyph);
 									seal = armor.checkSeal();

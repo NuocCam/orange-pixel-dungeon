@@ -114,6 +114,11 @@ public class Dungeon {
 		ENCH_STONE,
 		INT_STONE,
 		TRINKET_CATA,
+		//skull chalice: its own scrolls of upgrade, a bit for each region which had one,
+		// and the second catalyst
+		CHALICE_SOU,
+		CHALICE_SOU_REGIONS,
+		CHALICE_CATA,
 		LAB_ROOM, //actually a room, but logic is the same
 
 		//Health potion sources

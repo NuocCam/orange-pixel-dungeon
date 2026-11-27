@@ -291,6 +291,12 @@ public class EtherealChains extends Artifact {
 		return new chainsRecharge();
 	}
 	
+	//the soft cap, the same place they stop filling on their own
+	@Override
+	protected int fullCharge() {
+		return 5+(level()*2);
+	}
+
 	@Override
 	public void charge(Hero target, float amount) {
 		if (cursed || target.buff(MagicImmune.class) != null) return;

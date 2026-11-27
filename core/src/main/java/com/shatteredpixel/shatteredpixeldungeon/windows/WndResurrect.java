@@ -36,6 +36,7 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import com.shatteredpixel.shatteredpixeldungeon.ui.ItemButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
+import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.SkullChalice;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.watabou.noosa.Game;
 
@@ -151,7 +152,8 @@ public class WndResurrect extends Window {
 		@Override
 		public boolean itemSelectable(Item item) {
 			//cannot select ankhs or bags or equippable items that aren't equipped
-			return !(item instanceof Ankh || item instanceof Bag);
+			//the skull chalice stays with you anyway, it would only waste a pick
+			return !(item instanceof Ankh || item instanceof Bag || item instanceof SkullChalice);
 		}
 
 		@Override

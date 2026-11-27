@@ -33,6 +33,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.EbonyMimic;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.GoldenMimic;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Ijiraq;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mimic;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Statue;
@@ -256,6 +257,7 @@ public abstract class RegularLevel extends Level {
 		ArrayList<Mob> spawning = new ArrayList<>();
 		while (spawning.size() < mobsToSpawn){
 			Mob mob = createMob();
+			if (mob instanceof Ijiraq) ijiraqWaiting = true;
 			rollForChampion(mob);
 			spawning.add(mob);
 		}
@@ -309,6 +311,12 @@ public abstract class RegularLevel extends Level {
 					}
 				}
 			}
+		}
+
+		//the loop above doesn't end until every one of them has found a spot
+		if (ijiraqWaiting){
+			ijiraqWaiting = false;
+			ijiraqSpawned++;
 		}
 
 		for (Mob m : mobs){
@@ -751,6 +759,12 @@ public abstract class RegularLevel extends Level {
 		}
 		
 		return null;
+	}
+
+	//for something added once the floor is finished, the terrain stays as it is
+	public void dropExtraItem( Item item ){
+		int cell = randomDropCell();
+		drop( item, cell == -1 ? entrance() : cell );
 	}
 
 	protected int randomDropCell(){

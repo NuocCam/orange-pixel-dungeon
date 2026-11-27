@@ -103,6 +103,11 @@ public class RingOfWealth extends Ring {
 
 	//*** Various logic for custom Ring of Wealth drops ***
 
+	//limits on bonus drops, counted by each floor so farming one doesn't pay off
+	public static final int MAX_FLOOR_DROPS = 4;
+	public static final int MAX_FLOOR_EQUIPS = 1;
+	public static final int MAX_EQUIP_LEVEL = 4;
+
 	private float triesToDrop = Float.MIN_VALUE;
 	private int dropsToRare = Integer.MIN_VALUE;
 
@@ -145,9 +150,13 @@ public class RingOfWealth extends Ring {
 		//now handle reward logic
 		ArrayList<Item> drops = new ArrayList<>();
 
+		//a full floor doesn't use up any progress
+		if (Dungeon.level.wealthDrops >= MAX_FLOOR_DROPS) return drops;
+
 		triesToDrop.countDown(tries);
-		while ( triesToDrop.count() <= 0 ){
-			if (dropsToEquip.count() <= 0){
+		while ( triesToDrop.count() <= 0 && Dungeon.level.wealthDrops < MAX_FLOOR_DROPS ){
+			boolean equipDue = dropsToEquip.count() <= 0;
+			if (equipDue && Dungeon.level.wealthEquips < MAX_FLOOR_EQUIPS){
 				int equipBonus = 0;
 
 				//A second ring of wealth can be at most +1 when calculating wealth bonus for equips
@@ -166,6 +175,7 @@ public class RingOfWealth extends Ring {
 					i = genEquipmentDrop(equipBonus - 1);
 				} while (Challenges.isItemBlocked(i));
 				drops.add(i);
+				Dungeon.level.wealthEquips++;
 				dropsToEquip.countUp(Random.NormalIntRange(5, 10));
 			} else {
 				Item i;
@@ -173,8 +183,10 @@ public class RingOfWealth extends Ring {
 					i = genConsumableDrop(bonus - 1);
 				} while (Challenges.isItemBlocked(i));
 				drops.add(i);
-				dropsToEquip.countDown(1);
+				//owed equipment waits for the next floor
+				if (!equipDue) dropsToEquip.countDown(1);
 			}
+			Dungeon.level.wealthDrops++;
 			triesToDrop.countUp( Random.NormalIntRange(0, 20) );
 		}
 		
@@ -313,6 +325,9 @@ public class RingOfWealth extends Ring {
 			int minLevel = (level+1)/2;
 			if (result.level() < minLevel){
 				result.level(minLevel);
+			}
+			if (result.level() > MAX_EQUIP_LEVEL) {
+				result.level(MAX_EQUIP_LEVEL);
 			}
 		}
 		result.cursed = false;

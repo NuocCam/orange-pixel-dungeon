@@ -209,6 +209,10 @@ public class MagesStaff extends MeleeWeapon {
 		return wand.curCharges;
 	}
 
+	public boolean fullyRechargeWand() {
+		return wand != null && wand.fullyRecharge();
+	}
+
 	public void loseCharge() {
 		wand.loseCharge();
 	}

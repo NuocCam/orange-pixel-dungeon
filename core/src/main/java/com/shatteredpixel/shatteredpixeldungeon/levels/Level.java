@@ -89,6 +89,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.stones.StoneOfIntuition;
 import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.DimensionalSundial;
 import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.EyeOfNewt;
 import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.MossyClump;
+import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.SkullChalice;
 import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.TrapMechanism;
 import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.TrinketCatalyst;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfRegrowth;
@@ -159,6 +160,15 @@ public abstract class Level implements Bundlable {
 	protected static final float TIME_TO_RESPAWN	= 50;
 
 	public int version;
+
+	//ring of wealth bonus drops already given on this floor
+	public int wealthDrops;
+	public int wealthEquips;
+
+	//ijiraq which have made it onto this floor
+	public int ijiraqSpawned;
+	//one was rolled during createMobs and is still waiting for a spot
+	protected boolean ijiraqWaiting;
 	
 	public int[] map;
 	public boolean[] visited;
@@ -336,6 +346,10 @@ public abstract class Level implements Bundlable {
 		MossyClump.populate(this);
 
 		Random.popGenerator();
+
+		if (!Dungeon.bossLevel() && Dungeon.branch == 0){
+			SkullChalice.afterFloorCreated(this);
+		}
 	}
 	
 	public void setSize(int w, int h){
@@ -412,6 +426,10 @@ public abstract class Level implements Bundlable {
 		}
 
 		locked      = bundle.getBoolean( LOCKED );
+
+		wealthDrops = bundle.getInt( "wealth_drops" );
+		wealthEquips = bundle.getInt( "wealth_equips" );
+		ijiraqSpawned = bundle.getInt( "ijiraq_spawned" );
 		
 		Collection<Bundlable> collection = bundle.getCollection( HEAPS );
 		for (Bundlable h : collection) {
@@ -505,6 +523,9 @@ public abstract class Level implements Bundlable {
 		bundle.put( MAPPED, mapped );
 		bundle.put( TRANSITIONS, transitions );
 		bundle.put( LOCKED, locked );
+		bundle.put( "wealth_drops", wealthDrops );
+		bundle.put( "wealth_equips", wealthEquips );
+		bundle.put( "ijiraq_spawned", ijiraqSpawned );
 		bundle.put( HEAPS, heaps.valueList() );
 		bundle.put( PLANTS, plants.valueList() );
 		bundle.put( TRAPS, traps.valueList() );
@@ -553,10 +574,23 @@ public abstract class Level implements Bundlable {
 		}
 
 		Class<? extends Mob> cl = mobsToSpawn.remove(0);
-		Mob m = Ijiraq.rollToReplace(cl);
+		Mob m = Ijiraq.rollToReplace(cl, this);
 		if (m == null) m = Reflection.newInstance(cl);
 		DimensionalSundial.applyToNewMob(m);
 		return m;
+	}
+
+	public boolean ijiraqAllowed(){
+		if (ijiraqWaiting || ijiraqSpawned >= Ijiraq.MAX_PER_FLOOR) return false;
+		for (Mob m : mobs){
+			if (m instanceof Ijiraq && m.isAlive()) return false;
+		}
+		return true;
+	}
+
+	//call this once a mob from createMob really does get put on the floor
+	public void countIjiraq(Mob m){
+		if (m instanceof Ijiraq) ijiraqSpawned++;
 	}
 
 	public void rollForChampion(Mob m){
@@ -806,6 +840,7 @@ public abstract class Level implements Bundlable {
 		} while ((mob.pos == -1 || PathFinder.distance[mob.pos] < disLimit) && tries > 0);
 
 		if (Dungeon.hero.isAlive() && mob.pos != -1 && PathFinder.distance[mob.pos] >= disLimit) {
+			countIjiraq( mob );
 			GameScene.add( mob );
 			if (!mob.buffs(ChampionEnemy.class).isEmpty()){
 				GLog.w(Messages.get(ChampionEnemy.class, "warn"));

@@ -67,6 +67,8 @@ import com.watabou.utils.DeviceCompat;
 import java.text.NumberFormat;
 import java.util.Locale;
 
+import java.util.ArrayList;
+
 public class WndRanking extends WndTabbed {
 	
 	private static final int WIDTH			= 115;
@@ -383,17 +385,16 @@ public class WndRanking extends WndTabbed {
 				}
 			}
 
-			Trinket trinket = stuff.getItem(Trinket.class);
-			if (trinket != null){
-				slotsActive++;
-			}
+			//there can be two of them, with the skull chalice's second catalyst
+			ArrayList<Trinket> trinkets = stuff.getAllItems(Trinket.class);
+			slotsActive += trinkets.size();
 
 			float slotWidth = Math.min(28, ((WIDTH - slotsActive + 1) / (float)slotsActive));
 
-			for (int i = -1; i < QuickSlot.SIZE; i++){
+			for (int i = -trinkets.size(); i < QuickSlot.SIZE; i++){
 				Item item = null;
-				if (i == -1){
-					item = trinket;
+				if (i < 0){
+					item = trinkets.get(i + trinkets.size());
 				} else if (Dungeon.quickslot.isNonePlaceholder(i)) {
 					item = Dungeon.quickslot.getItem(i);
 				}

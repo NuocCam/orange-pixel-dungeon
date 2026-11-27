@@ -23,8 +23,6 @@ package com.shatteredpixel.shatteredpixeldungeon.actors.blobs;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Awareness;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.effects.BlobEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Identification;
@@ -38,6 +36,7 @@ import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.DungeonTilemap;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.watabou.noosa.audio.Sample;
+import com.watabou.utils.Random;
 
 public class WaterOfAwareness extends WellWater {
 
@@ -48,6 +47,13 @@ public class WaterOfAwareness extends WellWater {
 		emitter.parent.add( new Identification( hero.sprite.center() ) );
 		
 		hero.belongings.observe();
+
+		//each thing in the bags has its own shot at being worked out
+		for (Item item : hero.belongings.backpack) {
+			if (!item.isIdentified() && Random.Float() < 0.2f) {
+				ScrollOfIdentify.IDItem(item);
+			}
+		}
 		
 		for (int i=0; i < Dungeon.level.length(); i++) {
 			
@@ -62,7 +68,6 @@ public class WaterOfAwareness extends WellWater {
 			}
 		}
 		
-		Buff.affect( hero, Awareness.class, Awareness.DURATION );
 		Dungeon.observe();
 
 		Dungeon.hero.interrupt();

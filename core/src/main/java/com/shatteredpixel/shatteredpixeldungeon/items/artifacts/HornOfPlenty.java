@@ -168,6 +168,12 @@ public class HornOfPlenty extends Artifact {
 		updateQuickslot();
 	}
 
+	//a full horn is a lot of free food
+	@Override
+	public boolean fullyRecharge() {
+		return false;
+	}
+
 	@Override
 	protected ArtifactBuff passiveBuff() {
 		return new hornRecharge();

@@ -127,6 +127,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.PetrifiedSeed;
 import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.RatSkull;
 import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.SaltCube;
 import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.ShardOfOblivion;
+import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.SkullChalice;
 import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.ThirteenLeafClover;
 import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.TrapMechanism;
 import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.Trinket;
@@ -602,9 +603,10 @@ public class Generator {
 					ShardOfOblivion.class,
 					ChaoticCenser.class,
 					FerretTuft.class,
-					CrackedSpyglass.class
+					CrackedSpyglass.class,
+					SkullChalice.class
 			};
-			TRINKET.defaultProbs = new float[]{ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 };
+			TRINKET.defaultProbs = new float[]{ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 };
 			TRINKET.probs = TRINKET.defaultProbs.clone();
 
 			for (Category cat : Category.values()){
@@ -959,6 +961,11 @@ public class Generator {
 				if (bundle.contains(cat.name().toLowerCase() + CATEGORY_SEED)){
 					cat.seed = bundle.getLong(cat.name().toLowerCase() + CATEGORY_SEED);
 					cat.dropped = bundle.getInt(cat.name().toLowerCase() + CATEGORY_DROPPED);
+				}
+
+				//1.2.0 decks are a trinket short, what was taken from them stays taken
+				if (cat == Category.TRINKET && probs.length < cat.probs.length){
+					System.arraycopy(probs, 0, cat.probs, 0, probs.length);
 				}
 
 				//pre-v3.3.0 conversion for artifacts (addition of tome and key)

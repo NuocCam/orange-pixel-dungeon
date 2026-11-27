@@ -29,7 +29,10 @@ import com.shatteredpixel.shatteredpixeldungeon.journal.Notes;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
+import com.shatteredpixel.shatteredpixeldungeon.tiles.DungeonTilemap;
+import com.watabou.noosa.particles.Emitter;
 import com.watabou.utils.PathFinder;
+import com.watabou.utils.PointF;
 import com.watabou.utils.Random;
 
 public abstract class WellWater extends Blob {
@@ -104,15 +107,34 @@ public abstract class WellWater extends Blob {
 		}
 	}
 	
+	//a one off puff over a tile. Without a game screen there's no emitter to be had
+	protected static void burst( int cell, Emitter.Factory factory, int count ) {
+		Emitter e = GameScene.emitter();
+		if (e != null) {
+			PointF p = DungeonTilemap.tileToWorld( cell );
+			e.pos( p.x, p.y, DungeonTilemap.SIZE, DungeonTilemap.SIZE );
+			e.burst( factory, count );
+		}
+	}
+
 	protected abstract boolean affectHero( Hero hero );
 	
 	protected abstract Item affectItem( Item item, int pos );
 	
+	private static final Class<?>[] ALL = {WaterOfHealth.class, WaterOfAwareness.class,
+			WaterOfElectricity.class, WaterOfEnchantment.class};
+	//out of 100, same order as above
+	private static final float[] CHANCES = {35, 25, 20, 20};
+
+	//which water a new well gets
+	@SuppressWarnings("unchecked")
+	public static Class<? extends WellWater> randomWater() {
+		return (Class<? extends WellWater>) ALL[Random.chances( CHANCES )];
+	}
+
 	public static void affectCell( int cell ) {
 		
-		Class<?>[] waters = {WaterOfHealth.class, WaterOfAwareness.class};
-		
-		for (Class<?>waterClass : waters) {
+		for (Class<?>waterClass : ALL) {
 			WellWater water = (WellWater)Dungeon.level.blobs.get( waterClass );
 			if (water != null &&
 				water.volume > 0 &&

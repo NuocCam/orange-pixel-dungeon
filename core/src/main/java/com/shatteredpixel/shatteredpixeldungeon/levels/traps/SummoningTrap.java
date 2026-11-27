@@ -83,6 +83,7 @@ public class SummoningTrap extends Trap {
 					mob.state = mob.WANDERING;
 				}
 				mob.pos = point;
+				Dungeon.level.countIjiraq(mob);
 				GameScene.add(mob, DELAY);
 				mobs.add(mob);
 			}

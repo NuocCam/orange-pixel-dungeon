@@ -194,6 +194,15 @@ public abstract class Wand extends Item {
 		}
 	}
 	
+	//false if it's full already
+	public boolean fullyRecharge(){
+		if (curCharges >= maxCharges) return false;
+		curCharges = maxCharges;
+		partialCharge = 0;
+		updateQuickslot();
+		return true;
+	}
+
 	public void charge( Char owner ) {
 		if (charger == null) charger = new Charger();
 		charger.attachTo( owner );

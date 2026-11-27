@@ -1,4 +1,6 @@
 name: Release
+# the run is titled with just the version, not the commit message
+run-name: ${{ github.event.inputs.tag || github.ref_name }}
 
 on:
   push:

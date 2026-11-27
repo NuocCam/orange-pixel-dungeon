@@ -258,6 +258,20 @@ public class Artifact extends KindofMisc {
 		//do nothing by default;
 	}
 
+	//what counts as a full charge, 0 for artifacts that don't have one
+	protected int fullCharge(){
+		return chargeCap;
+	}
+
+	//false if there's nothing to fill. Cursed ones fill up too
+	public boolean fullyRecharge(){
+		if (charge >= fullCharge()) return false;
+		charge = fullCharge();
+		partialCharge = 0;
+		updateQuickslot();
+		return true;
+	}
+
 	public static float rechargeSpeedMultiplier(Char target){
 		float multiplier = 1f;
 

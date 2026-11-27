@@ -517,6 +517,7 @@ public class ItemSpriteSheet {
 	public static final int FERRET_TUFT     = TRINKETS+15;
 	public static final int SPYGLASS        = TRINKETS+16;
 	public static final int SPYGLASS_REPAIRED = TRINKETS+17;
+	public static final int SKULL_CHALICE   = TRINKETS+18;
 	static{
 		assignItemRect(RAT_SKULL,       16, 11);
 		assignItemRect(PARCHMENT_SCRAP, 10, 14);
@@ -536,6 +537,7 @@ public class ItemSpriteSheet {
 		assignItemRect(FERRET_TUFT,     16, 15);
 		assignItemRect(SPYGLASS,        15, 15);
 		assignItemRect(SPYGLASS_REPAIRED, 15, 15);
+		assignItemRect(SKULL_CHALICE,   12, 15);
 	}
 
 	private static final int SCROLLS        =                               xy(1, 20);  //16 slots

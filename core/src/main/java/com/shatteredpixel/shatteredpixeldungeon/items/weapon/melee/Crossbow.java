@@ -127,7 +127,7 @@ public class Crossbow extends MeleeWeapon {
 
 	public int dartMax(int lvl){
 		return  12 +    //12 base, up from dart base of 2
-				3*lvl;  //+3 per crossbow level
+				(5*lvl)/2;  //+2.5 per crossbow level, rounded down
 	}
 
 	public String statsInfo(){

@@ -143,6 +143,17 @@ public class TrinketCatalyst extends Item {
 		}
 	}
 
+	//never one the hero already has, that includes a second skull chalice.
+	//A blind pick is never the chalice at all, nobody gets stuck with it by surprise
+	public static Trinket rollTrinket( boolean blind ){
+		Trinket result;
+		do {
+			result = (Trinket) Generator.random(Generator.Category.TRINKET);
+		} while ((blind && result instanceof SkullChalice)
+				|| Dungeon.hero.belongings.getItem(result.getClass()) != null);
+		return result;
+	}
+
 	public static class RandomTrinket extends Item {
 
 		{
@@ -175,7 +186,7 @@ public class TrinketCatalyst extends Item {
 
 			//roll new trinkets if trinkets were not already rolled
 			while (cata.rolledTrinkets.size() < NUM_TRINKETS){
-				cata.rolledTrinkets.add((Trinket) Generator.random(Generator.Category.TRINKET));
+				cata.rolledTrinkets.add(rollTrinket(false));
 			}
 
 			for (int i = 0; i < NUM_TRINKETS; i++){
@@ -213,7 +224,7 @@ public class TrinketCatalyst extends Item {
 
 						Item result = item;
 						if (result instanceof RandomTrinket){
-							result = Generator.random(Generator.Category.TRINKET);
+							result = rollTrinket(true);
 						}
 
 						TrinketCatalyst cata = Dungeon.hero.belongings.getItem(TrinketCatalyst.class);

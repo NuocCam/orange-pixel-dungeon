@@ -41,7 +41,9 @@ import com.shatteredpixel.shatteredpixeldungeon.items.quest.Pickaxe;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.Ring;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.exotic.ExoticScroll;
 import com.shatteredpixel.shatteredpixeldungeon.items.stones.Runestone;
+import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.SkullChalice;
 import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.Trinket;
+import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.TrinketCatalyst;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.Wand;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Weapon;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MagesStaff;
@@ -88,6 +90,10 @@ public class ScrollOfTransmutation extends InventoryScroll {
 		//all non-unique artifacts (no holy tome or cloak of shadows, basically)
 		} else if (item instanceof Artifact) {
 			return !item.unique;
+
+		//there's no getting rid of the skull chalice, not this way either
+		} else if (item instanceof SkullChalice) {
+			return false;
 
 		//all rings, wands, trinkets, seeds, and runestones
 		} else {
@@ -258,6 +264,7 @@ public class ScrollOfTransmutation extends InventoryScroll {
 		n.cursed = w.cursed;
 		n.augment = w.augment;
 		n.enchantHardened = w.enchantHardened;
+		n.masterwork = w.masterwork;
 
 		//technically a new set, ensure old one is destroyed (except for darts)
 		if (w instanceof MissileWeapon && w.isUpgradable()){
@@ -322,7 +329,7 @@ public class ScrollOfTransmutation extends InventoryScroll {
 	private static Trinket changeTrinket( Trinket t ){
 		Trinket n;
 		do {
-			n = (Trinket)Generator.random(Generator.Category.TRINKET);
+			n = TrinketCatalyst.rollTrinket(true);
 		} while ( Challenges.isItemBlocked(n) || n.getClass() == t.getClass());
 
 		n.level(t.trueLevel());

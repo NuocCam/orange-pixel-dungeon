@@ -31,6 +31,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
+import com.shatteredpixel.shatteredpixeldungeon.items.Masterwork;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.DeepWater;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
@@ -74,7 +75,7 @@ public class Dagger extends MeleeWeapon {
 				if (exStr > 0) {
 					damage += Hero.heroDamageIntRange(0, exStr);
 				}
-				return damage;
+				return Math.round(damage * Masterwork.damageMulti(this));
 			}
 		}
 		return super.damageRoll(owner);

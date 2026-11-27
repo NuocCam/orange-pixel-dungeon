@@ -24,6 +24,7 @@ package com.shatteredpixel.shatteredpixeldungeon.ui.changelist;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.ChangesScene;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.BlacksmithSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.HunterSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.IjiraqSprite;
@@ -61,9 +62,42 @@ public class Orange_v1_X_Changes {
 
 	public static void add_v1_2_Changes( ArrayList<ChangeInfo> changeInfos ) {
 
-		release(changeInfos, "v1.2.0");
+		release(changeInfos, "v1.2.1");
 
 		ChangeInfo changes = section(changeInfos, "new", Window.TITLE_COLOR);
+
+		changes.addButton( new ChangeButton( new BlacksmithSprite(), Messages.get(Orange_v1_X_Changes.class, "v121_masterwork_title"),
+				Messages.get(Orange_v1_X_Changes.class, "v121_masterwork_text")));
+
+		changes.addButton( new ChangeButton( new ItemSprite(ItemSpriteSheet.SKULL_CHALICE), Messages.get(Orange_v1_X_Changes.class, "v121_skull_chalice_title"),
+				Messages.get(Orange_v1_X_Changes.class, "v121_skull_chalice_text")));
+
+		changes.addButton( new ChangeButton( Icons.get(Icons.WELL_ENCHANTMENT), Messages.get(Orange_v1_X_Changes.class, "v121_magic_wells_title"),
+				Messages.get(Orange_v1_X_Changes.class, "v121_magic_wells_text")));
+
+		changes = section(changeInfos, "changes", CharSprite.WARNING);
+
+		changes.addButton( new ChangeButton( new ItemSprite(ItemSpriteSheet.RING_TOPAZ), Messages.get(Orange_v1_X_Changes.class, "v121_ring_of_wealth_title"),
+				Messages.get(Orange_v1_X_Changes.class, "v121_ring_of_wealth_text")));
+
+		changes.addButton( new ChangeButton( new ItemSprite(ItemSpriteSheet.ARTIFACT_SPELLBOOK), Messages.get(Orange_v1_X_Changes.class, "v121_spellbook_title"),
+				Messages.get(Orange_v1_X_Changes.class, "v121_spellbook_text")));
+
+		changes.addButton( new ChangeButton( new ItemSprite(ItemSpriteSheet.CROSSBOW), Messages.get(Orange_v1_X_Changes.class, "v121_crossbow_title"),
+				Messages.get(Orange_v1_X_Changes.class, "v121_crossbow_text")));
+
+		changes.addButton( new ChangeButton( new ItemSprite(ItemSpriteSheet.RUNIC_BLADE), Messages.get(Orange_v1_X_Changes.class, "v121_runic_blade_title"),
+				Messages.get(Orange_v1_X_Changes.class, "v121_runic_blade_text")));
+
+		changes.addButton( new ChangeButton( Icons.get(Icons.WELL_AWARENESS), Messages.get(Orange_v1_X_Changes.class, "v121_well_of_awareness_title"),
+				Messages.get(Orange_v1_X_Changes.class, "v121_well_of_awareness_text")));
+
+		changes.addButton( new ChangeButton( ChangeIcons.V061_BUGFIX, Messages.get(ChangesScene.class, "bugfixes"),
+				Messages.get(Orange_v1_X_Changes.class, "v121_bugfixes_text")));
+
+		release(changeInfos, "v1.2.0");
+
+		changes = section(changeInfos, "new", Window.TITLE_COLOR);
 
 		//same spot shattered puts its commentary in the big updates
 		changes.addButton( new ChangeButton( Icons.get(Icons.NEWS), Messages.get(Orange_v1_X_Changes.class, "v120_developer_commentary_title"),

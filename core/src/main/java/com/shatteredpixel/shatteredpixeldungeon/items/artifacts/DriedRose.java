@@ -313,6 +313,12 @@ public class DriedRose extends Artifact {
 		return new roseRecharge();
 	}
 	
+	//the charge gets wiped when the ghost dies, so filling now would only waste it
+	@Override
+	public boolean fullyRecharge() {
+		return ghostID <= 0 && super.fullyRecharge();
+	}
+
 	@Override
 	public void charge(Hero target, float amount) {
 		if (cursed || target.buff(MagicImmune.class) != null) return;

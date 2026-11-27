@@ -40,6 +40,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.spells.HolyWard;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.spells.LifeLinkSpell;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.PrismaticImage;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
+import com.shatteredpixel.shatteredpixeldungeon.items.Masterwork;
 import com.shatteredpixel.shatteredpixeldungeon.items.BrokenSeal;
 import com.shatteredpixel.shatteredpixeldungeon.items.EquipableItem;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
@@ -115,6 +116,8 @@ public class Armor extends EquipableItem {
 	
 	public Glyph glyph;
 	public boolean glyphHardened = false;
+	//reworked by the troll blacksmith, see Masterwork
+	public boolean masterwork = false;
 	public boolean curseInfusionBonus = false;
 	public boolean masteryPotionBonus = false;
 	
@@ -138,6 +141,7 @@ public class Armor extends EquipableItem {
 	private static final String MASTERY_POTION_BONUS = "mastery_potion_bonus";
 	private static final String SEAL            = "seal";
 	private static final String AUGMENT			= "augment";
+	private static final String MASTERWORK		= "masterwork";
 
 	@Override
 	public void storeInBundle( Bundle bundle ) {
@@ -146,6 +150,7 @@ public class Armor extends EquipableItem {
 		bundle.put( AVAILABLE_USES, availableUsesToID );
 		bundle.put( GLYPH, glyph );
 		bundle.put( GLYPH_HARDENED, glyphHardened );
+		bundle.put( MASTERWORK, masterwork );
 		bundle.put( CURSE_INFUSION_BONUS, curseInfusionBonus );
 		bundle.put( MASTERY_POTION_BONUS, masteryPotionBonus );
 		bundle.put( SEAL, seal);
@@ -159,6 +164,7 @@ public class Armor extends EquipableItem {
 		availableUsesToID = bundle.getInt( AVAILABLE_USES );
 		inscribe((Glyph) bundle.get(GLYPH));
 		glyphHardened = bundle.getBoolean(GLYPH_HARDENED);
+		masterwork = bundle.getBoolean(MASTERWORK);
 		curseInfusionBonus = bundle.getBoolean( CURSE_INFUSION_BONUS );
 		masteryPotionBonus = bundle.getBoolean( MASTERY_POTION_BONUS );
 		seal = (BrokenSeal)bundle.get(SEAL);
@@ -173,6 +179,8 @@ public class Armor extends EquipableItem {
 		availableUsesToID = USES_TO_ID/2f;
 		//armor can be kept in bones between runs, the seal cannot.
 		seal = null;
+		//remains from an old run don't hand out the troll's work for free
+		masterwork = false;
 	}
 
 	@Override
@@ -377,6 +385,10 @@ public class Armor extends EquipableItem {
 	}
 
 	public int DRMax(int lvl){
+		return Math.round(plainDRMax(lvl) * Masterwork.defenseMulti(this));
+	}
+
+	private int plainDRMax(int lvl){
 		if (Dungeon.isChallenged(Challenges.NO_ARMOR)){
 			return 1 + tier + lvl + augment.defenseFactor(lvl);
 		}
@@ -398,12 +410,9 @@ public class Armor extends EquipableItem {
 			return 0;
 		}
 
-		int max = DRMax(lvl);
-		if (lvl >= max){
-			return (lvl - max);
-		} else {
-			return lvl;
-		}
+		int max = plainDRMax(lvl);
+		int min = lvl >= max ? lvl - max : lvl;
+		return Math.round(min * Masterwork.defenseMulti(this));
 	}
 
 	//This exists so we can test what a char's base evasion would be without armor affecting it
@@ -427,7 +436,7 @@ public class Armor extends EquipableItem {
 			}
 		}
 		
-		return evasion + augment.evasionFactor(buffedLvl());
+		return evasion * Masterwork.evasionMulti(this) + augment.evasionFactor(buffedLvl());
 	}
 	
 	public float speedFactor( Char owner, float speed ){
@@ -608,6 +617,8 @@ public class Armor extends EquipableItem {
 				break;
 			case NONE:
 		}
+
+		if (masterwork) info += "\n\n" + Masterwork.info(this);
 
 		if (isEquipped(Dungeon.hero) && !hasCurseGlyph() && Dungeon.hero.buff(HolyWard.HolyArmBuff.class) != null
 				&& (Dungeon.hero.subClass != HeroSubClass.PALADIN || glyph == null)){

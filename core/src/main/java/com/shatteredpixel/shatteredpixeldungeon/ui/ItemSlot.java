@@ -23,6 +23,7 @@ package com.shatteredpixel.shatteredpixeldungeon.ui;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.items.Masterwork;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
@@ -58,6 +59,7 @@ public class ItemSlot extends Button {
 	protected BitmapText status;
 	protected BitmapText extra;
 	protected Image      itemIcon;
+	private Masterwork.SlotMark masterworkMark;
 	protected BitmapText level;
 	
 	private static final String TXT_STRENGTH	= ":%d";
@@ -163,6 +165,11 @@ public class ItemSlot extends Button {
 			}
 			PixelScene.align(itemIcon);
 		}
+
+		if (masterworkMark != null){
+			masterworkMark.setRect(x + margin.left, y + margin.top,
+					width - (margin.left + margin.right), height - (margin.top + margin.bottom));
+		}
 		
 		if (level != null) {
 			level.x = x + (width - level.width()) - margin.right;
@@ -179,6 +186,7 @@ public class ItemSlot extends Button {
 		if (status != null)     status.alpha(value);
 		if (itemIcon != null)   itemIcon.alpha(value);
 		if (level != null)      level.alpha(value);
+		if (masterworkMark != null) masterworkMark.alpha(value);
 	}
 
 	public void clear(){
@@ -224,11 +232,23 @@ public class ItemSlot extends Button {
 			itemIcon = null;
 		}
 
+		if (masterworkMark != null){
+			remove(masterworkMark);
+			masterworkMark.destroy();
+			masterworkMark = null;
+		}
+
 		if (item == null){
 			status.visible = extra.visible = level.visible = false;
 			return;
 		} else {
 			status.visible = extra.visible = level.visible = true;
+		}
+
+		if (Masterwork.has(item)){
+			masterworkMark = new Masterwork.SlotMark();
+			masterworkMark.alpha(active ? ENABLED : DISABLED);
+			add(masterworkMark);
 		}
 
 		status.text( item.status() );
@@ -318,6 +338,7 @@ public class ItemSlot extends Button {
 		float alpha = value ? ENABLED : DISABLED;
 		sprite.alpha( alpha );
 		status.alpha( alpha );
+		if (masterworkMark != null) masterworkMark.alpha( alpha );
 		extra.alpha( alpha );
 		level.alpha( alpha );
 		if (itemIcon != null) itemIcon.alpha( alpha );
