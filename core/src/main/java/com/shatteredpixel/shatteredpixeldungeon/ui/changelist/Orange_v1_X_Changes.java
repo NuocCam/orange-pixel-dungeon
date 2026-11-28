@@ -65,9 +65,30 @@ public class Orange_v1_X_Changes {
 
 	public static void add_v1_3_Changes( ArrayList<ChangeInfo> changeInfos ) {
 
-		release(changeInfos, "v1.3.1");
+		release(changeInfos, "v1.3.2");
 
 		ChangeInfo changes = section(changeInfos, "new", Window.TITLE_COLOR);
+
+		changes.addButton( new ChangeButton( new ItemSprite(ItemSpriteSheet.JUNGLE_PIE), Messages.get(Orange_v1_X_Changes.class, "v132_jungle_pie_title"),
+				Messages.get(Orange_v1_X_Changes.class, "v132_jungle_pie_text")));
+
+		changes.addButton( new ChangeButton( Icons.get(Icons.JOURNAL), Messages.get(Orange_v1_X_Changes.class, "v132_bestiary_title"),
+				Messages.get(Orange_v1_X_Changes.class, "v132_bestiary_text")));
+
+		changes = section(changeInfos, "changes", CharSprite.WARNING);
+
+		changes.addButton( new ChangeButton( new ItemSprite(ItemSpriteSheet.POTION_HOLDER), Messages.get(Orange_v1_X_Changes.class, "v132_journal_order_title"),
+				Messages.get(Orange_v1_X_Changes.class, "v132_journal_order_text")));
+
+		changes.addButton( new ChangeButton( new BoarSprite(), Messages.get(Orange_v1_X_Changes.class, "v132_boar_title"),
+				Messages.get(Orange_v1_X_Changes.class, "v132_boar_text")));
+
+		changes.addButton( new ChangeButton( new ItemSprite(ItemSpriteSheet.BEAST_MARROW), Messages.get(Orange_v1_X_Changes.class, "v132_amalgam_title"),
+				Messages.get(Orange_v1_X_Changes.class, "v132_amalgam_text")));
+
+		release(changeInfos, "v1.3.1");
+
+		changes = section(changeInfos, "new", Window.TITLE_COLOR);
 
 		changes.addButton( new ChangeButton( new ItemSprite(ItemSpriteSheet.WAND_IMPLOSION), Messages.get(Orange_v1_X_Changes.class, "v131_implosion_title"),
 				Messages.get(Orange_v1_X_Changes.class, "v131_implosion_text")));

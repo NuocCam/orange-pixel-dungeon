@@ -16,8 +16,8 @@ allprojects {
         appApplicationId = 'nuoccam.orangepixeldungeon'
 
         //Full releases gets +2 on version code, needed for an F-Droid quirk
-        appVersionCode = 932
-        appVersionName = '1.3.1'
+        appVersionCode = 933
+        appVersionName = '1.3.2'
 
         appJavaCompatibility = JavaVersion.VERSION_11
 
