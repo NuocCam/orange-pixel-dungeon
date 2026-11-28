@@ -65,9 +65,33 @@ public class Orange_v1_X_Changes {
 
 	public static void add_v1_3_Changes( ArrayList<ChangeInfo> changeInfos ) {
 
-		release(changeInfos, "v1.3.0");
+		release(changeInfos, "v1.3.1");
 
 		ChangeInfo changes = section(changeInfos, "new", Window.TITLE_COLOR);
+
+		changes.addButton( new ChangeButton( new ItemSprite(ItemSpriteSheet.WAND_IMPLOSION), Messages.get(Orange_v1_X_Changes.class, "v131_implosion_title"),
+				Messages.get(Orange_v1_X_Changes.class, "v131_implosion_text")));
+
+		changes.addButton( new ChangeButton( new ItemSprite(ItemSpriteSheet.RING_OBSIDIAN), Messages.get(Orange_v1_X_Changes.class, "v131_rings_title"),
+				Messages.get(Orange_v1_X_Changes.class, "v131_rings_text")));
+
+		changes.addButton( new ChangeButton( new ItemSprite(ItemSpriteSheet.FIH_BLADE), Messages.get(Orange_v1_X_Changes.class, "v131_weapons_title"),
+				Messages.get(Orange_v1_X_Changes.class, "v131_weapons_text")));
+
+		changes.addButton( new ChangeButton( new ItemSprite(ItemSpriteSheet.SEALED_SCROLL), Messages.get(Orange_v1_X_Changes.class, "v131_sealed_scroll_title"),
+				Messages.get(Orange_v1_X_Changes.class, "v131_sealed_scroll_text")));
+
+		changes.addButton( new ChangeButton( new ItemSprite(ItemSpriteSheet.FOOD_POUCH), Messages.get(Orange_v1_X_Changes.class, "v131_food_pouch_title"),
+				Messages.get(Orange_v1_X_Changes.class, "v131_food_pouch_text")));
+
+		changes = section(changeInfos, "changes", CharSprite.WARNING);
+
+		changes.addButton( new ChangeButton( new BoarSprite(), Messages.get(Orange_v1_X_Changes.class, "v131_boar_title"),
+				Messages.get(Orange_v1_X_Changes.class, "v131_boar_text")));
+
+		release(changeInfos, "v1.3.0");
+
+		changes = section(changeInfos, "new", Window.TITLE_COLOR);
 
 		changes.addButton( new ChangeButton( new VeskSprite(), Messages.get(Orange_v1_X_Changes.class, "v130_vesk_title"),
 				Messages.get(Orange_v1_X_Changes.class, "v130_vesk_text")));
