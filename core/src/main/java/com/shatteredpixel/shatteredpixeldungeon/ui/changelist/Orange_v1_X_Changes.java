@@ -86,6 +86,9 @@ public class Orange_v1_X_Changes {
 		changes.addButton( new ChangeButton( new ItemSprite(ItemSpriteSheet.ARTIFACT_BEACON), Messages.get(Orange_v1_X_Changes.class, "v130_lloyds_beacon_title"),
 				Messages.get(Orange_v1_X_Changes.class, "v130_lloyds_beacon_text")));
 
+		changes.addButton( new ChangeButton( new ItemSprite(ItemSpriteSheet.JUNGLE_BERRY), Messages.get(Orange_v1_X_Changes.class, "v130_jungle_title"),
+				Messages.get(Orange_v1_X_Changes.class, "v130_jungle_text")));
+
 	}
 
 	public static void add_v1_2_Changes( ArrayList<ChangeInfo> changeInfos ) {

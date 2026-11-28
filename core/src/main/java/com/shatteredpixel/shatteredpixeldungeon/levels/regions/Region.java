@@ -69,11 +69,6 @@ public class Region {
 		return MobSpawner.RARE_ALTS.get(cls);
 	}
 
-	//how much likelier than usual each rare version is on this floor
-	public float rareAltScale( int depth ){
-		return 1f;
-	}
-
 	//level for the regular floors of the first region
 	public Level newLevel(){
 		return null;

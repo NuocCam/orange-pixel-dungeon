@@ -98,17 +98,6 @@ public class JungleRegion extends Region {
 		return super.rareAlt(depth, cls);
 	}
 
-	//floors should see as many rare ones as the sewer floors do. There 3, 4, 5 and 5 mobs
-	// of a rotation have a rare version, here it's only 3, 2, 2 and 2
-	@Override
-	public float rareAltScale( int depth ) {
-		switch (depth){
-			case 2:             return 4/2f;
-			case 3: case 4:     return 5/2f;
-			default:            return 1f;
-		}
-	}
-
 	@SafeVarargs
 	private static ArrayList<Class<? extends Mob>> rotation( Class<? extends Mob>... mobs ){
 		return new ArrayList<>(Arrays.asList(mobs));

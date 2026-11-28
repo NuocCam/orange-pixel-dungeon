@@ -185,7 +185,7 @@ public class Deer extends JungleAnimal {
 
 	@Override
 	public int berryTurns() {
-		return 12;
+		return 24;
 	}
 
 	@Override

@@ -57,7 +57,7 @@ public class Wolf extends JungleAnimal {
 
 	@Override
 	public int berryTurns() {
-		return 8;
+		return 16;
 	}
 
 	//the pelt goes by its own odds, however strong the hero is and whatever they're wearing

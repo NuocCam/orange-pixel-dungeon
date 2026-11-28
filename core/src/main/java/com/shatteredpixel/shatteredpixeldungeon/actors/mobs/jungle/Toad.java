@@ -64,7 +64,7 @@ public class Toad extends JungleAnimal {
 
 	@Override
 	public int berryTurns() {
-		return 10;
+		return 20;
 	}
 
 	@Override

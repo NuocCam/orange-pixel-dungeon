@@ -249,6 +249,6 @@ public class Boar extends JungleAnimal {
 
 	@Override
 	public int berryTurns() {
-		return 10;
+		return 20;
 	}
 }
