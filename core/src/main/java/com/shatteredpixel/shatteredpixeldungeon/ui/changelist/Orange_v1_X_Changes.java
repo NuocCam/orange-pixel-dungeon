@@ -31,6 +31,7 @@ import com.shatteredpixel.shatteredpixeldungeon.sprites.HunterSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.IjiraqSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.VeskSprite;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import com.shatteredpixel.shatteredpixeldungeon.ui.TalentIcon;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
@@ -42,6 +43,7 @@ public class Orange_v1_X_Changes {
 	private static final int ORANGE = 0xFF9933;
 
 	public static void addAllChanges( ArrayList<ChangeInfo> changeInfos ){
+		add_v1_3_Changes(changeInfos);
 		add_v1_2_Changes(changeInfos);
 		add_v1_1_Changes(changeInfos);
 		add_v1_0_Changes(changeInfos);
@@ -59,6 +61,31 @@ public class Orange_v1_X_Changes {
 		changes.hardlight(color);
 		changeInfos.add(changes);
 		return changes;
+	}
+
+	public static void add_v1_3_Changes( ArrayList<ChangeInfo> changeInfos ) {
+
+		release(changeInfos, "v1.3.0");
+
+		ChangeInfo changes = section(changeInfos, "new", Window.TITLE_COLOR);
+
+		changes.addButton( new ChangeButton( new VeskSprite(), Messages.get(Orange_v1_X_Changes.class, "v130_vesk_title"),
+				Messages.get(Orange_v1_X_Changes.class, "v130_vesk_text")));
+
+		changes.addButton( new ChangeButton( new ItemSprite(ItemSpriteSheet.CULTIST_MASK), Messages.get(Orange_v1_X_Changes.class, "v130_cultist_title"),
+				Messages.get(Orange_v1_X_Changes.class, "v130_cultist_text")));
+
+		changes.addButton( new ChangeButton( new ItemSprite(ItemSpriteSheet.ARTIFACT_TOME_DARK), Messages.get(Orange_v1_X_Changes.class, "v130_dark_tome_title"),
+				Messages.get(Orange_v1_X_Changes.class, "v130_dark_tome_text")));
+
+		changes = section(changeInfos, "changes", CharSprite.WARNING);
+
+		changes.addButton( new ChangeButton( new ItemSprite(ItemSpriteSheet.ARTIFACT_CAPE), Messages.get(Orange_v1_X_Changes.class, "v130_cape_of_thorns_title"),
+				Messages.get(Orange_v1_X_Changes.class, "v130_cape_of_thorns_text")));
+
+		changes.addButton( new ChangeButton( new ItemSprite(ItemSpriteSheet.ARTIFACT_BEACON), Messages.get(Orange_v1_X_Changes.class, "v130_lloyds_beacon_title"),
+				Messages.get(Orange_v1_X_Changes.class, "v130_lloyds_beacon_text")));
+
 	}
 
 	public static void add_v1_2_Changes( ArrayList<ChangeInfo> changeInfos ) {

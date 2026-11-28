@@ -992,7 +992,7 @@ public class Generator {
 			}
 		}
 
-		//saves from before 1.2.3 can still have odds for the beacon
+		//saves from before 1.3.0 can still have odds for the beacon
 		Category.ARTIFACT.probs[14] = 0;
 		
 	}
