@@ -22,6 +22,7 @@
 package com.shatteredpixel.shatteredpixeldungeon.actors.mobs.jungle;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.AllyBuff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
@@ -30,13 +31,16 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.FlavourBuff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Invisibility;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Terror;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
+import com.shatteredpixel.shatteredpixeldungeon.effects.Pushing;
 import com.shatteredpixel.shatteredpixeldungeon.items.food.MysteryMeat;
+import com.shatteredpixel.shatteredpixeldungeon.levels.features.DeepWater;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.BoarSprite;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.GameMath;
+import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
 
 import java.util.ArrayList;
@@ -62,15 +66,23 @@ public class Boar extends JungleAnimal {
 	private static final int CHARGE_RANGE = 3;
 	private static final float COOLDOWN = 8;
 	private static final int STUN_TURNS = 2;
+	//in a close fight it sometimes steps back to get a run up, but not too often
+	private static final float BACK_OFF_CHANCE = 1/3f;
+	private static final float BACK_OFF_REST = 3;
 
 	//the marked cells of a charge which goes off next turn, otherwise null
 	private ArrayList<Integer> chargePath;
 	//where that one starts, and what it was aimed at
 	private int chargeFrom, chargeAim;
 	private boolean stunned = false;
+	//it stepped back last turn, braced is saved and rushing is only for the turn thats running
+	private boolean braced = false;
+	private boolean rushing = false;
 	private final LineCharge.SureSwing sureSwing = new LineCharge.SureSwing();
 
 	public static class ChargeCooldown extends FlavourBuff {}
+
+	public static class BackOffRest extends FlavourBuff {}
 
 	public boolean stunned(){
 		return stunned;
@@ -79,6 +91,9 @@ public class Boar extends JungleAnimal {
 	@Override
 	protected boolean act() {
 		sureSwing.newTurn();
+		//the run up is only good for this one turn
+		rushing = braced;
+		braced = false;
 
 		//it only gets another turn once the stun has worn off
 		if (stunned){
@@ -98,9 +113,10 @@ public class Boar extends JungleAnimal {
 		return super.act();
 	}
 
-	private boolean prepareCharge(){
-		if (rooted || buff(ChargeCooldown.class) != null
-				|| Dungeon.level.distance(pos, enemy.pos) < CHARGE_RANGE){
+	//after backing off it only needs 1 tile in between, and doesn't wait on the long cooldown
+	private boolean prepareCharge( boolean runUp ){
+		if (rooted || (!runUp && buff(ChargeCooldown.class) != null)
+				|| Dungeon.level.distance(pos, enemy.pos) < (runUp ? 2 : CHARGE_RANGE)){
 			return false;
 		}
 		//nobody gets charged while they can't move out of the way
@@ -132,6 +148,7 @@ public class Boar extends JungleAnimal {
 		ArrayList<Integer> path = chargePath;
 		chargePath = null;
 		Buff.affect(this, ChargeCooldown.class, COOLDOWN);
+		Buff.prolong(this, BackOffRest.class, BACK_OFF_REST);
 
 		LineCharge.Result result = LineCharge.run(this, chargeFrom, chargeAim, path, this);
 		if (result.hit != null){
@@ -152,6 +169,52 @@ public class Boar extends JungleAnimal {
 			sprite.idle();
 			updateSpriteState();
 		}
+	}
+
+	//one step away from the enemy. Whatever hit it just before, it still goes
+	private boolean backOff(){
+		if (rooted || enemy.paralysed > 0 || buff(BackOffRest.class) != null
+				|| !Dungeon.level.adjacent(pos, enemy.pos)
+				|| Random.Float() >= BACK_OFF_CHANCE){
+			return false;
+		}
+		int cell = backOffCell();
+		if (cell == -1) return false;
+
+		int from = pos;
+		Buff.prolong(this, BackOffRest.class, BACK_OFF_REST);
+		move(cell, false);
+		//a trap it stepped on may have killed it or sent it elsewhere
+		if (isAlive() && pos == cell){
+			braced = true;
+			//sliding keeps it facing the enemy
+			Actor.add(new Pushing(this, from, cell));
+			if (Dungeon.level.heroFOV[pos]){
+				GLog.w(Messages.get(this, "back_off"));
+				Dungeon.hero.interrupt();
+			}
+		}
+		spend(1 / speed());
+		return true;
+	}
+
+	//a spot with 1 tile between them and a clear run back in, the straightest one. -1 if cornered
+	private int backOffCell(){
+		int best = -1;
+		for (int offset : PathFinder.NEIGHBOURS8){
+			int cell = pos + offset;
+			if (!Dungeon.level.passable[cell] || DeepWater.blocks(this, cell)
+					|| Actor.findChar(cell) != null
+					|| Dungeon.level.distance(cell, enemy.pos) != 2
+					|| LineCharge.aim(cell, enemy.pos, this) == null){
+				continue;
+			}
+			if (best == -1 || Dungeon.level.trueDistance(cell, enemy.pos)
+					< Dungeon.level.trueDistance(best, enemy.pos)){
+				best = cell;
+			}
+		}
+		return best;
 	}
 
 	private void cancelCharge(){
@@ -191,10 +254,12 @@ public class Boar extends JungleAnimal {
 	private class Hunting extends Mob.Hunting {
 		@Override
 		public boolean act( boolean enemyInFOV, boolean justAlerted ) {
-			if (enemyInFOV && !isCharmedBy(enemy) && prepareCharge()){
-				enemySeen = true;
-				target = enemy.pos;
-				return true;
+			if (enemyInFOV && !isCharmedBy(enemy)){
+				if (prepareCharge(rushing) || (!rushing && backOff())){
+					enemySeen = true;
+					target = enemy.pos;
+					return true;
+				}
 			}
 			return super.act(enemyInFOV, justAlerted);
 		}
@@ -204,6 +269,7 @@ public class Boar extends JungleAnimal {
 	private static final String CHARGE_FROM = "charge_from";
 	private static final String CHARGE_AIM  = "charge_aim";
 	private static final String STUNNED     = "stunned";
+	private static final String BRACED      = "braced";
 
 	@Override
 	public void storeInBundle( Bundle bundle ) {
@@ -216,6 +282,7 @@ public class Boar extends JungleAnimal {
 			bundle.put(CHARGE_AIM, chargeAim);
 		}
 		bundle.put(STUNNED, stunned);
+		bundle.put(BRACED, braced);
 		sureSwing.store(bundle);
 	}
 
@@ -229,6 +296,7 @@ public class Boar extends JungleAnimal {
 			chargeAim = bundle.getInt(CHARGE_AIM);
 		}
 		stunned = bundle.getBoolean(STUNNED);
+		braced = bundle.getBoolean(BRACED);
 		sureSwing.restore(bundle);
 	}
 

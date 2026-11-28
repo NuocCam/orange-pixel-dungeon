@@ -27,6 +27,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Belongings;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
+import com.shatteredpixel.shatteredpixeldungeon.items.bags.FoodPouch;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.MagicalHolster;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.PotionBandolier;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.ScrollHolder;
@@ -408,6 +409,8 @@ public class WndBag extends WndTabbed {
 	private Image icon( Bag bag ) {
 		if (bag instanceof VelvetPouch) {
 			return Icons.get( Icons.SEED_POUCH );
+		} else if (bag instanceof FoodPouch) {
+			return Icons.get( Icons.FOOD_POUCH );
 		} else if (bag instanceof ScrollHolder) {
 			return Icons.get( Icons.SCROLL_HOLDER );
 		} else if (bag instanceof MagicalHolster) {
@@ -444,6 +447,8 @@ public class WndBag extends WndTabbed {
 					return SPDAction.BAG_4;
 				case 5:
 					return SPDAction.BAG_5;
+				case 6:
+					return SPDAction.BAG_6;
 			}
 		}
 

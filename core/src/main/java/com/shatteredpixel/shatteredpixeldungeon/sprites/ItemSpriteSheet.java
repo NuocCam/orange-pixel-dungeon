@@ -260,6 +260,7 @@ public class ItemSpriteSheet {
 	public static final int ROUND_SHIELD    = WEP_TIER3+3;
 	public static final int SAI             = WEP_TIER3+4;
 	public static final int WHIP            = WEP_TIER3+5;
+	public static final int FIH_BLADE       = WEP_TIER3+6;
 	static{
 		assignItemRect(SWORD,           14, 14);
 		assignItemRect(MACE,            15, 15);
@@ -267,6 +268,7 @@ public class ItemSpriteSheet {
 		assignItemRect(ROUND_SHIELD,    16, 16);
 		assignItemRect(SAI,             16, 16);
 		assignItemRect(WHIP,            14, 14);
+		assignItemRect(FIH_BLADE,       15, 15);
 	}
 
 	private static final int WEP_TIER4      =                               xy(9, 8);   //8 slots
@@ -295,6 +297,7 @@ public class ItemSpriteSheet {
 	public static final int GREATSHIELD     = WEP_TIER5+4;
 	public static final int GAUNTLETS       = WEP_TIER5+5;
 	public static final int WAR_SCYTHE      = WEP_TIER5+6;
+	public static final int RUNIC_HAMMER    = WEP_TIER5+7;
 	static{
 		assignItemRect(GREATSWORD,  16, 16);
 		assignItemRect(WAR_HAMMER,  16, 16);
@@ -303,6 +306,7 @@ public class ItemSpriteSheet {
 		assignItemRect(GREATSHIELD, 12, 16);
 		assignItemRect(GAUNTLETS,   13, 15);
 		assignItemRect(WAR_SCYTHE,  14, 15);
+		assignItemRect(RUNIC_HAMMER,16, 16);
 	}
 
 	                                                                                    //8 free slots
@@ -417,9 +421,11 @@ public class ItemSpriteSheet {
 	public static final int WAND_WARDING        = WANDS+10;
 	public static final int WAND_REGROWTH       = WANDS+11;
 	public static final int WAND_TRANSFUSION    = WANDS+12;
+	public static final int WAND_IMPLOSION      = WANDS+13;
 	static {
 		for (int i = WANDS; i < WANDS+16; i++)
 			assignItemRect(i, 14, 14);
+		assignItemRect(WAND_IMPLOSION, 16, 16);
 	}
 
 	private static final int RINGS          =                               xy(1, 15);  //16 slots
@@ -435,6 +441,9 @@ public class ItemSpriteSheet {
 	public static final int RING_QUARTZ     = RINGS+9;
 	public static final int RING_AGATE      = RINGS+10;
 	public static final int RING_DIAMOND    = RINGS+11;
+	public static final int RING_MOONSTONE  = RINGS+12;
+	public static final int RING_OBSIDIAN   = RINGS+13;
+	public static final int RING_IVORY      = RINGS+14;
 	static {
 		for (int i = RINGS; i < RINGS+16; i++)
 			assignItemRect(i, 8, 10);
@@ -559,7 +568,7 @@ public class ItemSpriteSheet {
 	public static final int SCROLL_BERKANAN = SCROLLS+9;
 	public static final int SCROLL_ODAL     = SCROLLS+10;
 	public static final int SCROLL_TIWAZ    = SCROLLS+11;
-
+	public static final int SEALED_SCROLL   = SCROLLS+12;
 	public static final int ARCANE_RESIN    = SCROLLS+13;
 	static {
 		for (int i = SCROLLS; i < SCROLLS+16; i++)
@@ -835,6 +844,7 @@ public class ItemSpriteSheet {
 	public static final int BANDOLIER   = BAGS+4;
 	public static final int HOLSTER     = BAGS+5;
 	public static final int VIAL        = BAGS+6;
+	public static final int FOOD_POUCH  = BAGS+7;
 	static{
 		assignItemRect(WATERSKIN,   16, 14);
 		assignItemRect(BACKPACK,    16, 16);
@@ -843,6 +853,7 @@ public class ItemSpriteSheet {
 		assignItemRect(BANDOLIER,   15, 16);
 		assignItemRect(HOLSTER,     15, 16);
 		assignItemRect(VIAL,        12, 12);
+		assignItemRect(FOOD_POUCH,  14, 15);
 	}
 
 	private static final int DOCUMENTS  =                                   xy(1, 32);  //16 slots
@@ -895,6 +906,9 @@ public class ItemSpriteSheet {
 		public static final int RING_SHARPSHOOT = RINGS+9;
 		public static final int RING_TENACITY   = RINGS+10;
 		public static final int RING_WEALTH     = RINGS+11;
+		public static final int RING_SEER       = RINGS+12;
+		public static final int RING_VOID       = RINGS+13;
+		public static final int RING_BONES      = RINGS+14;
 		static {
 			assignIconRect( RING_ACCURACY,      7, 7 );
 			assignIconRect( RING_ARCANA,        7, 7 );
@@ -908,6 +922,9 @@ public class ItemSpriteSheet {
 			assignIconRect( RING_SHARPSHOOT,    7, 7 );
 			assignIconRect( RING_TENACITY,      6, 6 );
 			assignIconRect( RING_WEALTH,        7, 6 );
+			assignIconRect( RING_SEER,          7, 7 );
+			assignIconRect( RING_VOID,          7, 7 );
+			assignIconRect( RING_BONES,         7, 7 );
 		}
 
 		                                                                                //16 free slots

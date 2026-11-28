@@ -151,7 +151,8 @@ public class SkullChalice extends Trinket {
 						&& Random.Int(3) < 2){
 					//not upgrade(), which can strip enchantments and curses
 					item.level(1);
-					if (item instanceof Wand) ((Wand) item).curCharges++;
+					//not every wand gains a charge per level
+					if (item instanceof Wand) ((Wand) item).curCharges = ((Wand) item).maxCharges;
 				}
 			}
 		}

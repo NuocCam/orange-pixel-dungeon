@@ -25,6 +25,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Blacksmith;
 import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.RunicHammer;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.LevelTransition;
@@ -78,8 +79,10 @@ public class BlacksmithRoom extends StandardRoom {
 		if (height() == 8){
 			equipPos += level.width();
 		}
+		//10% of rooms: 0 or 1 puts a runic hammer on that stand instead
+		int hammerStand = Random.Int(20);
 		for (int i=0; i < 2; i++) {
-			level.drop(
+			level.drop( i == hammerStand ? new RunicHammer().random() :
 					Generator.random( Random.oneOf(
 							Generator.Category.ARMOR,
 							Generator.Category.WEAPON,

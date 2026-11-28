@@ -25,6 +25,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.ArcaneResin;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.Stylus;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.Scroll;
+import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.SealedScroll;
 import com.shatteredpixel.shatteredpixeldungeon.items.spells.Spell;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Notes;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
@@ -37,7 +38,7 @@ public class ScrollHolder extends Bag {
 
 	@Override
 	public boolean canHold( Item item ) {
-		if (item instanceof Scroll || item instanceof Spell
+		if (item instanceof Scroll || item instanceof SealedScroll || item instanceof Spell
 				|| item instanceof ArcaneResin || item instanceof Stylus){
 			return super.canHold(item);
 		} else {

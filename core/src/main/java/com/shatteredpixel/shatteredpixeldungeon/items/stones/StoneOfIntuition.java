@@ -179,14 +179,10 @@ public class StoneOfIntuition extends InventoryStone {
 				return;
 			}
 			
-			if (unIDed.size() <= 5){
-				rows = 1;
-				top += BTN_SIZE/2f;
-				left = (WIDTH - BTN_SIZE*unIDed.size())/2f;
-			} else {
-				rows = 2;
-				left = (WIDTH - BTN_SIZE*((unIDed.size()+1)/2))/2f;
-			}
+			//15 rings need a third row
+			rows = unIDed.size() <= 5 ? 1 : (unIDed.size() <= 12 ? 2 : 3);
+			if (rows == 1) top += BTN_SIZE/2f;
+			final int perRow = (unIDed.size() + rows - 1)/rows;
 			
 			for (final Class<?extends Item> i : unIDed){
 
@@ -204,20 +200,19 @@ public class StoneOfIntuition extends InventoryStone {
 				im.frame(ItemSpriteSheet.Icons.film.get(Reflection.newInstance(i).icon));
 				im.scale.set(2f);
 				btn.icon(im);
-				btn.setRect(left + placed*BTN_SIZE, top, BTN_SIZE, BTN_SIZE);
+				//each row is centred on its own
+				int row = placed / perRow;
+				left = (WIDTH - BTN_SIZE*Math.min(perRow, unIDed.size() - row*perRow))/2f;
+				btn.setRect(left + (placed % perRow)*BTN_SIZE, top + row*BTN_SIZE, BTN_SIZE, BTN_SIZE);
 				add(btn);
 				
 				placed++;
-				if (rows == 2 && placed == ((unIDed.size()+1)/2)){
-					placed = 0;
-					if (unIDed.size() % 2 == 1){
-						left += BTN_SIZE/2f;
-					}
-					top += BTN_SIZE;
-				}
 			}
 			
-			resize(WIDTH, 100);
+			float guessTop = Math.max(80, top + rows*BTN_SIZE);
+			guess.setRect(0, guessTop, WIDTH, 20);
+			
+			resize(WIDTH, (int)guessTop + 20);
 			
 		}
 

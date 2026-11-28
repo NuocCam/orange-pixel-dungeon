@@ -44,6 +44,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.bags.MagicalHolster;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.PotionBandolier;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.ScrollHolder;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.VelvetPouch;
+import com.shatteredpixel.shatteredpixeldungeon.items.bags.FoodPouch;
 import com.shatteredpixel.shatteredpixeldungeon.items.bombs.ArcaneBomb;
 import com.shatteredpixel.shatteredpixeldungeon.items.bombs.Bomb;
 import com.shatteredpixel.shatteredpixeldungeon.items.bombs.Firebomb;
@@ -114,6 +115,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.remains.CloakScrap;
 import com.shatteredpixel.shatteredpixeldungeon.items.remains.SealShard;
 import com.shatteredpixel.shatteredpixeldungeon.items.remains.TornPage;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.exotic.ExoticScroll;
+import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.SealedScroll;
 import com.shatteredpixel.shatteredpixeldungeon.items.spells.Alchemize;
 import com.shatteredpixel.shatteredpixeldungeon.items.spells.CurseInfusion;
 import com.shatteredpixel.shatteredpixeldungeon.items.spells.MagicalInfusion;
@@ -128,6 +130,8 @@ import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.TrinketCatalyst;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.SpiritBow;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Weapon;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.darts.TippedDart;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.FihBlade;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.RunicHammer;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.watabou.utils.Bundle;
 
@@ -202,8 +206,10 @@ public enum Catalog {
 		MELEE_WEAPONS.addItems(Generator.Category.WEP_T1.classes);
 		MELEE_WEAPONS.addItems(Generator.Category.WEP_T2.classes);
 		MELEE_WEAPONS.addItems(Generator.Category.WEP_T3.classes);
+		MELEE_WEAPONS.addItems(FihBlade.class); //only from piranhas
 		MELEE_WEAPONS.addItems(Generator.Category.WEP_T4.classes);
 		MELEE_WEAPONS.addItems(Generator.Category.WEP_T5.classes);
+		MELEE_WEAPONS.addItems(RunicHammer.class); //only from the troll blacksmith
 
 		ARMOR.addItems(Generator.Category.ARMOR.classes);
 
@@ -234,7 +240,7 @@ public enum Catalog {
 
 		TRINKETS.addItems(Generator.Category.TRINKET.classes);
 
-		MISC_EQUIPMENT.addItems(BrokenSeal.class, SpiritBow.class, Waterskin.class, VelvetPouch.class,
+		MISC_EQUIPMENT.addItems(BrokenSeal.class, SpiritBow.class, Waterskin.class, VelvetPouch.class, FoodPouch.class,
 				PotionBandolier.class, ScrollHolder.class, MagicalHolster.class, Amulet.class);
 
 
@@ -274,7 +280,7 @@ public enum Catalog {
 
 		MISC_CONSUMABLES.addItems( Gold.class, EnergyCrystal.class, Dewdrop.class,
 				IronKey.class, GoldenKey.class, CrystalKey.class, WornKey.class,
-				TrinketCatalyst.class, Stylus.class, Torch.class, Honeypot.class, Ankh.class,
+				TrinketCatalyst.class, Stylus.class, Torch.class, Honeypot.class, Ankh.class, SealedScroll.class,
 				CorpseDust.class, Embers.class, CeremonialCandle.class, DarkGold.class, EscapeCrystal.class, VaultBeacon.class, DwarfToken.class, ImpStatue.class,
 				GooBlob.class, BeastMarrow.class, TengusMask.class, CultistMask.class, MetalShard.class, KingsCrown.class,
 				LiquidMetal.class, ArcaneResin.class,

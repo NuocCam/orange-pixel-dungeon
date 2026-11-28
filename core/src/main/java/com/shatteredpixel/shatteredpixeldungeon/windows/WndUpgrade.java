@@ -307,10 +307,10 @@ public class WndUpgrade extends Window {
 
 		//max charges
 		if (wand instanceof Wand){
-			int chargeboost = levelFrom + (toUpgrade instanceof MagesStaff ? 1 : 0);
+			int chargeboost = toUpgrade instanceof MagesStaff ? 1 : 0;
 			bottom = fillFields(Messages.get(this, "charges"),
-					Integer.toString(Math.min(10, ((Wand) wand).initialCharges() + chargeboost)),
-					Integer.toString(Math.min(10, ((Wand) wand).initialCharges() + chargeboost + 1)),
+					Integer.toString(Math.min(10, ((Wand) wand).maxChargesAt(levelFrom) + chargeboost)),
+					Integer.toString(Math.min(10, ((Wand) wand).maxChargesAt(levelFrom + 1) + chargeboost)),
 					bottom);
 		}
 

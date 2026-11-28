@@ -71,6 +71,9 @@ public class Ring extends KindofMisc {
 			put("quartz",ItemSpriteSheet.RING_QUARTZ);
 			put("agate",ItemSpriteSheet.RING_AGATE);
 			put("diamond",ItemSpriteSheet.RING_DIAMOND);
+			put("moonstone",ItemSpriteSheet.RING_MOONSTONE);
+			put("obsidian",ItemSpriteSheet.RING_OBSIDIAN);
+			put("ivory",ItemSpriteSheet.RING_IVORY);
 		}
 	};
 	

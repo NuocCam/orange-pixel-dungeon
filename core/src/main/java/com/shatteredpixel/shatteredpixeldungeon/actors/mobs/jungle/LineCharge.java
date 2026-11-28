@@ -103,11 +103,17 @@ public class LineCharge {
 
 	//the path of a charge at this cell, null if it wouldn't get there with nothing in the way
 	public static ArrayList<Integer> aim( int from, int target ){
+		return aim(from, target, null);
+	}
+
+	//'self' is somebody who will have moved to 'from' by then, so isn't in their own way
+	public static ArrayList<Integer> aim( int from, int target, Char self ){
 		ArrayList<Integer> path = path(from, target);
 		int at = path.indexOf(target);
 		if (at == -1) return null;
 		for (int i = 0; i < at; i++){
-			if (Actor.findChar(path.get(i)) != null) return null;
+			Char ch = Actor.findChar(path.get(i));
+			if (ch != null && ch != self) return null;
 		}
 		return path;
 	}

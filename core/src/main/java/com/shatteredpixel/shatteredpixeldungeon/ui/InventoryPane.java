@@ -30,6 +30,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Belongings;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
+import com.shatteredpixel.shatteredpixeldungeon.items.bags.FoodPouch;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.MagicalHolster;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.PotionBandolier;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.ScrollHolder;
@@ -85,6 +86,8 @@ public class InventoryPane extends Component {
 	public static final int HEIGHT = 82;
 
 	private static final int SLOT_WIDTH = 17;
+	//6 bag tabs share the room 5 item slots take
+	private static final int BAG_WIDTH = 14;
 	private static final int SLOT_HEIGHT = 24;
 
 	private WndBag.ItemSelector selector;
@@ -141,7 +144,8 @@ public class InventoryPane extends Component {
 						&& KeyBindings.getActionForKey(keyEvent) != SPDAction.BAG_2
 						&& KeyBindings.getActionForKey(keyEvent) != SPDAction.BAG_3
 						&& KeyBindings.getActionForKey(keyEvent) != SPDAction.BAG_4
-						&& KeyBindings.getActionForKey(keyEvent) != SPDAction.BAG_5){
+						&& KeyBindings.getActionForKey(keyEvent) != SPDAction.BAG_5
+						&& KeyBindings.getActionForKey(keyEvent) != SPDAction.BAG_6){
 					//any windows opened as a consequence of this should be centered on the inventory
 					GameScene.centerNextWndOnInvPane();
 					selector.onSelect(null);
@@ -184,7 +188,7 @@ public class InventoryPane extends Component {
 		}
 
 		bags = new ArrayList<>();
-		for (int i = 0; i < 5; i++){
+		for (int i = 0; i < 6; i++){
 			BagButton btn = new BagButton(null, i+1);
 			bags.add(btn);
 			add(btn);
@@ -241,7 +245,7 @@ public class InventoryPane extends Component {
 		energy.y = energyTxt.y;
 
 		for (BagButton b : bags){
-			b.setRect(left, y + 14, SLOT_WIDTH, 14);
+			b.setRect(left, y + 14, BAG_WIDTH, 14);
 			left = b.right()+1;
 		}
 
@@ -479,6 +483,8 @@ public class InventoryPane extends Component {
 	private Image bagIcon(Bag bag ) {
 		if (bag instanceof VelvetPouch) {
 			return Icons.get( Icons.SEED_POUCH );
+		} else if (bag instanceof FoodPouch) {
+			return Icons.get( Icons.FOOD_POUCH );
 		} else if (bag instanceof ScrollHolder) {
 			return Icons.get( Icons.SCROLL_HOLDER );
 		} else if (bag instanceof MagicalHolster) {
@@ -695,6 +701,8 @@ public class InventoryPane extends Component {
 					return SPDAction.BAG_4;
 				case 5:
 					return SPDAction.BAG_5;
+				case 6:
+					return SPDAction.BAG_6;
 			}
 		}
 

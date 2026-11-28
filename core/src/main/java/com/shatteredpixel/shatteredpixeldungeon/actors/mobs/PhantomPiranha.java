@@ -45,6 +45,8 @@ public class PhantomPiranha extends Piranha {
 
 		loot = PhantomMeat.class;
 		lootChance = 1f;
+
+		fihBladeChance = 0.25f;
 	}
 
 	@Override

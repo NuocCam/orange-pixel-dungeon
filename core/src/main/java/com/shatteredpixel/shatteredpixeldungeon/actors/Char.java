@@ -21,6 +21,8 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.actors;
 
+import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfVoid;
+import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfSeer;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.spells.HolyMantle;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Barrier;
@@ -43,6 +45,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Barkskin;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Berserk;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Bleeding;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.BloodHex;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Implode;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Bless;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Burning;
@@ -516,6 +519,11 @@ public abstract class Char extends Actor {
 				dmg *= 0.67f;
 			}
 
+			//checked before defenseProc, which wakes the enemy up
+			if (this instanceof Hero){
+				dmg *= RingOfSeer.damageFactor((Hero) this, enemy);
+			}
+
 			int effectiveDamage = enemy.defenseProc( this, Math.round(dmg) );
 			//do not trigger on-hit logic if defenseProc returned a negative value
 			if (effectiveDamage >= 0) {
@@ -597,6 +605,8 @@ public abstract class Char extends Actor {
 				}
 				combinedLethality.detach();
 			}
+
+			RingOfVoid.afterHit(this, enemy, effectiveDamage);
 
 			//dread whisper, after all of this hit's damage so it doesnt shake off the fear
 			if (this == Dungeon.hero) {
@@ -1141,10 +1151,14 @@ public abstract class Char extends Actor {
 			sprite.showStatusWithIcon(CharSprite.NEGATIVE, Integer.toString(dmg + shielded), icon);
 		}
 
+		//only a staff of implosion cares how far past zero a hit went
+		int overkill = Math.max(0, -HP);
 		if (HP < 0) HP = 0;
 
 		if (!isAlive()) {
+			boolean spill = overkill > 0 && Implode.staffStrike(src);
 			die( src );
+			if (spill) Implode.spill(pos, overkill);
 		} else if (HP == 0 && buff(DeathMark.DeathMarkTracker.class) != null){
 			DeathMark.processFearTheReaper(this);
 		}
@@ -1204,6 +1218,12 @@ public abstract class Char extends Actor {
 		if (hex != null){
 			hex.detach();
 			hex.targetDied(this);
+		}
+		Implode implode = buff(Implode.class);
+		if (implode != null){
+			implode.detach();
+			//no blast for somthing that fell down a chasm
+			if (src != Chasm.class) implode.targetDied(this, src);
 		}
 		destroy();
 		if (src != Chasm.class) {

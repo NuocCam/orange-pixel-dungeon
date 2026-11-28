@@ -34,6 +34,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Amok;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Barrier;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Blindness;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Implode;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Burning;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Charm;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Corrosion;
@@ -61,6 +62,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfCorruption;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfDisintegration;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfFireblast;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfFrost;
+import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfImplosion;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfLightning;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfLivingEarth;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfMagicMissile;
@@ -104,6 +106,7 @@ public class ElementalBlast extends ArmorAbility {
 		effectTypes.put(WandOfTransfusion.class,    MagicMissile.BLOOD_CONE);
 		effectTypes.put(WandOfCorruption.class,     MagicMissile.SHADOW_CONE);
 		effectTypes.put(WandOfRegrowth.class,       MagicMissile.FOLIAGE_CONE);
+		effectTypes.put(WandOfImplosion.class,      MagicMissile.FORCE_CONE);
 	}
 
 	private static final HashMap<Class<?extends Wand>, Float> damageFactors = new HashMap<>();
@@ -121,6 +124,7 @@ public class ElementalBlast extends ArmorAbility {
 		damageFactors.put(WandOfTransfusion.class,      0f);
 		damageFactors.put(WandOfCorruption.class,       0f);
 		damageFactors.put(WandOfRegrowth.class,         0f);
+		damageFactors.put(WandOfImplosion.class,        0f);
 	}
 
 	{
@@ -378,6 +382,13 @@ public class ElementalBlast extends ArmorAbility {
 								} else if (finalWandCls == WandOfRegrowth.class){
 									if (mob.alignment != Char.Alignment.ALLY) {
 										Buff.prolong( mob, Roots.class, effectMulti*Roots.DURATION );
+										charsHit++;
+									}
+								//*** Wand of Implosion ***
+								} else if (finalWandCls == WandOfImplosion.class){
+									if (mob.isAlive() && mob.alignment != Char.Alignment.ALLY) {
+										//same as one zap from the staff
+										Implode.apply(mob, hero.belongings.getItem(MagesStaff.class).buffedLvl());
 										charsHit++;
 									}
 								}

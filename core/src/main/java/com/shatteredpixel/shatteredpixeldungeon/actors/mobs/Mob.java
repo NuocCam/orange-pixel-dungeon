@@ -21,6 +21,7 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.actors.mobs;
 
+import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfBones;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Berserk;
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Badges;
@@ -991,6 +992,7 @@ public abstract class Mob extends Char {
 				Bestiary.countEncounter(getClass());
 
 				AscensionChallenge.processEnemyKill(this);
+				RingOfBones.onEnemySlain(Dungeon.hero, this);
 				
 				int exp = Dungeon.hero.lvl <= maxLvl ? EXP : 0;
 

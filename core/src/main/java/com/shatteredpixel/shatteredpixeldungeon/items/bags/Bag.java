@@ -83,6 +83,11 @@ public class Bag extends Item implements Iterable<Item> {
 	@Override
 	public boolean collect( Bag container ) {
 
+		//a bag which can't go in mustn't take anything with it, or those items are gone
+		if (!container.canHold(this)){
+			return false;
+		}
+
 		grabItems(container);
 
 		//if there are any quickslot placeholders that match items in this bag, assign them

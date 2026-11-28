@@ -47,6 +47,8 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Imp;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Vesk;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Wandmaker;
 import com.shatteredpixel.shatteredpixeldungeon.items.Amulet;
+import com.shatteredpixel.shatteredpixeldungeon.items.bags.FoodPouch;
+import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
 import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
@@ -875,6 +877,22 @@ public class Dungeon {
 		
 		hero = null;
 		hero = (Hero)bundle.get( HERO );
+
+		//runs from before the food pouch get thiers now, their food moves in with it
+		if (fullLoad){
+			boolean hasPouch = false;
+			for (Bag b : hero.belongings.getBags()){
+				if (b instanceof FoodPouch) hasPouch = true;
+			}
+			if (!hasPouch){
+				FoodPouch pouch = new FoodPouch();
+				//goes in even while the backpack is lost, same trick as equipping uses
+				boolean wasKept = pouch.keptThoughLostInvent;
+				pouch.keptThoughLostInvent = true;
+				pouch.collect();
+				pouch.keptThoughLostInvent = wasKept;
+			}
+		}
 		
 		depth = bundle.getInt( DEPTH );
 		branch = bundle.getInt( BRANCH );

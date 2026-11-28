@@ -138,6 +138,7 @@ public class BuffIndicator extends Component {
 	public static final int THROWN_WEP  = 85;
 	public static final int RESSURRECT  = 86;
 	public static final int HOLY_MANTLE = 87;
+	public static final int IMPLODE     = 88;
 
 	public static final int SIZE_SMALL  = 7;
 	public static final int SIZE_LARGE  = 16;
