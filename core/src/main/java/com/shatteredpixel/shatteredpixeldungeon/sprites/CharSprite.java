@@ -21,6 +21,7 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.sprites;
 
+import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.HolyTome;
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
@@ -418,6 +419,7 @@ public class CharSprite extends MovieClip implements Tweener.Listener, MovieClip
 			case ILLUMINATED:
 				if (light != null) light.putOut();
 				GameScene.effect(light = new TorchHalo(this));
+				if (HolyTome.darkMagic()) light.hardlight(0.6f, 0.3f, 1f);
 				break;
 			case CHILLED:
 				if (chilled != null) chilled.on = false;

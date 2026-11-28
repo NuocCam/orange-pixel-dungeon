@@ -205,6 +205,8 @@ public enum Talent {
 	//Power of Many T4
 	BEAMING_RAY(183, 4), LIFE_LINK(184, 4), STASIS(185, 4),
 
+	//Cultist T3
+	BLOOD_TITHE(308, 3), SPREADING_ROT(309, 3), DREAD_WHISPER(310, 3), BLACK_WARD(311, 3), CURSE_BEARER(312, 3), SOUL_ROT(313, 3),
 	ATK_SPEED_ENHANCE(268, 4), ACC_ENHANCE(269, 4), EVA_ENHANCE(270, 4), BETTER_CHOICE(271, 3),
 
 	//universal T4
@@ -1337,6 +1339,9 @@ public enum Talent {
 				break;
 			case PALADIN:
 				Collections.addAll(tierTalents, LAY_ON_HANDS, AURA_OF_PROTECTION, WALL_OF_LIGHT, HOLY_MANTLE, POWER_OF_LIFE, INDUCE_AGGRO);
+				break;
+			case CULTIST:
+				Collections.addAll(tierTalents, BLOOD_TITHE, SPREADING_ROT, DREAD_WHISPER, BLACK_WARD, CURSE_BEARER, SOUL_ROT);
 				break;
 		}
 		for (Talent talent : tierTalents){

@@ -42,6 +42,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.AscensionChallenge;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Barkskin;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Berserk;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Bleeding;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.BloodHex;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Bless;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Burning;
@@ -51,6 +52,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Chill;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Corrosion;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Corruption;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Cripple;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.CultistPower;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Daze;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Doom;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Dread;
@@ -472,6 +474,10 @@ public abstract class Char extends Actor {
 				}
 			}
 
+			if (this instanceof Hero){
+				dmg *= CultistPower.damageFactor((Hero) this);
+			}
+
 			for (ChampionEnemy buff : buffs(ChampionEnemy.class)){
 				dmg *= buff.meleeDamageFactor();
 			}
@@ -590,6 +596,11 @@ public abstract class Char extends Actor {
 					}
 				}
 				combinedLethality.detach();
+			}
+
+			//dread whisper, after all of this hit's damage so it doesnt shake off the fear
+			if (this == Dungeon.hero) {
+				BloodHex.onHeroHit(Dungeon.hero, enemy);
 			}
 
 			if (enemy.sprite != null) {
@@ -963,6 +974,10 @@ public abstract class Char extends Actor {
 		if (alignment != Alignment.ALLY && this.buff(DeathMark.DeathMarkTracker.class) != null){
 			damage *= 1.25f;
 		}
+		//the cultist's hex. Its own rot isnt boosted by it
+		if (!(src instanceof BloodHex) && this.buff(BloodHex.class) != null){
+			damage *= 1.25f;
+		}
 
 		//two separate things can convert dmg to bleed, we handle that here
 		//we do this before modifiers are applied back to dmg as we don't want to stack them twice (from this and bleed)
@@ -1184,6 +1199,11 @@ public abstract class Char extends Actor {
 		//something else is forcing death, so remove death mark to prevent conflicts
 		if (buff(DeathMark.DeathMarkTracker.class) != null){
 			buff(DeathMark.DeathMarkTracker.class).detachOnDeath();
+		}
+		BloodHex hex = buff(BloodHex.class);
+		if (hex != null){
+			hex.detach();
+			hex.targetDied(this);
 		}
 		destroy();
 		if (src != Chasm.class) {

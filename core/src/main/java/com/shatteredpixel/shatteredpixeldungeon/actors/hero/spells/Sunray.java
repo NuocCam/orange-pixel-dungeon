@@ -58,12 +58,18 @@ public class Sunray extends TargetedClericSpell {
 		int min = Dungeon.hero.pointsInTalent(Talent.SUNRAY) == 2 ? 6 : 4;
 		int max = Dungeon.hero.pointsInTalent(Talent.SUNRAY) == 2 ? 12 : 8;
 		int dur = Dungeon.hero.pointsInTalent(Talent.SUNRAY) == 2 ? 6 : 4;
-		return Messages.get(this, "desc", min, max, dur) + "\n\n" + Messages.get(this, "charge_cost", (int)chargeUse(Dungeon.hero));
+		return Messages.get(this, HolyTome.darkMagic() ? "desc_dark" : "desc", min, max, dur) + "\n\n" + Messages.get(this, "charge_cost", (int)chargeUse(Dungeon.hero));
 	}
 
 	@Override
 	public boolean canCast(Hero hero) {
 		return super.canCast(hero) && hero.hasTalent(Talent.SUNRAY);
+	}
+
+	//plain magic from a dark tome, so no extra damage to the undead or demons
+	public static boolean holyBonus(Char ch){
+		return !HolyTome.darkMagic()
+				&& (Char.hasProp(ch, Char.Property.UNDEAD) || Char.hasProp(ch, Char.Property.DEMONIC));
 	}
 
 	@Override
@@ -90,14 +96,14 @@ public class Sunray extends TargetedClericSpell {
 		hero.sprite.zap(target);
 
 		hero.sprite.parent.add(
-				new Beam.SunRay(hero.sprite.center(), DungeonTilemap.raisedTileCenterToWorld(aim.collisionPos)));
+				HolyTome.spellBeam(hero.sprite.center(), DungeonTilemap.raisedTileCenterToWorld(aim.collisionPos)));
 		Sample.INSTANCE.play( Assets.Sounds.RAY );
 
 		Char ch = Actor.findChar( aim.collisionPos );
 		if (ch != null) {
-			ch.sprite.burst(0xFFFFFF44, 5);
+			ch.sprite.burst(HolyTome.darkMagic() ? 0xFF8833CC : 0xFFFFFF44, 5);
 
-			if (Char.hasProp(ch, Char.Property.UNDEAD) || Char.hasProp(ch, Char.Property.DEMONIC)){
+			if (holyBonus(ch)){
 				if (hero.pointsInTalent(Talent.SUNRAY) == 2) {
 					ch.damage(12, Sunray.this);
 				} else {

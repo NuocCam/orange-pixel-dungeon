@@ -71,6 +71,14 @@ public class Beam extends Image {
 		}
 	}
 
+	//sunray and its like, cast from a dark tome
+	public static class DarkRay extends Beam{
+		public DarkRay(PointF s, PointF e){
+			super(s, e, Effects.Type.LIGHT_RAY, 1f);
+			tint(0.55f, 0.2f, 0.85f, 1);
+		}
+	}
+
 	public static class HealthRay extends Beam{
 		public HealthRay(PointF s, PointF e){
 			super(s, e, Effects.Type.HEALTH_RAY, 0.75f);

@@ -211,7 +211,7 @@ public class Ring extends KindofMisc {
 			desc = super.info();
 		}
 
-		if (cursed && isEquipped( Dungeon.hero )) {
+		if (cursed && isEquipped( Dungeon.hero ) && !Dungeon.hero.freesCurses()) {
 			desc += "\n\n" + Messages.get(Ring.class, "cursed_worn");
 			
 		} else if (cursed && cursedKnown) {

@@ -21,14 +21,17 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.items.artifacts;
 
+import com.shatteredpixel.shatteredpixeldungeon.effects.Beam;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.MagicImmune;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Regeneration;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroSubClass;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.spells.ClericSpell;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.spells.GuidingLight;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.spells.HexSpell;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Catalog;
@@ -42,6 +45,7 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.QuickSlotButton;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndClericSpells;
 import com.watabou.utils.Bundle;
+import com.watabou.utils.PointF;
 
 import java.util.ArrayList;
 
@@ -64,6 +68,41 @@ public class HolyTome extends Artifact {
 	}
 
 	public static final String AC_CAST = "CAST";
+
+	//a cultist cleric's spells are dark magic: darker to look at, and with nothing holy
+	//about their damage
+	public static boolean darkMagic(){
+		return Dungeon.hero != null && Dungeon.hero.subClass == HeroSubClass.CULTIST;
+	}
+
+	//vesk's mask darkens the tome a cultist is carrying
+	private boolean dark(){
+		return darkMagic() && Dungeon.hero.belongings.contains(this);
+	}
+
+	//the colour of the flashes some spells give off
+	public static int spellColor(){
+		return darkMagic() ? 0x8833CC : 0xFFFF00;
+	}
+
+	public static Beam spellBeam( PointF from, PointF to ){
+		return darkMagic() ? new Beam.DarkRay(from, to) : new Beam.SunRay(from, to);
+	}
+
+	@Override
+	public String name() {
+		return dark() ? Messages.get(this, "dark_name") : super.name();
+	}
+
+	@Override
+	public int image() {
+		return dark() ? ItemSpriteSheet.ARTIFACT_TOME_DARK : super.image();
+	}
+
+	@Override
+	public String desc() {
+		return dark() ? Messages.get(this, "dark_desc") : super.desc();
+	}
 
 	@Override
 	public ArrayList<String> actions( Hero hero ) {
@@ -329,7 +368,9 @@ public class HolyTome extends Artifact {
 
 		@Override
 		public int indicatorColor() {
-			if (quickSpell == GuidingLight.INSTANCE && quickSpell.chargeUse(Dungeon.hero) == 0){
+			if (quickSpell == HexSpell.INSTANCE){
+				return 0x442266;
+			} else if (quickSpell == GuidingLight.INSTANCE && quickSpell.chargeUse(Dungeon.hero) == 0){
 				return 0x0063ff;
 			} else {
 				return 0x002157;

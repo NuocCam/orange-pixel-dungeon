@@ -68,7 +68,7 @@ public class DivineIntervention extends ClericSpell {
 		for (Char ch : Actor.chars()){
 			if (ch.alignment == Char.Alignment.ALLY && ch != hero){
 				Buff.affect(ch, DivineShield.class).setShield(100 + 50*hero.pointsInTalent(Talent.DIVINE_INTERVENTION));
-				new Flare(6, 32).color(0xFFFF00, true).show(ch.sprite, 2f);
+				new Flare(6, 32).color(HolyTome.spellColor(), true).show(ch.sprite, 2f);
 			}
 		}
 
@@ -77,7 +77,7 @@ public class DivineIntervention extends ClericSpell {
 
 		//we apply buffs here so that the 5 charge cost and shield boost do not stack
 		hero.buff(AscendedForm.AscendBuff.class).setShield(100 + 50*hero.pointsInTalent(Talent.DIVINE_INTERVENTION));
-		new Flare(6, 32).color(0xFFFF00, true).show(hero.sprite, 2f);
+		new Flare(6, 32).color(HolyTome.spellColor(), true).show(hero.sprite, 2f);
 
 		hero.buff(AscendedForm.AscendBuff.class).divineInverventionCast = true;
 		hero.buff(AscendedForm.AscendBuff.class).extend(2+hero.pointsInTalent(Talent.DIVINE_INTERVENTION));

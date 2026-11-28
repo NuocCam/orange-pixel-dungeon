@@ -29,6 +29,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Regeneration;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroSubClass;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.ArmorAbility;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.cleric.Trinity;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
@@ -142,6 +143,15 @@ abstract public class ClassArmor extends Armor {
 		classArmor.charge = 50;
 		
 		return classArmor;
+	}
+
+	//only the look changes for a cultist, the armor and its ability stay the same
+	@Override
+	public int image() {
+		if (Dungeon.hero != null && Dungeon.hero.subClass == HeroSubClass.CULTIST){
+			return ItemSpriteSheet.ARMOR_CULTIST;
+		}
+		return super.image();
 	}
 
 	private static final String ARMOR_TIER	= "armortier";

@@ -21,6 +21,7 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.actors.hero.spells;
 
+import com.shatteredpixel.shatteredpixeldungeon.effects.particles.ShadowParticle;
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
@@ -88,12 +89,12 @@ public class ShieldOfLight extends TargetedClericSpell {
 
 		hero.busy();
 		hero.sprite.operate(hero.pos);
-		hero.sprite.emitter().start(Speck.factory(Speck.LIGHT), 0.15f, 6);
+		hero.sprite.emitter().start(HolyTome.darkMagic() ? ShadowParticle.UP : Speck.factory(Speck.LIGHT), 0.15f, 6);
 
 		Char ally = PowerOfMany.getPoweredAlly();
 		if (ally != null && ally.buff(LifeLinkSpell.LifeLinkSpellBuff.class) != null){
 			Buff.prolong( ally, ShieldOfLightTracker.class, 3f).object = ch.id();
-			ally.sprite.emitter().start(Speck.factory(Speck.LIGHT), 0.15f, 6);
+			ally.sprite.emitter().start(HolyTome.darkMagic() ? ShadowParticle.UP : Speck.factory(Speck.LIGHT), 0.15f, 6);
 		}
 
 		onSpellCast(tome, hero);

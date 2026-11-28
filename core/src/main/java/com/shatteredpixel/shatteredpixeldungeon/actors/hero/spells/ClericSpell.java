@@ -147,6 +147,9 @@ public abstract class ClericSpell {
 
 			} else if (cleric.subClass == HeroSubClass.PALADIN){
 				spells.add(Smite.INSTANCE);
+
+			} else if (cleric.subClass == HeroSubClass.CULTIST){
+				spells.add(HexSpell.INSTANCE);
 			}
 
 			if (cleric.hasTalent(Talent.CLEANSE)){
@@ -264,6 +267,7 @@ public abstract class ClericSpell {
 		spells.add(BeamingRay.INSTANCE);
 		spells.add(LifeLinkSpell.INSTANCE);
 		spells.add(Stasis.INSTANCE);
+		spells.add(HexSpell.INSTANCE);
 		return spells;
 	}
 }

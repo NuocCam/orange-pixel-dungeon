@@ -98,7 +98,7 @@ public class BlessSpell extends TargetedClericSpell {
 	}
 
 	private void affectChar(Hero hero, Char ch){
-		new Flare(6, 32).color(0xFFFF00, true).show(ch.sprite, 2f);
+		new Flare(6, 32).color(HolyTome.spellColor(), true).show(ch.sprite, 2f);
 		if (ch == hero){
 			Buff.prolong(ch, Bless.class, 2f + 4*hero.pointsInTalent(Talent.BLESS));
 			Buff.affect(ch, Barrier.class).setShield(5 + 5*hero.pointsInTalent(Talent.BLESS));

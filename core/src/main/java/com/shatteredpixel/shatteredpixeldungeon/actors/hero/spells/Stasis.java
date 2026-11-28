@@ -91,7 +91,7 @@ public class Stasis extends ClericSpell {
 		Char ally = PowerOfMany.getPoweredAlly();
 
 		hero.sprite.zap(ally.pos);
-		MagicMissile.boltFromChar(hero.sprite.parent, MagicMissile.LIGHT_MISSILE, ally.sprite, hero.pos, null);
+		MagicMissile.boltFromChar(hero.sprite.parent, HolyTome.darkMagic() ? MagicMissile.SHADOW : MagicMissile.LIGHT_MISSILE, ally.sprite, hero.pos, null);
 
 		LinkedHashSet<Buff> buffs = ally.buffs();
 		Actor.remove(ally);

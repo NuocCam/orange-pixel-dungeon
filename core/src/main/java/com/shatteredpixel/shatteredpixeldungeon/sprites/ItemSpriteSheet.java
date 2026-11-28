@@ -385,6 +385,7 @@ public class ItemSpriteSheet {
 	public static final int ARMOR_HUNTRESS  = ARMOR+8;
 	public static final int ARMOR_DUELIST   = ARMOR+9;
 	public static final int ARMOR_CLERIC    = ARMOR+10;
+	public static final int ARMOR_CULTIST   = ARMOR+11;
 	static{
 		assignItemRect(ARMOR_CLOTH,     15, 12);
 		assignItemRect(ARMOR_LEATHER,   14, 13);
@@ -397,6 +398,7 @@ public class ItemSpriteSheet {
 		assignItemRect(ARMOR_HUNTRESS,  13, 15);
 		assignItemRect(ARMOR_DUELIST,   12, 13);
 		assignItemRect(ARMOR_CLERIC,    13, 14);
+		assignItemRect(ARMOR_CULTIST,   14, 15);
 	}
 
 	                                                                                    //16 free slots
@@ -468,6 +470,7 @@ public class ItemSpriteSheet {
 	public static final int ARTIFACT_CITRINE1   = ARTIFACTS+26;
 	public static final int ARTIFACT_CITRINE2   = ARTIFACTS+27;
 	public static final int ARTIFACT_CITRINE3   = ARTIFACTS+28;
+	public static final int ARTIFACT_TOME_DARK  = ARTIFACTS+29;
 	static{
 		assignItemRect(ARTIFACT_CLOAK,      9,  15);
 		assignItemRect(ARTIFACT_ARMBAND,    16, 13);
@@ -493,6 +496,7 @@ public class ItemSpriteSheet {
 		assignItemRect(ARTIFACT_ROSE2,      14, 14);
 		assignItemRect(ARTIFACT_ROSE3,      14, 14);
 		assignItemRect(ARTIFACT_TOME,       14, 16);
+		assignItemRect(ARTIFACT_TOME_DARK,  14, 16);
 		assignItemRect(ARTIFACT_KEY,        8,  16);
 		assignItemRect(ARTIFACT_MEDIC_KIT,  16, 13);
 		assignItemRect(ARTIFACT_CITRINE1,   8,  16);

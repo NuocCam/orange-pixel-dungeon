@@ -77,7 +77,7 @@ public class GuidingLight extends TargetedClericSpell {
 		hero.busy();
 		Sample.INSTANCE.play( Assets.Sounds.ZAP );
 		hero.sprite.zap(target);
-		MagicMissile.boltFromChar(hero.sprite.parent, MagicMissile.LIGHT_MISSILE, hero.sprite, aim.collisionPos, new Callback() {
+		MagicMissile.boltFromChar(hero.sprite.parent, HolyTome.darkMagic() ? MagicMissile.SHADOW : MagicMissile.LIGHT_MISSILE, hero.sprite, aim.collisionPos, new Callback() {
 			@Override
 			public void call() {
 
@@ -85,7 +85,7 @@ public class GuidingLight extends TargetedClericSpell {
 				if (ch != null) {
 					ch.damage(Hero.heroDamageIntRange(2, 8), GuidingLight.this);
 					Sample.INSTANCE.play(Assets.Sounds.HIT_MAGIC, 1, Random.Float(0.87f, 1.15f));
-					ch.sprite.burst(0xFFFFFF44, 3);
+					ch.sprite.burst(HolyTome.darkMagic() ? 0xFF8833CC : 0xFFFFFF44, 3);
 					if (ch.isAlive()){
 						Buff.affect(ch, Illuminated.class);
 						Buff.affect(ch, WasIlluminatedTracker.class);

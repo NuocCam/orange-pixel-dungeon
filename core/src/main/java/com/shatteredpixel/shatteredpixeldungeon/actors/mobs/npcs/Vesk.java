@@ -26,6 +26,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Badges;
 import com.shatteredpixel.shatteredpixeldungeon.Statistics;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroSubClass;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Guard;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Ijiraq;
 import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
@@ -204,8 +205,8 @@ public class Vesk extends NPC {
 	private String afterDealLine(){
 		switch (Quest.deal){
 			case MASK:
-				boolean waiting = Dungeon.hero.belongings.getItem(CultistMask.class) != null;
-				return Messages.get(this, waiting ? "after_mask_waiting" : "after_mask_worn");
+				boolean worn = Dungeon.hero.subClass == HeroSubClass.CULTIST;
+				return Messages.get(this, worn ? "after_mask_worn" : "after_mask_waiting");
 			case CLOAK:
 				return Messages.get(this, "after_cloak");
 			default:

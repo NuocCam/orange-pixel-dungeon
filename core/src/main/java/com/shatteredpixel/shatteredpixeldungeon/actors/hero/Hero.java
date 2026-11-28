@@ -54,6 +54,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Bless;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Charm;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Combo;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.CultistPower;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Drowsy;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Foresight;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.GreaterHaste;
@@ -482,7 +483,8 @@ public class Hero extends Char {
 	public int tier() {
 		Armor armor = belongings.armor();
 		if (armor instanceof ClassArmor){
-			return 6;
+			//a cultist wears theirs as a hooded cloak
+			return subClass == HeroSubClass.CULTIST ? 7 : 6;
 		} else if (armor != null){
 			return armor.tier;
 		} else {
@@ -1774,6 +1776,11 @@ public class Hero extends Char {
 		}
 	}
 
+	//cursed gear never sticks to a cultist
+	public boolean freesCurses(){
+		return subClass == HeroSubClass.CULTIST;
+	}
+
 	@Override
 	public void damage( int dmg, Object src ) {
 		if (buff(TimekeepersHourglass.timeStasis.class) != null
@@ -1810,6 +1817,9 @@ public class Hero extends Char {
 				damage *= 0.2f;
 			}
 		}
+
+		//a cultist's curse bearer talent
+		damage *= CultistPower.takenFactor(this);
 
 		CapeOfThorns.Thorns thorns = buff( CapeOfThorns.Thorns.class );
 		if (thorns != null) {

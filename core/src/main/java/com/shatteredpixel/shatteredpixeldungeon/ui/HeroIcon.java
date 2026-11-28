@@ -21,6 +21,7 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.ui;
 
+import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.HolyTome;
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroSubClass;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.ArmorAbility;
@@ -50,6 +51,7 @@ public class HeroIcon extends Image {
 	public static final int MONK        = 9;
 	public static final int PRIEST      = 10;
 	public static final int PALADIN     = 11;
+	public static final int CULTIST     = 12;
 
 	//abilities
 	public static final int HEROIC_LEAP     = 16;
@@ -100,6 +102,7 @@ public class HeroIcon extends Image {
 	public static final int BEAMING_RAY     = 64;
 	public static final int LIFE_LINK       = 65;
 	public static final int STASIS          = 66;
+	public static final int HEX_SPELL       = 67;
 
 	//all cleric spells have a separate icon with no background for the action indicator
 	public static final int SPELL_ACTION_OFFSET      = 32;
@@ -138,8 +141,13 @@ public class HeroIcon extends Image {
 		frame(film.get(abil.icon()));
 	}
 
+	//the tome's spells have a dark set for a cultist. Both sheets are laid out the same
+	public static String spellSheet(){
+		return HolyTome.darkMagic() ? Assets.Interfaces.HERO_ICONS_DARK : Assets.Interfaces.HERO_ICONS;
+	}
+
 	public HeroIcon(ActionIndicator.Action action){
-		super( Assets.Interfaces.HERO_ICONS );
+		super( action instanceof HolyTome.TomeRecharge ? spellSheet() : Assets.Interfaces.HERO_ICONS );
 		if (film == null){
 			film = new TextureFilm(texture, SIZE, SIZE);
 		}
@@ -147,7 +155,7 @@ public class HeroIcon extends Image {
 	}
 
 	public HeroIcon(ClericSpell spell){
-		super( Assets.Interfaces.HERO_ICONS );
+		super( spellSheet() );
 		if (film == null){
 			film = new TextureFilm(texture, SIZE, SIZE);
 		}
