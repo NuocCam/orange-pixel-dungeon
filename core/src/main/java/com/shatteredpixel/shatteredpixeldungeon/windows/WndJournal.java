@@ -51,6 +51,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MagesStaff;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Bestiary;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Catalog;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Document;
+import com.shatteredpixel.shatteredpixeldungeon.journal.MobInfo;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Notes;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.Trap;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
@@ -997,10 +998,14 @@ public class WndJournal extends WndTabbed {
 							image = new Image(icon);
 						}
 
+						MobInfo info = seen && finalMob != null ? MobInfo.of(entityCls) : null;
+						Window window = info != null
+								? new WndBestiaryEntry(image, finalTitle, finalDesc, info)
+								: new WndJournalItem(image, finalTitle, finalDesc);
 						if (ShatteredPixelDungeon.scene() instanceof GameScene){
-							GameScene.show(new WndJournalItem(image, finalTitle, finalDesc));
+							GameScene.show(window);
 						} else {
-							ShatteredPixelDungeon.scene().addToFront(new WndJournalItem(image, finalTitle, finalDesc));
+							ShatteredPixelDungeon.scene().addToFront(window);
 						}
 
 						return true;

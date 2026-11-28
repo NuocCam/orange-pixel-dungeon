@@ -24,6 +24,7 @@ package com.shatteredpixel.shatteredpixeldungeon.actors.mobs.jungle;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Bleeding;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Poison;
 import com.shatteredpixel.shatteredpixeldungeon.effects.FloatingText;
+import com.shatteredpixel.shatteredpixeldungeon.effects.Pushing;
 import com.shatteredpixel.shatteredpixeldungeon.effects.MagicMissile;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfBlastWave;
 import com.shatteredpixel.shatteredpixeldungeon.mechanics.Ballistica;
@@ -149,6 +150,9 @@ public class Amalgam extends Mob {
 	private static final int CHARGE_RANGE = 3;
 	private static final float CHARGE_COOLDOWN = 8;
 	private static final int STUN_TURNS = 2;
+	//it backs off for a run up too, but about half as often as a boar
+	private static final float BACK_OFF_CHANCE = 1/6f;
+	private static final float BACK_OFF_REST = 8;
 
 	//the marked cells of a charge which goes off next turn, otherwise null
 	private ArrayList<Integer> chargePath;
@@ -162,6 +166,8 @@ public class Amalgam extends Mob {
 	private boolean secondCharge = false;
 
 	public static class ChargeCooldown extends FlavourBuff {}
+
+	public static class BackOffRest extends FlavourBuff {}
 
 	@Override
 	public int damageRoll() {
@@ -217,12 +223,13 @@ public class Amalgam extends Mob {
 		return super.act();
 	}
 
-	private boolean prepareCharge(){
+	//after backing off it only needs 1 tile in between, and doesn't wait on the long cooldown
+	private boolean prepareCharge( boolean runUp ){
 		//a follow-up which never found its line is gone once the cooldown is
 		if (buff(ChargeCooldown.class) == null) secondCharge = false;
 
-		if (rooted || !secondCharge && (buff(ChargeCooldown.class) != null
-				|| Dungeon.level.distance(pos, enemy.pos) < CHARGE_RANGE)){
+		if (rooted || !secondCharge && ((!runUp && buff(ChargeCooldown.class) != null)
+				|| Dungeon.level.distance(pos, enemy.pos) < (runUp ? 2 : CHARGE_RANGE))){
 			return false;
 		}
 		//nobody gets charged while they can't move out of the way
@@ -240,6 +247,33 @@ public class Amalgam extends Mob {
 			sprite.turnTo(pos, enemy.pos);
 			updateSpriteState();
 		}
+		return true;
+	}
+
+	//one step away from the enemy and straight into the warning
+	private boolean backOff(){
+		if (rooted || enemy.paralysed > 0 || buff(BackOffRest.class) != null
+				|| !Dungeon.level.adjacent(pos, enemy.pos)
+				|| Random.Float() >= BACK_OFF_CHANCE){
+			return false;
+		}
+		int cell = LineCharge.backOffCell(this, enemy);
+		if (cell == -1) return false;
+
+		int from = pos;
+		Buff.prolong(this, BackOffRest.class, BACK_OFF_REST);
+		move(cell, false);
+		//a trap may have moved it, held it still or hurt it enough to call for food
+		if (isAlive() && pos == cell && paralysed == 0 && !feeding){
+			Actor.add(new Pushing(this, from, cell));
+			if (Dungeon.level.heroFOV[pos]){
+				GLog.w(Messages.get(this, "back_off"));
+				Dungeon.hero.interrupt();
+			}
+			//the warning takes up this same turn
+			if (prepareCharge(true)) return true;
+		}
+		spend(1 / speed());
 		return true;
 	}
 
@@ -261,6 +295,7 @@ public class Amalgam extends Mob {
 		ArrayList<Integer> path = chargePath;
 		chargePath = null;
 		Buff.prolong(this, ChargeCooldown.class, CHARGE_COOLDOWN);
+		Buff.prolong(this, BackOffRest.class, BACK_OFF_REST);
 
 		charging = true;
 		LineCharge.Result result = LineCharge.run(this, chargeFrom, chargeAim, path, this);
@@ -703,7 +738,7 @@ public class Amalgam extends Mob {
 	private class Hunting extends Mob.Hunting {
 		@Override
 		public boolean act( boolean enemyInFOV, boolean justAlerted ) {
-			if (enemyInFOV && !isCharmedBy(enemy) && (prepareCharge() || useMove())){
+			if (enemyInFOV && !isCharmedBy(enemy) && (prepareCharge(false) || backOff() || useMove())){
 				enemySeen = true;
 				target = enemy.pos;
 				return true;

@@ -760,6 +760,7 @@ public class ItemSpriteSheet {
 	public static final int SUPPLY_RATION   = FOOD+12;
 	public static final int MAGIC_ORANGE    = FOOD+13;
 	public static final int JUNGLE_BERRY    = FOOD+14;
+	public static final int JUNGLE_PIE      = FOOD+15;
 	static{
 		assignItemRect(MEAT,            15, 11);
 		assignItemRect(STEAK,           15, 11);
@@ -776,6 +777,7 @@ public class ItemSpriteSheet {
 		assignItemRect(SUPPLY_RATION,   16, 12);
 		assignItemRect(MAGIC_ORANGE,    12, 14);
 		assignItemRect(JUNGLE_BERRY,    15, 16);
+		assignItemRect(JUNGLE_PIE,      16, 12);
 	}
 
 	private static final int HOLIDAY_FOOD   =                               xy(1, 29);  //16 slots
@@ -789,6 +791,8 @@ public class ItemSpriteSheet {
 	public static final int VANILLA_CAKE    = HOLIDAY_FOOD+7;
 	public static final int CANDY_CANE      = HOLIDAY_FOOD+8;
 	public static final int SPARKLING_POTION= HOLIDAY_FOOD+9;
+	//not for holidays, the food row just ran out of room
+	public static final int JUNGLE_PIE_SLICE= HOLIDAY_FOOD+15;
 	static{
 		assignItemRect(STEAMED_FISH,    16, 12);
 		assignItemRect(FISH_LEFTOVER,   16, 12);
@@ -800,6 +804,7 @@ public class ItemSpriteSheet {
 		assignItemRect(VANILLA_CAKE,    14, 13);
 		assignItemRect(CANDY_CANE,      13, 16);
 		assignItemRect(SPARKLING_POTION, 7, 16);
+		assignItemRect(JUNGLE_PIE_SLICE, 16, 12);
 	}
 
 	private static final int QUEST  =                                       xy(1, 30);  //16 slots

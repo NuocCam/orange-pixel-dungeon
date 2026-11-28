@@ -49,6 +49,25 @@ public class LineCharge {
 		public int endPos;
 	}
 
+	//a spot with 1 tile between them and a clear run back in, the straightest one. -1 if cornered
+	public static int backOffCell( Char charger, Char enemy ){
+		int best = -1;
+		for (int offset : PathFinder.NEIGHBOURS8){
+			int cell = charger.pos + offset;
+			if (!Dungeon.level.passable[cell] || DeepWater.blocks(charger, cell)
+					|| Actor.findChar(cell) != null
+					|| Dungeon.level.distance(cell, enemy.pos) != 2
+					|| aim(cell, enemy.pos, charger) == null){
+				continue;
+			}
+			if (best == -1 || Dungeon.level.trueDistance(cell, enemy.pos)
+					< Dungeon.level.trueDistance(best, enemy.pos)){
+				best = cell;
+			}
+		}
+		return best;
+	}
+
 	//aimed the way the demon floor's death gaze is: through 'through' and on past it,
 	// until somthing stops a charge. The starting cell isn't included
 	public static ArrayList<Integer> path( int from, int through ){

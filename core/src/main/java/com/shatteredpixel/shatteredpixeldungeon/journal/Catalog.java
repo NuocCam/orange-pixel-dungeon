@@ -63,6 +63,8 @@ import com.shatteredpixel.shatteredpixeldungeon.items.food.ChargrilledMeat;
 import com.shatteredpixel.shatteredpixeldungeon.items.food.Food;
 import com.shatteredpixel.shatteredpixeldungeon.items.food.FrozenCarpaccio;
 import com.shatteredpixel.shatteredpixeldungeon.items.food.JungleBerry;
+import com.shatteredpixel.shatteredpixeldungeon.items.food.JungleBerryPie;
+import com.shatteredpixel.shatteredpixeldungeon.items.food.JungleBerryPieSlice;
 import com.shatteredpixel.shatteredpixeldungeon.items.food.MagicOrange;
 import com.shatteredpixel.shatteredpixeldungeon.items.food.MeatPie;
 import com.shatteredpixel.shatteredpixeldungeon.items.food.MysteryMeat;
@@ -256,7 +258,7 @@ public enum Catalog {
 		FOOD.addItems( Food.class, Pasty.class, MysteryMeat.class, ChargrilledMeat.class,
 				StewedMeat.class, FrozenCarpaccio.class, SmallRation.class, Berry.class,
 				SupplyRation.class, Blandfruit.class, PhantomMeat.class, MeatPie.class, MagicOrange.class,
-				JungleBerry.class );
+				JungleBerry.class, JungleBerryPie.class, JungleBerryPieSlice.class );
 
 		EXOTIC_POTIONS.addItems(ExoticPotion.exoToReg.keySet().toArray(new Class[0]));
 
@@ -305,17 +307,17 @@ public enum Catalog {
 
 	public static ArrayList<Catalog> consumableCatalogs = new ArrayList<>();
 	static {
-		consumableCatalogs.add(POTIONS);
-		consumableCatalogs.add(SCROLLS);
-		consumableCatalogs.add(SEEDS);
-		consumableCatalogs.add(STONES);
 		consumableCatalogs.add(FOOD);
+		consumableCatalogs.add(SEEDS);
+		consumableCatalogs.add(POTIONS);
 		consumableCatalogs.add(EXOTIC_POTIONS);
-		consumableCatalogs.add(EXOTIC_SCROLLS);
-		consumableCatalogs.add(BOMBS);
-		consumableCatalogs.add(TIPPED_DARTS);
 		consumableCatalogs.add(BREWS_ELIXIRS);
+		consumableCatalogs.add(STONES);
+		consumableCatalogs.add(SCROLLS);
+		consumableCatalogs.add(EXOTIC_SCROLLS);
 		consumableCatalogs.add(SPELLS);
+		consumableCatalogs.add(TIPPED_DARTS);
+		consumableCatalogs.add(BOMBS);
 		consumableCatalogs.add(MISC_CONSUMABLES);
 	}
 	

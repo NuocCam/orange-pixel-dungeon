@@ -24,6 +24,7 @@ package com.shatteredpixel.shatteredpixeldungeon.items.bags;
 import com.shatteredpixel.shatteredpixeldungeon.items.Honeypot;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.food.Food;
+import com.shatteredpixel.shatteredpixeldungeon.items.food.JungleBerryPie;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 
 //every hero carries one from the start
@@ -35,7 +36,8 @@ public class FoodPouch extends Bag {
 
 	@Override
 	public boolean canHold( Item item ) {
-		if (item instanceof Food || item instanceof Honeypot || item instanceof Honeypot.ShatteredPot){
+		if (item instanceof Food || item instanceof Honeypot || item instanceof Honeypot.ShatteredPot
+				|| item instanceof JungleBerryPie){
 			return super.canHold(item);
 		} else {
 			return false;
